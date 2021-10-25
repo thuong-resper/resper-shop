@@ -1,0 +1,138 @@
+.box-border {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px 15px 20px;
+  margin: 1rem 0;
+}
+
+.rating {
+  overflow: hidden;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.rating__title {
+  line-height: 1.4;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.rating-star {
+  align-items: flex-start;
+  display: flex;
+  margin: 25px 0 20px;
+}
+
+.rating-item {
+  padding: 0 2px;
+}
+
+.rating-star.left {
+  float: left;
+  width: 38.2%;
+}
+
+.rating-star .point {
+  color: #fe8c23;
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 27px;
+  margin-top: 2px;
+}
+
+.rating-star.left .rating-left {
+  width: auto;
+}
+.rating-left {
+  border-right: 1px solid #f1f1f1;
+  position: relative;
+  padding: 0 20px 10px 10px;
+  text-align: center;
+  width: 38.2%;
+}
+
+.rating-top {
+  align-items: center;
+  display: flex;
+  margin-bottom: 15px;
+  margin-top: -10px;
+}
+ul,
+ol {
+  list-style: none;
+}
+
+.rating-list li {
+  align-items: center;
+  display: flex;
+  margin-bottom: 7px;
+}
+
+.ground-start-rating {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #ffff;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+.ground-start-rating h3 {
+  color: #4a5568;
+  font-size: 1.2em;
+  font-weight: 550;
+  margin: 0;
+  text-align: left;
+  padding: 15px;
+}
+
+.items-start-rating {
+  display: grid;
+  grid-template-columns: 15% 45% 37%;
+  grid-column-gap: 10px;
+}
+.control-start {
+  display: flex;
+  justify-self: center;
+  align-items: center;
+}
+.items-start-rating .control-start p {
+  margin-right: 5px;
+  color: #4a5568;
+  font-weight: 550;
+}
+
+.items-start-rating {
+  display: flex;
+}
+
+.items-start-rating p {
+  margin: 0;
+  color: #288ad6;
+  font-size: 1em;
+  justify-self: center;
+}
+.items-start-rating p span {
+  font-weight: 550;
+}
+@media screen and (max-width: 600px) {
+  .main-start-rating {
+    padding: 10px;
+  }
+  .rating-star {
+    align-items: flex-start;
+    display: block;
+    margin: 25px 0 20px;
+  }
+  .rating-star.left {
+    float: none;
+    width: 100%;
+  }
+}
+@media screen and (max-width: 480px) {
+  .main-start-rating .start-rating h3 {
+    font-size: 1.2em;
+  }
+}
+@media screen and (max-width: 1100px) {
+  .control-start-rating {
+    border-right: none;
+  }
+}

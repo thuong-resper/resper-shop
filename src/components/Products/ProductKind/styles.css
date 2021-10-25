@@ -1,0 +1,41 @@
+.kind-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  border-right: 1px solid var(--background);
+  position: relative;
+}
+
+.img-kind {
+  margin-right: 5px;
+  width: 60px;
+}
+
+.routes {
+  background-color: #fff;
+  margin: 10px 0;
+}
+
+.route-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+@media only screen and (max-width: 600px) {
+  .kind-item {
+    display: inline-block;
+    padding: 5px 0;
+    text-align: center;
+  }
+  .img-kind {
+    margin-right: 0;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .routes {
+    margin: 0;
+  }
+}
