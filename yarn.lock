@@ -11575,6 +11575,13 @@
     "auto-bind" "^2.1.1"
     "react-swipeable" "^5.5.1"
 
+"react-messenger-customer-chat@^0.8.0":
+  "integrity" "sha512-7HItF+2nElXCBLi1q5eccgE9X4P86BmjmzF5nBcok+hJNWVjdKJTdWxl9VZTQnjkp3GHB7WwTwN2l3d/RKmFuQ=="
+  "resolved" "https://registry.npmjs.org/react-messenger-customer-chat/-/react-messenger-customer-chat-0.8.0.tgz"
+  "version" "0.8.0"
+  dependencies:
+    "prop-types" "^15.6.0"
+
 "react-only-when@^1.0.2":
   "integrity" "sha512-agE6l3L6bqaVuwNtjihTQ36M+VBfPS63KOzcNL4ZTmlwSxQPvhzIqmBWfiol0/wLYmKxCcBqgXkEJpvj5Kob8Q=="
   "resolved" "https://registry.npmjs.org/react-only-when/-/react-only-when-1.0.2.tgz"

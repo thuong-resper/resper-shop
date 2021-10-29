@@ -14,7 +14,16 @@ const useStyles = makeStyles((theme) => ({
     transition: '0.5ms',
     width: '100%',
     height: '100%',
-    '&:hover': { boxShadow: '0 2px 12px rgb(0 0 0 / 12%)' },
+    '&:hover': {
+      boxShadow: '0 2px 12px rgb(0 0 0 / 12%)',
+      '& div': {
+        '& a': {
+          '& div': {
+            '& span': { '& img': { marginBottom: '20px', transition: 'all 300ms ease-in-out' } },
+          },
+        },
+      },
+    },
   },
   oneItem: {
     float: 'left',

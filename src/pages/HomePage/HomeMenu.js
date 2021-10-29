@@ -2,7 +2,8 @@ import {
   faLaptop,
   faMobileAlt,
   faShareSquare,
-  faTabletAlt,faCube
+  faTabletAlt,
+  faCube,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -83,7 +84,7 @@ export default function HomeMenu({ i }) {
               </ListItem>
               <ListItem
                 component={Link}
-                to="/laptop"
+                to="/shop?category=6142bff8d0c33220905c8bd2"
                 button
                 selected={selectedIndex === 1}
                 onClick={(value) => handleListItemClick(value)}

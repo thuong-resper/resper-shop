@@ -43,13 +43,10 @@ const CustomizedBreadcrumbs = ({ step1, step2, step3, infoProduct }) => {
             href="#"
             label={step2}
             onClick={
-              infoProduct
-                ? () => router.push(`/product?category=${infoProduct.category._id}`)
-                : null
+              infoProduct ? () => router.push(`/shop?category=${infoProduct.category._id}`) : null
             }
           />
         ) : null}
-        {step3 ? <StyledBreadcrumb label={step3} deleteIcon={<ExpandMoreIcon />} /> : null}
       </Breadcrumbs>
     </Box>
   );

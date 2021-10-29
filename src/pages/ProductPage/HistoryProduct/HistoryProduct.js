@@ -18,6 +18,12 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: '0.5rem',
     },
   },
+  minHeight: {
+    height: '25.5rem',
+    [theme.breakpoints.down('md')]: {
+      height: '21.5rem',
+    },
+  },
 }));
 
 //react slick
@@ -72,7 +78,7 @@ export default function HistoryProduct({ _id, historyProduct }) {
             <>
               <Grid container justify="flex-start">
                 {data.map((item, index) => (
-                  <Grid item xs={6} key={index}>
+                  <Grid item xs={6} key={index} className={classes.minHeight}>
                     <Product product={item} />
                   </Grid>
                 ))}
@@ -80,7 +86,7 @@ export default function HistoryProduct({ _id, historyProduct }) {
             </>
           ) : (
             <>
-              <div className="list-item list-top-ten">
+              <div className={classes.minHeight}>
                 <Slider
                   className="list-item-banner"
                   {...settings}

@@ -40,6 +40,10 @@ import { getCategories, getCategorySubs } from 'features/Admin/Category/pathAPI'
 import { getSearch } from 'features/Search/patchAPI';
 import { updateSearch } from 'features/Search/SearchProductSlice';
 import useWindowDimensions from 'hooks/useWindowDimensions';
+import queryString from 'query-string';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import {
   colorOptions,
   laptopCpu,
@@ -60,10 +64,6 @@ import {
   watchSc,
   watchSex,
 } from 'staticOptions';
-import queryString from 'query-string';
-import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import './style.css';
 
 const useStyles = makeStyles((theme) => ({
@@ -108,6 +108,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   colorForm: { display: 'block' },
+  minHeight: {
+    height: '25.5rem',
+    [theme.breakpoints.down('md')]: {
+      height: '21.5rem',
+    },
+  },
 }));
 
 const sortOptions = [
@@ -550,7 +556,14 @@ export default function ShopPage({ location }) {
                 <TabPanel className="tab-panel" value={value} index={index} key={index}>
                   <Grid container direction="row" justifyContent="center" alignItems="center">
                     {data?.map((listProduct) => (
-                      <Grid item xs={6} sm={4} md={3} key={listProduct._id}>
+                      <Grid
+                        item
+                        xs={6}
+                        sm={4}
+                        md={3}
+                        key={listProduct._id}
+                        className={classes.minHeight}
+                      >
                         <Product product={listProduct} />
                       </Grid>
                     ))}

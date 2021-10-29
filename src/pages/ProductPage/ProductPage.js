@@ -340,7 +340,6 @@ const ProductPage = ({ location }) => {
               <CustomizedBreadcrumbs
                 step1="Home"
                 step2={dataProductsId?.category.name}
-                step3={dataProductsId?.name}
                 infoProduct={dataProductsId}
               />
             </Grid>

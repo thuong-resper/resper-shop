@@ -1,6 +1,7 @@
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AOS from 'aos';
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 // --CSS
 import 'aos/dist/aos.css';
 import { UserContext } from 'contexts/UserContext';
@@ -77,6 +78,7 @@ const App = () => {
         </Container>
       </div>
       <Footer />
+      <MessengerCustomerChat pageId="972426273088823" appId="461020245337447" />
     </Router>
   );
 };

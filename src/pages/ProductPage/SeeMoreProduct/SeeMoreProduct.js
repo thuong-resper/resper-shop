@@ -7,6 +7,10 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: '20%',
       flexBasis: '20%',
+      height: '25.5rem',
+    },
+    [theme.breakpoints.down('md')]: {
+      height: '21.5rem',
     },
   },
   titleSeeMore: {
