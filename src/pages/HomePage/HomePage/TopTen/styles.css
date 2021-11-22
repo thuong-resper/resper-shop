@@ -61,7 +61,6 @@
 }
 
 .skeleton-p {
-  margin-top: 20px;
   background-color: #fac6ce;
   position: relative;
   overflow: hidden;
@@ -73,11 +72,11 @@
 }
 
 .color-laptop {
-  background-color: #fff;
+  background-color: #f8bbd0;
 }
 
 .color-watch {
-  background-color: #fff;
+  background-color: #dcedc8;
 }
 
 .skeleton-p-top {

@@ -1,8 +1,8 @@
 import { Box } from '@material-ui/core';
+import MainMenu from 'components/Navigation/MainMenu/MainMenu';
 import WatchNews from 'components/WatchNews/WatchNews';
 import { UserContext } from 'contexts/UserContext';
 import React, { useContext, useEffect } from 'react';
-import HomeMenu from '../HomeMenu';
 import HomeBanner from './Banner/HomeBanner';
 import TopTenLaptop from './TopTen/Laptop';
 import TopTenPhone from './TopTen/Phone';
@@ -19,7 +19,7 @@ const HomePage = (props) => {
 
   return (
     <div>
-      <HomeMenu i={-1} />
+      <MainMenu />
       <HomeBanner />
       <Box m="0.5rem 0">
         <TopTenPhone />

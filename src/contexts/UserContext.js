@@ -57,14 +57,20 @@ const UserContextProvider = ({ children }) => {
   // declare socketIo, connect and get user if have token
   useEffect(() => {
     async function setProfile() {
-      const socketIo = io(process.env.REACT_APP_API_URL, {
-        withCredentials: true,
-        extraHeaders: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Header': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-          'Access-Control-Allow-Methods': 'PUT, POST, DELETE, GET',
-        },
-      });
+      const socketIo = io(
+        process.env.REACT_APP_NODE_ENV === 'development'
+          ? 'http://127.0.0.1:5000'
+          : process.env.REACT_APP_API_URL,
+        {
+          withCredentials: true,
+          extraHeaders: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Header':
+              'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+            'Access-Control-Allow-Methods': 'PUT, POST, DELETE, GET',
+          },
+        }
+      );
       if (socketIo) {
         setSocket(socketIo);
       }

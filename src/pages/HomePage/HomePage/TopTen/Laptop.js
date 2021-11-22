@@ -3,6 +3,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { NextBtn, PreviousBtn } from 'components/Button/ButtonSlide/ButtonSlide';
 import SeeMoreButtonMobile from 'components/Button/SeeMoreButtonMobile/SeeMoreButtonMobile';
 import Product from 'components/Products/Product/Product';
+import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct';
 import { AntTab, AntTabs } from 'components/Tab/Tab';
 import { getListProducts } from 'features/Product/pathApi';
 import useWindowDimensions from 'hooks/useWindowDimensions';
@@ -114,7 +115,7 @@ const TopTenLaptop = () => {
               <Grid container justify="flex-start">
                 {data.slice(0, 4).map((item, index) => (
                   <Grid item xs={6} key={index}>
-                    <Product product={item} loading={loading} />
+                    {loading ? <SkeletonProduct /> : <Product product={item} />}
                   </Grid>
                 ))}
                 {/* button see more on mobile */}
@@ -145,24 +146,34 @@ const TopTenLaptop = () => {
                     </Link>
                   ))}
                   <div className="list-item list-top-ten">
-                    <Slider
-                      className="list-item-banner"
-                      {...settings}
-                      prevArrow={<PreviousBtn />}
-                      nextArrow={<NextBtn />}
-                      beforeChange={handleBeforeChange}
-                      afterChange={handleAfterChange}
-                    >
-                      {data.map((item, index) => (
-                        <div
-                          onClickCapture={handleOnItemClick}
-                          key={item._id}
-                          className="one-slide-item"
-                        >
-                          <Product product={item} loading={loading} />
-                        </div>
-                      ))}
-                    </Slider>
+                    {loading ? (
+                      <Box display="flex" justify="space-between">
+                        {[...Array(5)].map((item, index) => (
+                          <Box width="20%" key={index}>
+                            <SkeletonProduct />
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Slider
+                        className="list-item-banner"
+                        {...settings}
+                        prevArrow={<PreviousBtn />}
+                        nextArrow={<NextBtn />}
+                        beforeChange={handleBeforeChange}
+                        afterChange={handleAfterChange}
+                      >
+                        {data.map((item, index) => (
+                          <div
+                            onClickCapture={handleOnItemClick}
+                            key={item._id}
+                            className="one-slide-item"
+                          >
+                            <Product product={item} />
+                          </div>
+                        ))}
+                      </Slider>
+                    )}
                   </div>
                 </TabPanel>
               ))}

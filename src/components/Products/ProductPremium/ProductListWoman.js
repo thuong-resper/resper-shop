@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import Product from '../Product/Product';
+import SkeletonProduct from '../Product/Skeleton/SkeletonProduct';
 import img1 from './DHnu-720x240.png';
 import img from './DHphaidep-330x428.png';
 import './styles.css';
@@ -107,7 +108,7 @@ const ProductListWoman = () => {
               <Grid container justify="flex-start">
                 {data.slice(0, 4).map((item, index) => (
                   <Grid item xs={6} key={index}>
-                    <Product product={item} loading={loading} />
+                    {loading ? <SkeletonProduct /> : <Product product={item} />}
                   </Grid>
                 ))}
                 {/* button see more on mobile */}
@@ -138,24 +139,34 @@ const ProductListWoman = () => {
                     </Link>
                   ))}
                   <div className="list-item list-top-ten">
-                    <Slider
-                      className="list-item-banner"
-                      {...settings}
-                      prevArrow={<PreviousBtn />}
-                      nextArrow={<NextBtn />}
-                      beforeChange={handleBeforeChange}
-                      afterChange={handleAfterChange}
-                    >
-                      {data.map((item, index) => (
-                        <div
-                          onClickCapture={handleOnItemClick}
-                          key={item._id}
-                          className="one-slide-item"
-                        >
-                          <Product product={item} loading={loading} />
-                        </div>
-                      ))}
-                    </Slider>
+                    {loading ? (
+                      <Box display="flex" justify="space-between">
+                        {[...Array(4)].map((item, index) => (
+                          <Box width="25%">
+                            <SkeletonProduct />
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Slider
+                        className="list-item-banner"
+                        {...settings}
+                        prevArrow={<PreviousBtn />}
+                        nextArrow={<NextBtn />}
+                        beforeChange={handleBeforeChange}
+                        afterChange={handleAfterChange}
+                      >
+                        {data.map((item, index) => (
+                          <div
+                            onClickCapture={handleOnItemClick}
+                            key={item._id}
+                            className="one-slide-item"
+                          >
+                            <Product product={item} />
+                          </div>
+                        ))}
+                      </Slider>
+                    )}
                   </div>
                 </TabPanel>
               ))}

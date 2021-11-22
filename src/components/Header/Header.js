@@ -35,33 +35,35 @@ const Header = (props) => {
   const router = useRouter();
 
   return (
-    <div className={classes.wrap}>
-      <div className={classes.grow}>
-        <AppBar position="static" color="transparent" elevation={0}>
-          <Toolbar>
-            <Typography
-              onClick={(e) => router.push('/')}
-              className={classes.title}
-              variant="h6"
-              noWrap
-            >
-              Resper Shop
-            </Typography>
-            <Search />
-            <div className={classes.grow} />
-            <BadgeCart setPatchCart={setPatchCart} dataCart={dataCart} />
-            <MenuListUser
-              socket={socket}
-              user={user}
-              setUser={setUser}
-              idUser={idUser}
-              setIdUser={setIdUser}
-              token={token}
-              setToken={setToken}
-              loadingGetProfile={loadingGetProfile}
-            />
-          </Toolbar>
-        </AppBar>
+    <div className={classes.header}>
+      <div className={classes.wrap}>
+        <div className={classes.grow}>
+          <AppBar position="static" color="transparent" elevation={0}>
+            <Toolbar>
+              <Typography
+                onClick={(e) => router.push('/')}
+                className={classes.title}
+                variant="h6"
+                noWrap
+              >
+                Resper Shop
+              </Typography>
+              <Search />
+              <div className={classes.grow} />
+              <BadgeCart setPatchCart={setPatchCart} dataCart={dataCart} />
+              <MenuListUser
+                socket={socket}
+                user={user}
+                setUser={setUser}
+                idUser={idUser}
+                setIdUser={setIdUser}
+                token={token}
+                setToken={setToken}
+                loadingGetProfile={loadingGetProfile}
+              />
+            </Toolbar>
+          </AppBar>
+        </div>
       </div>
     </div>
   );

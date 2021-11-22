@@ -1,16 +1,19 @@
-import axios from "axios";
-import queryString from "query-string";
+import axios from 'axios';
+import queryString from 'query-string';
 
 const axiosClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL:
+    process.env.REACT_APP_NODE_ENV === 'development'
+      ? 'http://127.0.0.1:5000'
+      : process.env.REACT_APP_API_URL,
   headers: {
-    "content-type": "application/json",
+    'content-type': 'application/json',
   },
   paramsSerializer: (params) => queryString.stringify(params),
 });
 axiosClient.interceptors.request.use(
   (config) => {
-    const getLocalToken = localStorage.getItem("token");
+    const getLocalToken = localStorage.getItem('token');
     if (getLocalToken) {
       config.headers.Authorization = `Bearer ${getLocalToken}`;
     }

@@ -56,10 +56,6 @@ const OrderPage = lazy(() => {
   return import('./OrderPage/OrderPage');
 });
 
-const SmartPhone = lazy(() => {
-  return import('./ProductTypePages/SmartPhone');
-});
-
 const ShopPage = lazy(() => {
   return import('./Search/ShopPage');
 });
@@ -142,11 +138,6 @@ const Page = [
     path: '/order/:id',
     exact: true,
     main: OrderPage,
-  },
-  {
-    path: '/dtdt',
-    exact: true,
-    main: SmartPhone,
   },
   {
     path: '/shop',

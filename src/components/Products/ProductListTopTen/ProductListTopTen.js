@@ -1,6 +1,7 @@
 import { AppBar, Box, Grid } from '@material-ui/core';
 import { NextBtn, PreviousBtn } from 'components/Button/ButtonSlide/ButtonSlide';
 import SeeMoreButtonMobile from 'components/Button/SeeMoreButtonMobile/SeeMoreButtonMobile';
+import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct';
 import { AntTab, AntTabs } from 'components/Tab/Tab';
 import SimpleAlerts from 'components/UI/Alerts/Alerts';
 import { getListProducts } from 'features/Product/pathApi';
@@ -103,7 +104,7 @@ const ProductListTopTen = () => {
               <Grid container justify="flex-start">
                 {data.slice(0, 4).map((item, index) => (
                   <Grid item xs={6} key={index}>
-                    <Product product={item} loading={loading} />
+                    {loading ? <SkeletonProduct /> : <Product product={item} />}
                   </Grid>
                 ))}
                 {/* button see more on mobile */}
@@ -134,24 +135,34 @@ const ProductListTopTen = () => {
                     </Link>
                   ))}
                   <div className="list-item list-top-ten">
-                    <Slider
-                      className="list-item-banner"
-                      {...settings}
-                      prevArrow={<PreviousBtn />}
-                      nextArrow={<NextBtn />}
-                      beforeChange={handleBeforeChange}
-                      afterChange={handleAfterChange}
-                    >
-                      {data.map((item, index) => (
-                        <div
-                          onClickCapture={handleOnItemClick}
-                          key={item._id}
-                          className="one-slide-item"
-                        >
-                          <Product product={item} loading={loading} />
-                        </div>
-                      ))}
-                    </Slider>
+                    {loading ? (
+                      <Box display="flex" justify="space-between">
+                        {[...Array(5)].map((item, index) => (
+                          <Box width="20%" key={index}>
+                            <SkeletonProduct />
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Slider
+                        className="list-item-banner"
+                        {...settings}
+                        prevArrow={<PreviousBtn />}
+                        nextArrow={<NextBtn />}
+                        beforeChange={handleBeforeChange}
+                        afterChange={handleAfterChange}
+                      >
+                        {data.map((item, index) => (
+                          <div
+                            onClickCapture={handleOnItemClick}
+                            key={item._id}
+                            className="one-slide-item"
+                          >
+                            <Product product={item} />
+                          </div>
+                        ))}
+                      </Slider>
+                    )}
                   </div>
                 </TabPanel>
               ))}
@@ -163,7 +174,6 @@ const ProductListTopTen = () => {
   };
   return (
     <>
-      <div className="headingtop"></div>
       <div className="skeleton-p skeleton-p-top">
         <div className="tab">
           <AppBar position="static" className="app-bar">

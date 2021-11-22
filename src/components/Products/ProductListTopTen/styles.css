@@ -42,14 +42,6 @@
   margin: unset;
 }
 
-.headingtop {
-  height: 89px;
-  text-indent: -9999px;
-  margin-top: 0.5rem;
-  padding: 0;
-  background: transparent url('./title-bestseller-min.png') no-repeat center top;
-}
-
 .seemore {
   position: absolute;
   top: 15px;
@@ -69,7 +61,6 @@
 }
 
 .skeleton-p {
-  margin-top: 20px;
   background-color: #fac6ce;
   position: relative;
   overflow: hidden;

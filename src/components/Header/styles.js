@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles((theme) => ({
+  header: { width: '100%', backgroundColor: '#e3f2fd' },
   wrap: {
     width: 1280,
     margin: 'auto',

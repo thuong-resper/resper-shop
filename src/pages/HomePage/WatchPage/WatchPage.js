@@ -1,3 +1,4 @@
+import MainMenu from 'components/Navigation/MainMenu/MainMenu';
 import ProductCollections from 'components/Products/ProductCollections/ProductCollections';
 import ProductListTopTen from 'components/Products/ProductListTopTen/ProductListTopTen';
 import ProductListMan from 'components/Products/ProductPremium/ProductListMan';
@@ -8,14 +9,13 @@ import useWindowDimensions from 'hooks/useWindowDimensions';
 import React from 'react';
 import Banner from '../../../components/Products/ProductBanner/ProductBanner';
 import ProductRoutes from '../../../components/Products/ProductKind/ProductRoutes';
-import HomeMenu from '../HomeMenu';
 
 const WatchPage = (props) => {
   const { width } = useWindowDimensions();
 
   return (
     <div>
-      {width < 600 ? null : <HomeMenu i={4} />}
+      <MainMenu />
       <Banner />
       <ProductCollections />
       <ProductListTopTen />
