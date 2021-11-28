@@ -32,7 +32,6 @@ const ForgetForm = ({ location }) => {
   // context data
   const state = useContext(UserContext);
   const { data, setValues } = useData();
-  console.log(data);
   // state
   const [token] = state.token;
   const [patchCart] = state.patchCart;
@@ -41,7 +40,6 @@ const ForgetForm = ({ location }) => {
   const isSuccess = useSelector((state) => state.user.isSuccess);
   const isError = useSelector((state) => state.user.isError);
   const message = useSelector((state) => state.user.message);
-  const isAdmin = useSelector((state) => state.user.isAdmin);
 
   const actionPostForgotPassword = (email) => dispatch(postForgotPassword(email));
 

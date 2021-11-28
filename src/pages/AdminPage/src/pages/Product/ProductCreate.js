@@ -8,10 +8,10 @@ import {
 import { makeStyles } from '@material-ui/core';
 import { Tabs } from 'antd';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 import FormProductCreateLaptop from './ProductCreate/FormProductCreateLaptop';
 import FormProductCreatePhone from './ProductCreate/FormProductCreatePhone';
 import FormProductCreateSmWatch from './ProductCreate/FormProductCreateSmWatch';
@@ -42,7 +42,7 @@ const ProductCreate = () => {
       </Helmet>
       <div className={classes.root}>
         {loading && <SimpleBackdrop />}
-        <AdminDrawer i={1} />
+        <AdminSidebar />
         <main className={classes.content}>
           <Tabs defaultActiveKey="1">
             <TabPane

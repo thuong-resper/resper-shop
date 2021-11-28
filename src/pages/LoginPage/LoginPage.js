@@ -56,7 +56,6 @@ const LoginPage = ({ location }) => {
   const isSuccess = useSelector((state) => state.user.isSuccess);
   const isError = useSelector((state) => state.user.isError);
   const message = useSelector((state) => state.user.message);
-  const isAdmin = useSelector((state) => state.user.isAdmin);
 
   // snackbar
   useEffect(() => {
@@ -102,7 +101,6 @@ const LoginPage = ({ location }) => {
     history.push('./recover');
     // get value of email field
     const value = getValues('email');
-    console.log(value);
     if (value) {
       // set value context
       setValues({ value: value });
@@ -149,7 +147,6 @@ const LoginPage = ({ location }) => {
   // login with google
   const responseGoogle = async (response) => {
     const { tokenId } = response;
-    console.log(tokenId);
     try {
       const resultLogin = await dispatch(loginGoogle(tokenId));
       const currentUser = unwrapResult(resultLogin);
@@ -158,9 +155,7 @@ const LoginPage = ({ location }) => {
         setUser(currentUser.user);
         setIdUser(currentUser.user._id);
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   //hide and show password field

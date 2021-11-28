@@ -147,7 +147,7 @@ const ProductPremium = () => {
                   {fetchedCategories.map((c) => (
                     <Link
                       key={c.index}
-                      to={c.index === value ? `products?category=${category}&subs=${c._id}` : null}
+                      to={`products?category=${category}&subs=${c._id}`}
                       className="seemore"
                     >
                       {c.index === value ? (

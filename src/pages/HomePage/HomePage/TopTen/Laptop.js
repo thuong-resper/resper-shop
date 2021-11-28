@@ -133,11 +133,7 @@ const TopTenLaptop = () => {
               {data.map((item, index) => (
                 <TabPanel className="tab-panel" value={value} index={index} key={index}>
                   {fetchedCategories.map((c) => (
-                    <Link
-                      key={c.index}
-                      to={c.index === value ? `shop?category=${c.id}` : null}
-                      className="seemore"
-                    >
+                    <Link key={c.index} to={`shop?category=${c.id}`} className="seemore">
                       {c.index === value ? (
                         <span>
                           Xem thêm&nbsp;<strong>{c.label}</strong>

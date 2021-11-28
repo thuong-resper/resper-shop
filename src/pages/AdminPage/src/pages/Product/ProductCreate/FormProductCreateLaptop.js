@@ -10,7 +10,7 @@ import {
   Radio,
   Select,
   Typography,
-  Upload
+  Upload,
 } from 'antd';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
 import { UserContext } from 'contexts/UserContext';
@@ -25,7 +25,7 @@ import {
   laptopRam,
   laptopRes,
   laptopRom,
-  laptopSc
+  laptopSc,
 } from 'staticOptions';
 import DescriptionCreate from './DescriptionCreate';
 
@@ -149,9 +149,7 @@ export default function FormProductCreateLaptop() {
       }
       setPreviewImage(file.url || file.preview);
       setPreviewVisible(true);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   const handleChange = (f) => {
     const { file, fileList } = f;

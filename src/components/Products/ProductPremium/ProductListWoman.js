@@ -128,7 +128,7 @@ const ProductListWoman = () => {
                   {fetchedCategories.map((c) => (
                     <Link
                       key={c.index}
-                      to={c.index === value ? `products?category=${c.id}&sex=${c.sex}` : null}
+                      to={`products?category=${c.id}&sex=${c.sex}`}
                       className="seemore"
                     >
                       {c.index === value ? (

@@ -14,6 +14,7 @@ import {
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import { UserContext } from 'contexts/UserContext';
 import { clearState } from 'features/Admin/Category/CategorySlice';
 import {
@@ -28,7 +29,6 @@ import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import CategoryForm from '../../components/forms/CategoryForm';
 import LocalSearch from '../../components/forms/LocalSearch';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -123,7 +123,6 @@ const Category = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(name);
     actionCreateCategory({ name }, token);
     actionGetCategories();
     setName('');
@@ -154,7 +153,7 @@ const Category = () => {
       </Helmet>
       <div className={classes.root}>
         {loading && <SimpleBackdrop />}
-        <AdminDrawer i={2} />
+        <AdminSidebar />
         <main className={classes.content}>
           <Box display="flex" spacing={1}>
             <CategoryForm

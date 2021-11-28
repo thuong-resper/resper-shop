@@ -66,7 +66,7 @@ export default function FormProductCreateSmWatch() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    actionGetCategories();
+    actionGetCategories(); // eslint-disable-next-line
   }, []);
 
   const handleChangeCategory = async (value) => {
@@ -147,9 +147,7 @@ export default function FormProductCreateSmWatch() {
       }
       setPreviewImage(file.url || file.preview);
       setPreviewVisible(true);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   const handleChange = (f) => {
     const { file, fileList } = f;

@@ -215,9 +215,7 @@ const OrderPage = ({ location }) => {
         setDataOrder(res);
         setPaypalAmount(Number(res.totalPayable / 23000).toFixed(2));
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -236,9 +234,7 @@ const OrderPage = ({ location }) => {
         if (res.ok) {
           getOrderById();
         }
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     payOrder(paymentResult); // eslint-disable-next-line
   };
@@ -254,9 +250,7 @@ const OrderPage = ({ location }) => {
       if (res) {
         getOrderById();
       }
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   let sumOrder = 0;

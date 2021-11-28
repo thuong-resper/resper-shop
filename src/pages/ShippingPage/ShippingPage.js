@@ -111,9 +111,7 @@ const ShippingPage = () => {
         if (res) {
           history.push('/placeorder');
         }
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     saveAddress(value);
   };

@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-const Dashboard = lazy(() => import('./src/pages/Dashboard.js'));
+const Dashboard = lazy(() => import('./src/pages/Dashboard/Dashboard.js'));
 const Category = lazy(() => import('./src/pages/Category/Category.js'));
 const Coupon = lazy(() => import('./src/pages/Coupon/Coupon.js'));
 const Sub = lazy(() => import('./src/pages/Sub/Sub.js'));

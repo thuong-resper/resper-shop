@@ -8,12 +8,14 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  TextField, Typography
+  TextField,
+  Typography
 } from '@material-ui/core';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import { UserContext } from 'contexts/UserContext';
 import { getCategories } from 'features/Admin/Category/pathAPI';
 import { createSub, deleteSub, getSubs } from 'features/Admin/Sub/pathAPI';
@@ -23,7 +25,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 import LocalSearch from '../../components/forms/LocalSearch';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,8 +62,6 @@ const Sub = () => {
   const dispatch = useDispatch();
   const [token] = state.token;
   const { enqueueSnackbar } = useSnackbar();
-
-  // close dialog after confirm
 
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
@@ -109,7 +108,7 @@ const Sub = () => {
 
   useEffect(() => {
     actionGetCategories();
-    actionGetSubs();
+    actionGetSubs(); // eslint-disable-next-line
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -141,7 +140,6 @@ const Sub = () => {
     handleCloseDelete();
   };
 
-  // step 4
   const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword);
 
   return (
@@ -151,7 +149,7 @@ const Sub = () => {
       </Helmet>
       <div className={classes.root}>
         {loading && <SimpleBackdrop />}
-        <AdminDrawer i={3} />
+        <AdminSidebar />
         <main className={classes.content}>
           <Box display="flex">
             <form onSubmit={handleSubmit} style={{ margin: '0.5rem', minWidth: '120px' }}>

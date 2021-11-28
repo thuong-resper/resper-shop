@@ -38,7 +38,7 @@ const rootReducer = {
 };
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [thunk, logger],
+  middleware: [thunk, process.env.REACT_APP_NODE_ENV !== 'production' ? logger : null],
   devTools: process.env.REACT_APP_NODE_ENV !== 'production',
 });
 export default store;

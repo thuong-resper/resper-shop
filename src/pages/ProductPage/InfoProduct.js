@@ -116,15 +116,6 @@ export default function InfoProduct({ dataProductsId, actionAddToCart }) {
           <Typography variant="h4" color="secondary">
             {dataProductsId.price ? formatter.format(dataProductsId.price) : null}
             <abbr style={{ textDecoration: 'underline', margin: '0 5px' }}>đ</abbr>
-            {/* {true ? (
-              <Chip
-                color="secondary"
-                size="small"
-                label="Hire purchase 0%"
-                variant="outlined"
-                style={styles.ml5}
-              />
-            ) : null} */}
           </Typography>
           <Typography variant="body2">
             <span>

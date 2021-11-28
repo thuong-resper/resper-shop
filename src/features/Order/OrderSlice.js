@@ -60,7 +60,6 @@ const OrderSlice = createSlice({
     },
     [putPayOrderAPI.rejected]: (state, action) => {
       state.loading = false;
-      console.log('error', action);
     },
     [putPayOrderAPI.fulfilled]: (state, action) => {
       const { data } = action.payload;
@@ -86,7 +85,6 @@ const OrderSlice = createSlice({
     },
     [putOrderAddressesAPI.rejected]: (state, action) => {
       state.loading = false;
-      console.log('error', action);
     },
     // delete cart
     [deleteOrderAPI.pending]: (state) => {

@@ -24,18 +24,6 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-function createData(attribute, value) {
-  return { attribute, value };
-}
-
-const items = [
-  createData('Face Diameter:', 159),
-  createData('Face material:', 'Mineral'),
-  createData('Frame material:', 'Stainless Steel'),
-  createData('Face thickness:', 'Dày 9 mm'),
-  createData('Wire material:', 'Leather'),
-];
-
 export default function ProductSpecification({ product }) {
   const { color, ram, rom, sc, res, cpu, pin, face } = product;
 

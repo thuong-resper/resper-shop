@@ -34,7 +34,6 @@ const CartSlice = createSlice({
         data[index].cart = cart;
         data[index].user = user;
       }
-      console.log({ index });
       state.LoadingCheckOutCart = false;
     },
     [checkOutCart.rejected]: (state) => {

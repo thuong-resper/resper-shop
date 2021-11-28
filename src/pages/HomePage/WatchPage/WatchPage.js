@@ -5,14 +5,11 @@ import ProductListMan from 'components/Products/ProductPremium/ProductListMan';
 import ProductListWoman from 'components/Products/ProductPremium/ProductListWoman';
 import ProductPremium from 'components/Products/ProductPremium/ProductPremium';
 import WatchNews from 'components/WatchNews/WatchNews';
-import useWindowDimensions from 'hooks/useWindowDimensions';
 import React from 'react';
 import Banner from '../../../components/Products/ProductBanner/ProductBanner';
 import ProductRoutes from '../../../components/Products/ProductKind/ProductRoutes';
 
 const WatchPage = (props) => {
-  const { width } = useWindowDimensions();
-
   return (
     <div>
       <MainMenu />

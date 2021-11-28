@@ -29,7 +29,6 @@ function TabPanel(props) {
 
 const ProductColor = ({ product }) => {
   const { colors } = product;
-  console.log(product);
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -47,11 +46,7 @@ const ProductColor = ({ product }) => {
           <TabPanel value={value} index={value}>
             {colors[value].name}
           </TabPanel>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            className={classes.muiTabRoot}
-          >
+          <Tabs value={value} onChange={handleChange} className={classes.muiTabRoot}>
             {colors.map((color) => (
               <Tab
                 icon={<Avatar alt="test avatar" src="/logo192.png" />}

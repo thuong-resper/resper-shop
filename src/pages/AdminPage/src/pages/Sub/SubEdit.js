@@ -1,6 +1,7 @@
 import { Box, Button, makeStyles, TextField, Typography } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import { UserContext } from 'contexts/UserContext';
 import { getCategories } from 'features/Admin/Category/pathAPI';
 import { getSub, updateSub } from 'features/Admin/Sub/pathAPI';
@@ -9,7 +10,6 @@ import { useSnackbar } from 'notistack';
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,9 +63,7 @@ const SubEdit = ({ match, history }) => {
   const [inputValue, setInputValue] = React.useState('');
 
   const [parent, setParent] = useState(categories[0]);
-  // step 1
 
-  // snackbar
   useEffect(() => {
     return () => {
       dispatch(clearState());
@@ -102,8 +100,6 @@ const SubEdit = ({ match, history }) => {
     history.push('/admin/sub');
   };
 
-  // step 4
-
   return (
     <>
       <Helmet>
@@ -111,7 +107,7 @@ const SubEdit = ({ match, history }) => {
       </Helmet>
       <div className={classes.root}>
         {loading && <SimpleBackdrop />}
-        <AdminDrawer i={3} />
+        <AdminSidebar />
         <main className={classes.content}>
           <form onSubmit={handleSubmitEdit} style={{ margin: '0.5rem', minWidth: '120px' }}>
             <Typography variant="h5">Cập nhật thương hiệu</Typography>

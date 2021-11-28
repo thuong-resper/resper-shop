@@ -1,6 +1,6 @@
 import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import UserDrawer from 'components/Drawer/UserDrawer';
+import UserSidebar from 'components/Navigation/MainMenu/UserSidebar';
 import { UserContext } from 'contexts/UserContext';
 import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -23,8 +23,6 @@ const UserProfile = ({ location }) => {
   const [token] = state.token;
   const [user] = state.user;
 
-  console.log(user);
-
   if (!token) {
     history.push('/login?redirect=user/profile');
   }
@@ -32,10 +30,10 @@ const UserProfile = ({ location }) => {
   return (
     <>
       <Helmet>
-        <title>Thông tin tài khoản</title>
+        <title>My Account</title>
       </Helmet>
       <div className={classes.root}>
-        <UserDrawer i={0} />
+        <UserSidebar />
         <main className={classes.content}>
           {/* step 5 */}
           <Box m="0.5rem">

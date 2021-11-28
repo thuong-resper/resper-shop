@@ -28,11 +28,9 @@ const UserContextProvider = ({ children }) => {
   useEffect(() => {
     if (socket) {
       socket.on('serverDeleteAccount', (msg) => {
-        const { accountDelete, _id_user } = msg;
-        console.log(msg);
+        const { _id_user } = msg;
         if (msg) {
           if (_id_user === idUser) {
-            console.log(accountDelete);
             setToken(null);
             setUser(null);
             setIdUser(null);
@@ -58,9 +56,10 @@ const UserContextProvider = ({ children }) => {
   useEffect(() => {
     async function setProfile() {
       const socketIo = io(
-        process.env.REACT_APP_NODE_ENV === 'development'
-          ? 'http://127.0.0.1:5000'
-          : process.env.REACT_APP_API_URL,
+        // development
+        // process.env.REACT_APP_API_DEV,
+        // production
+        process.env.REACT_APP_API_URL,
         {
           withCredentials: true,
           extraHeaders: {
@@ -84,7 +83,6 @@ const UserContextProvider = ({ children }) => {
             setIdUser(currentUser.user._id);
           }
         } catch (e) {
-          console.log(e);
           localStorage.removeItem('token');
           window.location.reload();
         }

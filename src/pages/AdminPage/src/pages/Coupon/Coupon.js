@@ -8,7 +8,7 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -19,6 +19,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import { UserContext } from 'contexts/UserContext';
 import { clearState } from 'features/Admin/Category/CategorySlice';
 import { createCoupon, deleteCoupon, getCoupons } from 'features/Admin/Coupon/pathAPI';
@@ -27,7 +28,6 @@ import { useSnackbar } from 'notistack';
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 import CouponForm from '../../components/forms/CouponForm';
 import LocalSearch from '../../components/forms/LocalSearch';
 
@@ -66,7 +66,6 @@ const Coupon = () => {
   const [name, setName] = useState('');
   const [discount, setDiscount] = useState(0);
   const [expiry, setExpiry] = useState('2021-01-01T00:00');
-  const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [couponId, setCouponId] = useState('');
   const [keyword, setKeyword] = useState('');
@@ -107,18 +106,9 @@ const Coupon = () => {
     actionGetCoupons(); // eslint-disable-next-line
   }, []);
 
-  const handleClickOpen = (slug) => {
-    setOpen(true);
-    setCouponId(slug);
-  };
-
   const handleClickDeleteOpen = (_id) => {
     setOpenDelete(true);
     setCouponId(_id);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   const handleCloseDelete = () => {
@@ -145,7 +135,6 @@ const Coupon = () => {
     handleCloseDelete();
   };
 
-  // step 4
   const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword);
 
   return (
@@ -155,7 +144,7 @@ const Coupon = () => {
       </Helmet>
       <div className={classes.root}>
         {loading && <SimpleBackdrop />}
-        <AdminDrawer i={4} />
+        <AdminSidebar />
         <main className={classes.content}>
           <Box display="flex" spacing={1}>
             <CouponForm

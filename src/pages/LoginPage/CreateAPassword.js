@@ -94,7 +94,6 @@ const CreateAPassword = () => {
   }, [accessToken, token]);
 
   const onSubmit = async (value) => {
-    console.log(value, accessToken);
     if (value && accessToken) {
       const data = { password: value.password.trim(), accessToken: accessToken };
       const actionResult = await dispatch(putResetPassword(data));

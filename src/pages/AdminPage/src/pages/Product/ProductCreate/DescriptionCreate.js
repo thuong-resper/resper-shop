@@ -3,7 +3,6 @@ import ReactQuill from 'react-quill';
 import '../../../../../../../node_modules/react-quill/dist/quill.snow.css';
 
 const DescriptionCreate = ({ body, handleChangeQuill }) => {
-  console.log(body);
   return (
     <div>
       <p>Mô tả</p>

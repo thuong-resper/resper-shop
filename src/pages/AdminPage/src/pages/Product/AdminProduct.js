@@ -13,6 +13,7 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import { Pagination } from '@material-ui/lab';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import ProductAdminItem from 'components/Products/Product/ProductAdminItem';
 import { UserContext } from 'contexts/UserContext';
 import { deleteProduct } from 'features/Admin/Product/pathAPI';
@@ -22,7 +23,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,7 +87,6 @@ const AdminProduct = ({ location }) => {
   const handleClickDeleteOpen = (product) => {
     setOpenDelete(true);
     setProduct(product);
-    console.log(product);
   };
 
   const handleCloseDelete = () => {
@@ -107,11 +106,11 @@ const AdminProduct = ({ location }) => {
   return (
     <>
       <Helmet>
-        <title>Product Admin</title>
+        <title>Product</title>
       </Helmet>
       <div className={classes.root} ref={divRef}>
         {loading && <SimpleBackdrop />}
-        <AdminDrawer i={1} />
+        <AdminSidebar />
         <main className={classes.content}>
           <Box mb={1} display="flex" justifyContent="space-between">
             <Typography variant="h5">Tất cả sản phẩm&nbsp;({length})</Typography>

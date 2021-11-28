@@ -181,9 +181,7 @@ export default function FormProductEdit({ id_product, valuesEdit }) {
       }
       setPreviewImage(file.url || file.preview);
       setPreviewVisible(true);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const handleChange = (f) => {
@@ -203,13 +201,11 @@ export default function FormProductEdit({ id_product, valuesEdit }) {
   };
 
   const handleRemoveImage = async (file) => {
-    console.log(file.id);
     setLoading(true);
     // remove image on cloudinary by public_id
     const data = { public_id: file.id };
     const resCloud = await actionRemoveImage(data, token);
     const res = unwrapResult(resCloud);
-    console.log(res);
     //if not find image on cloudinary -> remove failed
     if (res.err.result === 'not found') {
       setLoading(false);
@@ -219,7 +215,6 @@ export default function FormProductEdit({ id_product, valuesEdit }) {
       });
     } else {
       setLoading(false);
-      console.log(fileListImage);
       let filteredImages = fileListImage.filter((item) => {
         return item.id !== file.id;
       });
@@ -229,7 +224,7 @@ export default function FormProductEdit({ id_product, valuesEdit }) {
   return (
     <>
       {loading && <SimpleBackdrop />}
-      <Title level={4}>Chỉnh sửa sản phẩm</Title>
+      <Title level={4}>Edit A Product</Title>
       <Form
         form={form}
         {...formItemLayout}

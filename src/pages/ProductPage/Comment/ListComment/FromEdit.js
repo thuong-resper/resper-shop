@@ -76,9 +76,7 @@ export default function FromEdit({
         setIsForm(false);
         setLoadingSubmitCmt(false);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   return (
     <div className={classes.mainEdit} id="main_edit">

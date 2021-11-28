@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Pagination } from '@material-ui/lab';
 import { unwrapResult } from '@reduxjs/toolkit';
-import AdminDrawer from 'components/Drawer/AdminDrawer';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import { UserContext } from 'contexts/UserContext';
 import { getAllOrders } from 'features/Order/pathAPI';
 import moment from 'moment';
@@ -48,7 +48,6 @@ const AdminOrder = ({ location }) => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [length, setLength] = useState(0);
-  console.log(orders);
   const formatter = new Intl.NumberFormat('vn');
 
   // dispatch API
@@ -120,10 +119,10 @@ const AdminOrder = ({ location }) => {
   return (
     <>
       <Helmet>
-        <title>Đơn hàng</title>
+        <title>Orders</title>
       </Helmet>
       <div className={classes.root} ref={divRef}>
-        <AdminDrawer i={5} />
+        <AdminSidebar />
         <main className={classes.content}>
           {/* step 5 */}
           <Box m="0.5rem">

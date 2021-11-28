@@ -1,12 +1,12 @@
-import { makeStyles, Toolbar } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { unwrapResult } from '@reduxjs/toolkit';
 import SimpleBackdrop from 'components/Backdrop/Backdrop';
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
 import { getProductId } from 'features/Product/pathApi';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouteMatch } from 'react-router-dom';
-import AdminDrawer from '../../../../../components/Drawer/AdminDrawer';
 import FormProductEdit from './FormProductEdit';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +39,7 @@ export default function ProductEdit() {
         setValuesEdit(res);
       }
     };
-    fetchDataProduct(id);
+    fetchDataProduct(id); // eslint-disable-next-line
   }, []);
   return (
     <>
@@ -49,7 +49,7 @@ export default function ProductEdit() {
         </Helmet>
         <div className={classes.root}>
           {loading && <SimpleBackdrop />}
-          <AdminDrawer i={1} />
+          <AdminSidebar />
           <main className={classes.content}>
             <FormProductEdit id_product={id} valuesEdit={valuesEdit} />
           </main>

@@ -91,7 +91,7 @@ const ProductDescription = ({ product }) => {
             </Box>
           )}
         </div>
-
+        <div className={classes.bgContent}></div>
         <AlertDialogSlide
           title="Mô tả sản phẩm"
           component={

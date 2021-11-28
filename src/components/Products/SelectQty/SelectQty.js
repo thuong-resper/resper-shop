@@ -1,9 +1,9 @@
-import { Grid, IconButton, TextField } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
-import React, { useState } from "react";
-import { useStyles } from "./styles";
-import styles from "./styles.module.css";
+import { Grid, IconButton, TextField } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+import React, { useState } from 'react';
+import { useStyles } from './styles';
+import styles from './styles.module.css';
 
 const SelectQty = (props) => {
   const classes = useStyles();
@@ -14,7 +14,6 @@ const SelectQty = (props) => {
   const [count, setCount] = useState(1);
 
   const handleChange = (e) => {
-    console.log(e.target.value);
     const base = Math.abs(e.target.value);
 
     if (base >= max) {

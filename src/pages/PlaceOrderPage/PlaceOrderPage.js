@@ -218,9 +218,7 @@ const PlaceOrderPage = () => {
           setTotalAfterDiscount(0);
           setCoupon('');
         }
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     emptyCart();
   };
@@ -238,9 +236,7 @@ const PlaceOrderPage = () => {
         if (res.err) {
           setDiscountError(res.err);
         }
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     applyCoupon();
   };
@@ -267,9 +263,7 @@ const PlaceOrderPage = () => {
         if (res.err) {
           setDiscountError(res.err);
         }
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     createOrder();
   };

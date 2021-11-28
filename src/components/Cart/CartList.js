@@ -182,9 +182,7 @@ const CartList = ({
           if (res) {
             history.push('/shipping');
           }
-        } catch (err) {
-          console.log(err);
-        }
+        } catch (err) {}
       };
       createCart(dataCart);
     } else history.push('/login');

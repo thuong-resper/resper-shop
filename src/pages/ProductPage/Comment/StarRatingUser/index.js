@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import './style.css';
 export default function StarRatingUser({ starRating, sumStarRating, nameProduct, reviewRating }) {
   const { oneStars, twoStars, threeStars, fourStars, fiveStars } = starRating;
-  console.log(reviewRating);
   return (
     <>
       <div className="box-border">

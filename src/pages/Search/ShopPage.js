@@ -8,7 +8,7 @@ import {
   Paper,
   Radio,
   RadioGroup,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import AspectRatioSharpIcon from '@material-ui/icons/AspectRatioSharp';
 import BookmarkSharpIcon from '@material-ui/icons/BookmarkSharp';
@@ -62,7 +62,7 @@ import {
   tabletRom,
   tabletSc,
   watchSc,
-  watchSex,
+  watchSex
 } from 'staticOptions';
 import './style.css';
 
@@ -210,7 +210,7 @@ export default function ShopPage({ location }) {
   const [value, setValue] = useState(0);
   const [sort, setSort] = useState(sortOptions[0].value);
   const [price, setPrice] = useState([]);
-  const [priceValue, setPriceValue] = useState('');
+  const [, setPriceValue] = useState('');
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(categoryUrl);
   const [star, setStar] = useState([]);
@@ -239,7 +239,6 @@ export default function ShopPage({ location }) {
 
   // Data Search
   const dataSearch = useSelector((state) => state.search.data);
-  console.log(dataSearch);
   const lengthSearch = useSelector((state) => state.search.length);
   const loadingSearch = useSelector((state) => state.search.loading);
   const query = useSelector((state) => state.search.search);
@@ -375,17 +374,14 @@ export default function ShopPage({ location }) {
   };
 
   const handleChangePrice = async (item) => {
-    console.log(item);
     actionSaveSearch('');
     if (item) {
       setPrice(item.value);
       setPriceValue(item.index);
-      console.log(priceValue);
     }
   };
 
   const handleChangeStar = async (item) => {
-    console.log(item);
     actionSaveSearch('');
     if (item) {
       setStar(item.value);

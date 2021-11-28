@@ -59,11 +59,10 @@ export default function FormProductCreatePhone() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    actionGetCategories();
+    actionGetCategories(); // eslint-disable-next-line
   }, []);
 
   const handleChangeCategory = async (value) => {
-    console.log(value);
     const subs = await actionGetCategorySubs(value);
     const resSubs = unwrapResult(subs);
     if (resSubs) {
@@ -141,9 +140,7 @@ export default function FormProductCreatePhone() {
       }
       setPreviewImage(file.url || file.preview);
       setPreviewVisible(true);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
   const handleChange = (f) => {
     const { file, fileList } = f;

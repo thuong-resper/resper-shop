@@ -37,7 +37,6 @@ export default function CheckEmailForget() {
     } else setEmail(data.value);
     // eslint-disable-next-line
   }, [data]);
-  console.log(email);
 
   return (
     <Grid container className={classes.root}>
