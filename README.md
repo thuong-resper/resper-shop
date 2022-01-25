@@ -11,8 +11,6 @@
 - [Socket.IO](https://socket.io/) - Bidirectional and low-latency communication for every platform
 - [React Hook Form](https://react-hook-form.com/) - Performant, flexible and extensible forms with easy-to-use validation
 
-```
-
 ## License
 
 MIT License.
