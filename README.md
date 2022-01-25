@@ -3,7 +3,7 @@
 [https://respershop.netlify.app/](https://respershop.netlify.app/)
 
 
-## Stack
+## Stack (frontend)
 
 - [Reactjs](https://reactjs.org/) - A JavaScript library for building user interfaces
 - [Material UI(V4)](https://v4.mui.com/) - React components for faster and easier web development. Build your own design system, or start with Material Design
