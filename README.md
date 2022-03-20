@@ -11,6 +11,11 @@
 - [Socket.IO](https://socket.io/) - Bidirectional and low-latency communication for every platform
 - [React Hook Form](https://react-hook-form.com/) - Performant, flexible and extensible forms with easy-to-use validation
 
+------
+
+- [Backend](https://github.com/thuong-resper/resper-api) - Checkout my backend repository of this site
+
+
 ## License
 
 MIT License.
