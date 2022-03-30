@@ -4,25 +4,24 @@ import Product from '../Products/Product/Product.js'
 import React, { useCallback, useState } from 'react'
 import styles from './styles.module.css'
 
-const settings = {
-	infinite: false,
-	autoplay: false,
-	autoplaySpeed: 3000,
-	speed: 300,
-	dots: false,
-	slidesToShow: 5,
-	swipeToSlide: true,
-	responsive: [
-		{
-			breakpoint: 1024,
-			settings: {
-				slidesToShow: 3,
+const ProductsSlider = ({ data, slidesToShow }) => {
+	const settings = {
+		infinite: false,
+		autoplay: false,
+		autoplaySpeed: 3000,
+		speed: 300,
+		dots: false,
+		slidesToShow: slidesToShow ? slidesToShow : 5,
+		swipeToSlide: true,
+		responsive: [
+			{
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 3,
+				},
 			},
-		},
-	],
-}
-
-const ProductsSlider = ({ data }) => {
+		],
+	}
 	//prevent click action when swipe
 	const [dragging, setDragging] = useState(false)
 	const handleBeforeChange = useCallback(() => {

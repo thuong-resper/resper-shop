@@ -1,17 +1,14 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import adminAPI from 'apis/adminAPI';
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import adminAPI from 'apis/adminAPI'
 
 export const createCoupon = createAsyncThunk('createCoupon', async (coupon, token) => {
-  const response = await adminAPI.createCoupon(coupon, token);
-  return response;
-});
+	return await adminAPI.createCoupon(coupon, token)
+})
 
 export const getCoupons = createAsyncThunk('getCoupons', async (token) => {
-  const response = await adminAPI.getCoupons(token);
-  return response;
-});
+	return await adminAPI.getCoupons(token)
+})
 
 export const deleteCoupon = createAsyncThunk('deleteCoupon', async (couponId, token) => {
-  const response = await adminAPI.deleteCoupon(couponId, token);
-  return response;
-});
+	return await adminAPI.deleteCoupon(couponId, token)
+})

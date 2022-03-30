@@ -1,9 +1,7 @@
 import React from 'react'
 import { Box } from '@material-ui/core'
-import MainMenu from 'components/Navigation/MainMenu/MainMenu'
 import WatchNews from 'components/WatchNews/WatchNews'
-import TopTenProducts from './TopTen/TopTenProducts.js'
-import Banner from '../../../components/Banner/Banner.js'
+import Banner from 'components/Banner/Banner.js'
 import imgX from 'images/anhhome10.png'
 import imgY from 'images/anhhome11.png'
 import anh1 from 'images/anhhome1.png'
@@ -13,7 +11,9 @@ import anh4 from 'images/anhhome4.png'
 import anh5 from 'images/anhhome5.png'
 import anh6 from 'images/anhhome6.png'
 import anh7 from 'images/anhhome7.png'
-import { LaptopAndTablet, Phone, Watch } from './category.js'
+import { LaptopAndTablet, Phone, Watch } from '../StaticParam.js'
+import TopProducts from '../TopProducts.js'
+import { MainLayout } from 'components/Layout'
 
 const dataBannerResult = [
 	{
@@ -41,23 +41,21 @@ const dataBannerResult = [
 
 const HomePage = (props) => {
 	return (
-		<div>
-			<MainMenu />
+		<MainLayout>
 			<Banner dataBannerResult={dataBannerResult} imgX={imgX} imgY={imgY} />
 			<Box m="0.5rem 0">
-				<TopTenProducts fetchedCategories={Phone} />
+				<TopProducts fetchedCategories={Phone} />
 			</Box>
 			<Box m="0.5rem 0">
-				<TopTenProducts fetchedCategories={LaptopAndTablet} />
+				<TopProducts fetchedCategories={LaptopAndTablet} />
 			</Box>
 			<Box m="0.5rem 0">
-				<TopTenProducts fetchedCategories={Watch} />
+				<TopProducts fetchedCategories={Watch} />
 			</Box>
 			<Box m="0.5rem 0">
 				<WatchNews />
 			</Box>
-		</div>
+		</MainLayout>
 	)
 }
-
 export default HomePage

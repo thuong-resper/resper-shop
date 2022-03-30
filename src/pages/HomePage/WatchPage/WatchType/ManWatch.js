@@ -1,18 +1,21 @@
 import { AppBar, Box, Grid } from '@material-ui/core'
 import { unwrapResult } from '@reduxjs/toolkit'
-import SeeMoreButtonMobile from 'components/Button/SeeMoreButtonMobile/SeeMoreButtonMobile'
-import Product from 'components/Products/Product/Product'
-import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct'
+import SeeMoreButtonMobile from 'components/Button/SeeMoreButtonMobile/SeeMoreButtonMobile.js'
+import Product from 'components/Products/Product/Product.js'
+import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct.js'
 import ProductsSlider from 'components/ReactSlickSlider/ProductsSlider.js'
-import { AntTab, AntTabs } from 'components/Tab/Tab'
-import { getListProducts } from 'features/Product/pathApi'
-import useWindowDimensions from 'hooks/useWindowDimensions'
+import { AntTabBlack, AntTabs } from 'components/Tab/Tab.js'
+import { getListProducts } from 'features/Product/pathApi.js'
+import useWindowDimensions from 'hooks/useWindowDimensions.js'
+import 'pages/HomePage/styles.css'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-import './styles.css'
+import { ManWatch as fetchedCategories } from '../../StaticParam.js'
+import img1 from '../Images/DHNammobile-720x240.jpg'
+import img from '../Images/DHphaimanh-330x428.png'
 
-const TopTenProducts = ({ fetchedCategories }) => {
+const ManWatch = () => {
 	const dispatch = useDispatch()
 	const { width } = useWindowDimensions()
 	const [value, setValue] = useState(0)
@@ -24,8 +27,8 @@ const TopTenProducts = ({ fetchedCategories }) => {
 	useEffect(() => {
 		const params = {
 			category: category,
-			sort: '-sold',
-			limit: 10,
+			sex: 'man',
+			limit: 15,
 		}
 		const fetchDataProduct = async (params) => {
 			try {
@@ -49,7 +52,6 @@ const TopTenProducts = ({ fetchedCategories }) => {
 		}
 		setValue(newValue)
 	}
-
 	const showListProducts = (data) => {
 		if (data.length > 0) {
 			return (
@@ -62,11 +64,12 @@ const TopTenProducts = ({ fetchedCategories }) => {
 										{loading ? <SkeletonProduct /> : <Product product={item} />}
 									</Grid>
 								))}
+								{/* button see more on mobile */}
 								{fetchedCategories.map((c) => (
 									<SeeMoreButtonMobile
 										key={c.index}
-										title={c.index === value ? c.label : null}
-										link={c.index === value ? `shop?category=${c.id}` : null}
+										title={c.index === value ? `${c.label} nam` : null}
+										link={c.index === value ? `products?category=${c.id}&sex=${c.sex}` : null}
 									/>
 								))}
 							</Grid>
@@ -76,10 +79,14 @@ const TopTenProducts = ({ fetchedCategories }) => {
 							{data.map((item, index) => (
 								<TabPanel className="tab-panel" value={value} index={index} key={index}>
 									{fetchedCategories.map((c) => (
-										<Link key={c.index} to={`shop?category=${c.id}`} className="seemore">
+										<Link
+											key={c.index}
+											to={`products?category=${c.id}&sex=${c.sex}`}
+											className="seemore"
+										>
 											{c.index === value ? (
 												<span>
-													Xem thêm&nbsp;<strong>{c.label}</strong>
+													Xem thêm&nbsp;<strong>{`${c.label} nam`}</strong>
 												</span>
 											) : null}
 										</Link>
@@ -87,14 +94,14 @@ const TopTenProducts = ({ fetchedCategories }) => {
 									<div className="list-item list-top-ten">
 										{loading ? (
 											<Box display="flex" justify="space-between">
-												{[...Array(5)].map((item, index) => (
-													<Box width="20%" key={index}>
+												{[...Array(4)].map((item, index) => (
+													<Box width="25%">
 														<SkeletonProduct />
 													</Box>
 												))}
 											</Box>
 										) : (
-											<ProductsSlider data={data} />
+											<ProductsSlider data={data} slidesToShow={4} />
 										)}
 									</div>
 								</TabPanel>
@@ -107,25 +114,34 @@ const TopTenProducts = ({ fetchedCategories }) => {
 	}
 	return (
 		<>
-			<div className="skeleton-p skeleton-p-top products-slider-bgColor">
-				<div className="tab">
-					<AppBar position="static" className="app-bar">
-						<AntTabs
-							value={value}
-							onChange={handleChange}
-							indicatorColor="primary"
-							textColor="primary"
-							variant="scrollable"
-							scrollButtons="auto"
-							aria-label="scrollable auto tabs example"
-						>
-							{fetchedCategories.map((c) => (
-								<AntTab key={c.label} label={c.label} />
-							))}
-						</AntTabs>
-					</AppBar>
-					{showListProducts(data)}
+			<div className="watch-type premium-section watchforman">
+				<div className="premium-type">
+					<Link to="/premium-products">
+						<img src={width > 1024 ? img : img1} alt="premium-products" />
+					</Link>
 				</div>
+				<aside>
+					<div className="skeleton-p skeleton-p-pre">
+						<div className="tab">
+							<AppBar position="static" className="app-bar">
+								<AntTabs
+									value={value}
+									onChange={handleChange}
+									indicatorColor="primary"
+									scrollButtons="on"
+									textColor="primary"
+									variant="scrollable"
+									aria-label="scrollable auto tabs example"
+								>
+									{fetchedCategories.map((c) => (
+										<AntTabBlack key={c.index} label={c.label} />
+									))}
+								</AntTabs>
+							</AppBar>
+							{showListProducts(data)}
+						</div>
+					</div>
+				</aside>
 			</div>
 		</>
 	)
@@ -138,8 +154,8 @@ function TabPanel(props) {
 		<div
 			role="tabpanel"
 			hidden={value !== index}
-			id={`scrollable-auto-tabpanel-${index}`}
-			aria-labelledby={`scrollable-auto-tab-${index}`}
+			id={`scrollable-force-tabpanel-${index}`}
+			aria-labelledby={`scrollable-force-tab-${index}`}
 			{...other}
 		>
 			{value === index && (
@@ -151,4 +167,4 @@ function TabPanel(props) {
 	)
 }
 
-export default TopTenProducts
+export default ManWatch
