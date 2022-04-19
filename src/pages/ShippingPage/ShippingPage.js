@@ -8,7 +8,6 @@ import { Input } from 'components/Input/Input'
 import { MainLayout } from 'components/Layout'
 import SEO from 'components/SEO/SEO.js'
 import { SignupBtn } from 'components/UI/Button/Button.js'
-import { UserContext } from 'contexts/UserContext'
 import dataCity from 'data.json'
 import { saveAddressAndPayment } from 'features/Cart/CartSlice'
 import { saveUserAddressAPI } from 'features/Cart/pathAPI'
@@ -18,7 +17,8 @@ import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import { paymentOptions } from 'staticOptions.js'
 import * as yup from 'yup'
-
+import { UserContext } from 'contexts/index.js'
+import SimpleBackdrop from 'components/Backdrop/Backdrop.js'
 
 const useStyles = makeStyles((theme) => ({
 	layout: {
@@ -101,6 +101,7 @@ const ShippingPage = () => {
 	const actionSaveAddress = (data) => dispatch(saveUserAddressAPI(data))
 	const actionSaveAddressAndPayment = (data) => dispatch(saveAddressAndPayment(data))
 
+	const [loading, setLoading] = useState(false)
 	const [city, setCity] = useState([])
 	const [district, setDistrict] = useState([])
 
@@ -112,7 +113,7 @@ const ShippingPage = () => {
 	}
 
 	const onSubmit = async (values) => {
-		console.log(values)
+		setLoading(true)
 		const { name, city, district, commune, street, numberPhone, payment } = values
 		const data = {
 			address: `${name} - ${numberPhone} - ${street} - ${commune} - ${district} - ${city}`,
@@ -122,6 +123,7 @@ const ShippingPage = () => {
 		actionSaveAddressAndPayment(data)
 		const res = await actionSaveAddress(data)
 		if (res) {
+			setLoading(false)
 			history.push('/placeorder')
 			reset({ defaultValues })
 		}
@@ -134,6 +136,7 @@ const ShippingPage = () => {
 				pageDescription={'Địa chỉ nhận hàng'}
 				pageUrl={`${process.env.REACT_APP_CLIENT_URL}/shipping`}
 			/>
+			{loading && <SimpleBackdrop />}
 			<main className={classes.layout}>
 				<Paper className={classes.paper}>
 					<CheckoutSteps step1 step2 />
@@ -247,6 +250,11 @@ const ShippingPage = () => {
 							id="payment"
 							options={paymentOptions}
 							getOptionLabel={(option) => option.label}
+							getOptionDisabled={(option) =>
+								option === paymentOptions[2] ||
+								option === paymentOptions[3] ||
+								option === paymentOptions[4]
+							}
 							autoHighlight
 							renderInput={(params) => (
 								<Input

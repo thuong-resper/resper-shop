@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Grid } from '@material-ui/core'
+import { Box, Button, Grid } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import AddIcon from '@material-ui/icons/Add'
@@ -6,12 +6,12 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import RemoveIcon from '@material-ui/icons/Remove'
-import { unwrapResult } from '@reduxjs/toolkit'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import AlertDialogSlide from '../UI/Modal/CustomModal'
 import styles from './styles.module.css'
+import cartAPI from 'apis/cartAPI.js'
 
 const useStyles = makeStyles((theme) => ({
 	wrapper: {
@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
 		textAlign: 'center',
 		outline: 'none',
 		fontSize: '16px',
-		border: '1px solid rgba(0, 0, 0, 0.23)',
 		lineHeight: '2rem',
 	},
 	itemName: {
@@ -92,17 +91,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
-const CartList = ({
-	dataCart,
-	actionDeleteCart,
-	actionUpdateCartProduct,
-	actionUserCart,
-	token,
-	loadingUserCart,
-}) => {
+const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loadingUserCart }) => {
 	const history = useHistory()
 	const classes = useStyles()
 	const formatter = new Intl.NumberFormat('vn')
+	const [loading, setLoading] = useState(false)
 
 	let totalSumCart = 0
 	const deleteCart = (index) => {
@@ -130,23 +123,19 @@ const CartList = ({
 		return totalSumCart
 	}
 
-	const createCart = async (cart) => {
-		const product = await actionUserCart({ cart })
-		const res = unwrapResult(product)
-		if (res) {
+	const cartConfirm = async () => {
+		setLoading(true)
+		const response = await cartAPI.userCartAPI({ cart: dataCart })
+		if (response?.ok) {
+			setLoading(false)
 			history.push('/shipping')
 		}
-	}
-
-	const cartConfirm = () => {
-		if (token) {
-			createCart(dataCart)
-		} else history.push('/login')
 	}
 
 	return (
 		dataCart.length > 0 && (
 			<div className={classes.wrapper}>
+				{loading && <SimpleBackdrop />}
 				{loadingUserCart && <SimpleBackdrop />}
 				<Box
 					display="flex"
@@ -171,7 +160,7 @@ const CartList = ({
 								</Link>
 								<Grid container justify="center" className={classes.itemContent}>
 									<Grid item xs={3} sm={2} className={classes.img}>
-										<Link to={`/product?id=${item.product._id}&key=${item.product.brand}`}>
+										<Link to={`/product/${item.product._id}&key=${item.product.brand}`}>
 											<img
 												alt={item.product.name}
 												className={classes.media}
@@ -180,10 +169,7 @@ const CartList = ({
 										</Link>
 									</Grid>
 									<Grid item xs={6} sm={6}>
-										<Link
-											to={`/product?id=${item.product._id}&key=${item.product.brand}`}
-											className={classes.itemName}
-										>
+										<Link to={`/product/${item.product._id}`} className={classes.itemName}>
 											<Typography variant="body1">{item.product.name}</Typography>
 										</Link>
 									</Grid>
@@ -238,7 +224,7 @@ const CartList = ({
 										</div>
 									</Grid>
 									<Grid item xs={12} sm={2} className={classes.qty}>
-										<ButtonGroup>
+										<Box display="flex">
 											<Button
 												aria-label="reduce"
 												onClick={() => {
@@ -262,7 +248,7 @@ const CartList = ({
 											>
 												<AddIcon fontSize="small" />
 											</Button>
-										</ButtonGroup>
+										</Box>
 									</Grid>
 								</Grid>
 								<div className={classes.price}>

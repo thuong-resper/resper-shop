@@ -7,8 +7,6 @@ import CartSlice from 'features/Cart/CartSlice'
 import CommentSlice from 'features/Comment/CommentSlice'
 import OrderSlice from 'features/Order/OrderSlice'
 import ListProductSlice from 'features/Product/ListProductSlice'
-import ProductIdSlice from 'features/Product/ProductIdSlice'
-import ListRelatedSlice from 'features/Product/ListRelatedSlice'
 import SearchProductSlice from 'features/Search/SearchProductSlice'
 import UserSlice from 'features/User/UserSlice'
 import logger from 'redux-logger'
@@ -16,11 +14,9 @@ import thunk from 'redux-thunk'
 
 const rootReducer = {
 	ListProducts: ListProductSlice,
-	productId: ProductIdSlice,
 	user: UserSlice,
 	cart: CartSlice,
 	comment: CommentSlice,
-	related: ListRelatedSlice,
 	order: OrderSlice,
 	search: SearchProductSlice,
 	category: CategorySlice,

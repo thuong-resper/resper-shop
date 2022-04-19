@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core'
-import { Icon } from '@iconify/react'
+import Iconify from 'components/Iconify'
 
 const useStyles = makeStyles((theme) => ({
 	menuItem: {
@@ -37,7 +37,7 @@ const NavigationItem = ({ item }) => {
 	return (
 		<NavLink to={item.link} className={classes.menuItem} activeClassName={classes.active}>
 			<div className={classes.itemIcon}>
-				<Icon icon={item.icon} width="1.5em" height="1.5em" />
+				<Iconify icon={item.icon} width="1.5em" height="1.5em" />
 			</div>
 			<div>{item.title}</div>
 		</NavLink>

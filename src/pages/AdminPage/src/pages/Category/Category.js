@@ -1,248 +1,238 @@
 import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import EditIcon from '@material-ui/icons/Edit';
-import SimpleBackdrop from 'components/Backdrop/Backdrop';
-import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
-import { UserContext } from 'contexts/UserContext';
-import { clearState } from 'features/Admin/Category/CategorySlice';
+	Box,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	IconButton,
+	makeStyles,
+	TextField,
+	Typography,
+} from '@material-ui/core'
+import React, { useState } from 'react'
+import LocalSearch from '../../components/forms/LocalSearch'
+import { AdminContent, AdminLayout } from 'components/Layout/index.js'
+import SEO from 'components/SEO/SEO.js'
 import {
-  createCategory,
-  deleteCategory,
-  getCategories,
-  updateCategory,
-} from 'features/Admin/Category/pathAPI';
-import { useSnackbar } from 'notistack';
-import React, { useContext, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useDispatch, useSelector } from 'react-redux';
-import CategoryForm from '../../components/forms/CategoryForm';
-import LocalSearch from '../../components/forms/LocalSearch';
+	useAddCategory,
+	useDeleteCategory,
+	useGetCategories,
+	usePatchCategory,
+} from 'features/Admin/Category/index.js'
+import SimpleBackdrop from 'components/Backdrop/Backdrop'
+import Iconify from 'components/Iconify.js'
+import CategoryForm from 'pages/AdminPage/src/components/forms/CategoryForm.js'
+import { useSnackbar } from 'notistack'
+import { OptionBtn } from 'components/UI/Button/Button.js'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  item: {
-    padding: '0.5rem',
-    margin: '0.5rem 0',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'relative',
-    borderRadius: '0.5rem',
-    backgroundColor: '#e8eaf6',
-  },
-  dialog: { minWidth: '400px' },
-  itemBtn: { display: 'flex' },
-}));
+	root: {
+		display: 'flex',
+	},
+	content: {
+		flexGrow: 1,
+		padding: theme.spacing(3),
+	},
+	item: {
+		padding: '0.5rem',
+		margin: '0.5rem 0',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		position: 'relative',
+		borderRadius: '0.5rem',
+		backgroundColor: '#e8eaf6',
+	},
+	dialog: { minWidth: '400px' },
+	itemBtn: { display: 'flex' },
+}))
 
 const Category = () => {
-  // --Contexts
-  const state = useContext(UserContext);
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const [token] = state.token;
-  const { enqueueSnackbar } = useSnackbar();
-  const [name, setName] = useState('');
-  const [nameEdit, setNameEdit] = useState('');
-  const [open, setOpen] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [slug, setSlug] = useState('');
-  const [keyword, setKeyword] = useState('');
+	const classes = useStyles()
+	const { enqueueSnackbar } = useSnackbar()
+	const [name, setName] = useState('')
+	const [nameEdit, setNameEdit] = useState('')
+	const [initialName, setInitialName] = useState('')
+	const [open, setOpen] = useState(false)
+	const [openDelete, setOpenDelete] = useState(false)
+	const [id, setId] = useState(null)
+	const [keyword, setKeyword] = useState('')
 
-  // dispatch API
-  const actionGetCategories = () => dispatch(getCategories());
-  const actionCreateCategory = (data, token) => dispatch(createCategory(data, token));
-  const actionDeleteCategory = (slug, token) => dispatch(deleteCategory(slug, token));
-  const actionUpdateCategory = (data, token) => dispatch(updateCategory(data, token));
+	const { status, data, error, isFetching } = useGetCategories()
+	const mutationAdd = useAddCategory((oldData, newData) => [...oldData, newData])
+	const mutationUpdate = usePatchCategory((oldData, id) =>
+		oldData.map((x) => (x._id === id ? { ...x, name: nameEdit } : x))
+	)
+	const mutationDelete = useDeleteCategory((oldData, id) =>
+		oldData.filter((item) => item._id !== id)
+	)
 
-  //store
-  const categories = useSelector((state) => state.category.categories);
-  const isSuccess = useSelector((state) => state.category.isSuccess);
-  const isError = useSelector((state) => state.category.isError);
-  const message = useSelector((state) => state.category.message);
-  const loading = useSelector((state) => state.category.loading);
+	const onOpenUpdate = (c) => {
+		setOpen(true)
+		setId(c._id)
+		setInitialName(c.name)
+	}
 
-  // snackbar
-  useEffect(() => {
-    return () => {
-      dispatch(clearState());
-    }; // eslint-disable-next-line
-  }, []);
+	const onOpenDelete = (id) => {
+		setOpenDelete(true)
+		setId(id)
+	}
 
-  useEffect(() => {
-    if (isError) {
-      enqueueSnackbar(message, { variant: 'error' });
-      dispatch(clearState());
-    }
+	const onCloseEdit = () => {
+		setOpen(false)
+	}
 
-    if (isSuccess) {
-      enqueueSnackbar(message, { variant: 'success' });
-      dispatch(clearState());
-      actionGetCategories();
-    } // eslint-disable-next-line
-  }, [isError, isSuccess]);
+	const handleCloseDelete = () => {
+		setOpenDelete(false)
+	}
 
-  useEffect(() => {
-    actionGetCategories(); // eslint-disable-next-line
-  }, []);
+	const onAdd = async (e) => {
+		e.preventDefault()
+		try {
+			await mutationAdd.mutateAsync({ name })
+			setName('')
+		} catch (e) {
+			enqueueSnackbar('Tạo mới thất bại', { variant: 'error' })
+		}
+	}
 
-  const handleClickOpen = (slug) => {
-    setOpen(true);
-    setSlug(slug);
-  };
+	const onUpdate = async (e) => {
+		e.preventDefault()
+		try {
+			await mutationUpdate.mutateAsync({ id, nameEdit })
+			setNameEdit('')
+			onCloseEdit()
+		} catch (e) {
+			enqueueSnackbar('Cập nhật thất bại', { variant: 'error' })
+		}
+	}
 
-  const handleClickDeleteOpen = (slug) => {
-    setOpenDelete(true);
-    setSlug(slug);
-  };
+	const onRemove = async () => {
+		try {
+			await mutationDelete.mutateAsync(id)
+			handleCloseDelete()
+		} catch (e) {
+			enqueueSnackbar('Xóa thất bại', { variant: 'error' })
+		}
+	}
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+	const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword)
 
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
+	return (
+		<AdminLayout>
+			<AdminContent>
+				{status === 'loading' ? (
+					<SimpleBackdrop />
+				) : (
+					<>
+						{status === 'error' ? (
+							<span>Error: {error.message}</span>
+						) : (
+							<>
+								<SEO pageTitle={'Admin | Danh mục'} />
+								<Box mb={4}>
+									<Typography variant="h6">{`Danh mục (${data.length})`}</Typography>
+								</Box>
+								<Box display="flex" justifyContent="space-between" alignItems="center">
+									<CategoryForm
+										mutationAdd={mutationAdd}
+										handleSubmit={onAdd}
+										name={name}
+										setName={setName}
+									/>
+									<LocalSearch
+										keyword={keyword}
+										setKeyword={setKeyword}
+										placeholder="Tìm kiếm danh mục"
+									/>
+								</Box>
+								<Box mt={4}>
+									{data.filter(searched(keyword)).map((c) => (
+										<div key={c._id}>
+											<div className={classes.item}>
+												<p>{c.name}</p>
+												<div className={classes.itemBtn}>
+													<IconButton onClick={() => onOpenUpdate(c)} size="small">
+														<Iconify
+															icon="eva:edit-2-fill"
+															width="1.5em"
+															height="1.5em"
+															color="#2065d1"
+														/>
+													</IconButton>
+													<IconButton onClick={() => onOpenDelete(c._id)} size="small">
+														<Iconify
+															icon="fluent:delete-16-filled"
+															width="1.5em"
+															height="1.5em"
+															color="#f50057"
+														/>
+													</IconButton>
+												</div>
+											</div>
+										</div>
+									))}
+									{/* Update */}
+									<Box>
+										<Dialog
+											open={open}
+											onClose={onCloseEdit}
+											aria-labelledby="form-dialog-title"
+											fullWidth
+										>
+											<DialogTitle id="form-dialog-title">{`Cập nhật danh mục: ${initialName}`}</DialogTitle>
+											<DialogContent>
+												<TextField
+													autoFocus
+													margin="dense"
+													label="Tên danh mục mới"
+													fullWidth
+													value={nameEdit}
+													onChange={(e) => setNameEdit(e.target.value)}
+												/>
+											</DialogContent>
+											<DialogActions>
+												<OptionBtn onClick={onCloseEdit} title="Hủy" color="default" />
+												<OptionBtn
+													onClick={onUpdate}
+													title="Xác nhận"
+													autoFocus
+													disabled={!nameEdit || nameEdit === initialName}
+												/>
+											</DialogActions>
+										</Dialog>
+									</Box>
+									{/* Delete */}
+									<Box>
+										<Dialog
+											open={openDelete}
+											onClose={handleCloseDelete}
+											aria-labelledby="alert-dialog-title"
+											aria-describedby="alert-dialog-description"
+											fullWidth
+										>
+											<DialogTitle id="alert-dialog-title">Xóa danh mục</DialogTitle>
+											<DialogContent>
+												<DialogContentText id="alert-dialog-description">
+													Bạn có chắc chắn xóa?
+												</DialogContentText>
+											</DialogContent>
+											<DialogActions>
+												<OptionBtn onClick={handleCloseDelete} title="Hủy" color="default" />
+												<OptionBtn onClick={onRemove} title="Xác nhận" autoFocus />
+											</DialogActions>
+										</Dialog>
+									</Box>
+								</Box>
+							</>
+						)}
+					</>
+				)}
+				{isFetching ? <SimpleBackdrop /> : null}
+			</AdminContent>
+		</AdminLayout>
+	)
+}
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    actionCreateCategory({ name }, token);
-    actionGetCategories();
-    setName('');
-  };
-
-  const handleSubmitEdit = (e) => {
-    e.preventDefault();
-    const data = { nameEdit, slug };
-    actionUpdateCategory(data, token);
-    actionGetCategories();
-    setNameEdit('');
-    handleClose();
-  };
-
-  const handleRemove = () => {
-    actionDeleteCategory(slug, token);
-    actionGetCategories();
-    handleCloseDelete();
-  };
-
-  // step 4
-  const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword);
-
-  return (
-    <>
-      <Helmet>
-        <title>Category</title>
-      </Helmet>
-      <div className={classes.root}>
-        {loading && <SimpleBackdrop />}
-        <AdminSidebar />
-        <main className={classes.content}>
-          <Box display="flex" spacing={1}>
-            <CategoryForm
-              handleSubmit={handleSubmit}
-              name={name}
-              setName={setName}
-              title="Tạo mới danh mục"
-            />
-            <LocalSearch keyword={keyword} setKeyword={setKeyword} placeholder="Tên danh mục" />
-          </Box>
-
-          {/* step 5 */}
-          <Box m="0.5rem">
-            <Typography variant="body1">Danh sách danh mục&nbsp;({categories.length})</Typography>
-            {categories.length > 0 &&
-              categories.filter(searched(keyword)).map((c, index) => (
-                <div className={classes.wrapper} key={c.slug}>
-                  <div className={classes.item}>
-                    <p>{c.name}</p>
-                    <div className={classes.itemBtn}>
-                      <IconButton onClick={() => handleClickOpen(c.slug)} size="small">
-                        <EditIcon color="primary" />
-                      </IconButton>
-                      <IconButton onClick={() => handleClickDeleteOpen(c.slug)} size="small">
-                        <DeleteOutlineIcon color="secondary" />
-                      </IconButton>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            {/* box edit */}
-            <Box>
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="form-dialog-title"
-                fullWidth
-              >
-                <DialogTitle id="form-dialog-title">Cập nhật danh mục</DialogTitle>
-                <DialogContent>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Danh mục"
-                    fullWidth
-                    value={nameEdit}
-                    onChange={(e) => setNameEdit(e.target.value)}
-                    variant="outlined"
-                  />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose} color="primary">
-                    Đóng
-                  </Button>
-                  <Button onClick={handleSubmitEdit} color="primary">
-                    Lưu
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </Box>
-            {/* Box delete */}
-            <Box>
-              <Dialog
-                open={openDelete}
-                onClose={handleCloseDelete}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">Xóa danh mục</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Bạn có chắc chắn xóa?
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleCloseDelete} color="primary">
-                    Đóng
-                  </Button>
-                  <Button onClick={handleRemove} color="primary" autoFocus>
-                    Xác nhận
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </Box>
-          </Box>
-        </main>
-      </div>
-    </>
-  );
-};
-
-export default Category;
+export default Category

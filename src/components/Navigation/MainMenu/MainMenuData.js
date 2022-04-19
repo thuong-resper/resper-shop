@@ -1,14 +1,7 @@
-import {
-	faArchive,
-	faHeart,
-	faMobileAlt,
-	faPassport,
-	faStopwatch,
-	faStopwatch20,
-	faSuitcase,
-	faTabletAlt,
-	faUserCheck,
-} from '@fortawesome/free-solid-svg-icons'
+import { faArchive, faHeart, faUserCheck } from '@fortawesome/free-solid-svg-icons'
+import Iconify from 'components/Iconify'
+
+const getIcon = (name) => <Iconify icon={name} width={22} height={22} />
 
 export const mainMenuItems = [
 	{
@@ -41,33 +34,38 @@ export const mainMenuItems = [
 export const AdminSidebarItems = [
 	{
 		title: 'Thống kê',
-		icon: faMobileAlt,
-		link: '/admin/dashboard',
+		path: '/admin/dashboard',
+		icon: getIcon('bxs:dashboard'),
+	},
+	{
+		title: 'Người dùng',
+		path: '/admin/user',
+		icon: getIcon('carbon:user-avatar-filled'),
 	},
 	{
 		title: 'Sản phẩm',
-		icon: faSuitcase,
-		link: '/admin/product',
+		path: '/admin/product',
+		icon: getIcon('bxs:shopping-bag'),
 	},
 	{
 		title: 'Danh mục',
-		icon: faTabletAlt,
-		link: '/admin/category',
+		path: '/admin/category',
+		icon: getIcon('ic:round-category'),
 	},
 	{
 		title: 'Thương hiệu',
-		icon: faStopwatch,
-		link: '/admin/sub',
+		path: '/admin/sub',
+		icon: getIcon('ic:round-branding-watermark'),
 	},
 	{
 		title: 'Khuyến mãi',
-		icon: faStopwatch20,
-		link: '/admin/coupon',
+		path: '/admin/coupon',
+		icon: getIcon('ic:round-discount'),
 	},
 	{
 		title: 'Đơn hàng',
-		icon: faPassport,
-		link: '/admin/order',
+		path: '/admin/order',
+		icon: getIcon('fa:first-order'),
 	},
 ]
 

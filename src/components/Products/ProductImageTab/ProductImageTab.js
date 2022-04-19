@@ -6,7 +6,6 @@ import './styles.css'
 
 const ProductImageTab = ({ product }) => {
 	const { image } = product
-	console.log(image)
 
 	const newImage = image.slice(1)
 	const settings = {

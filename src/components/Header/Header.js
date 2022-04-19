@@ -6,10 +6,10 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Aos from 'aos'
 import BadgeCart from 'components/Cart/BadgeCart/BadgeCart'
 import Search from 'components/Search/Search'
-import { UserContext } from 'contexts/UserContext'
 import MenuListUser from './Menu/Menu'
 import { useStyles } from './styles'
 import { Logo } from './Logo'
+import { UserContext } from 'contexts/index.js'
 
 const Header = (props) => {
 	const classes = useStyles()

@@ -13,11 +13,10 @@ import { unwrapResult } from '@reduxjs/toolkit'
 import { Form } from 'components/Form/Form'
 import { Input } from 'components/Input/Input'
 import { LogInBtn } from 'components/UI/Button/Button'
-import { useData } from 'contexts/DataContext'
-import { UserContext } from 'contexts/UserContext'
+import { useData } from 'contexts/DataContextProvider.js'
 import { loginGoogle, loginUser } from 'features/User/pathAPI'
 import { useSnackbar } from 'notistack'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { GoogleLogin } from 'react-google-login'
 import { useForm, useFormState } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -26,6 +25,7 @@ import * as yup from 'yup'
 import { useStyles } from './styles'
 import './styles.css'
 import { SubLayout } from 'components/Layout'
+import { UserContext } from 'contexts/index.js'
 import { closeSnackbar } from 'features/User/UserSlice.js'
 
 const schema = yup.object().shape({
@@ -48,11 +48,15 @@ const LoginPage = ({ location }) => {
 	const [token, setToken] = state.token
 	const [, setUser] = state.user
 	const [, setIdUser] = state.idUser
+	const componentMounted = useRef(true)
 
 	const { isSuccess, isError, message } = useSelector((state) => state.user)
 	useEffect(() => {
 		message.length > 0 && enqueueSnackbar(message, { variant: isSuccess ? 'success' : 'error' })
-		dispatch(closeSnackbar())
+		return () => {
+			dispatch(closeSnackbar())
+			componentMounted.current = false
+		}
 	}, [message, isError, isSuccess])
 
 	const redirect = location.search ? location.search.slice(location.search.indexOf('=') + 1) : '/'
@@ -69,10 +73,8 @@ const LoginPage = ({ location }) => {
 
 	const handleForget = () => {
 		history.push('./recover')
-		// get value of email field
 		const value = getValues('email')
 		if (value) {
-			// set value context
 			setValues({ value: value })
 		}
 	}
@@ -114,7 +116,7 @@ const LoginPage = ({ location }) => {
 		}
 	}
 
-	// login with google
+	// login with Google
 	const responseGoogle = async (response) => {
 		const { tokenId } = response
 		try {

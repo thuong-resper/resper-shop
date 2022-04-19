@@ -1,11 +1,10 @@
 import { unwrapResult } from '@reduxjs/toolkit'
-import { UserContext } from 'contexts/UserContext'
 import { postActiveEmail } from 'features/User/pathAPI'
-import { useSnackbar } from 'notistack'
 import { useContext, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
 import SimpleBackdrop from '../../components/Backdrop/Backdrop'
+import { UserContext } from 'contexts/index.js'
 
 const tokenLocal = localStorage.getItem('token')
 
@@ -13,7 +12,6 @@ export default function ActiveEmail() {
 	const history = useHistory()
 	const dispatch = useDispatch()
 	const { accessToken } = useParams()
-	const { enqueueSnackbar } = useSnackbar()
 	const state = useContext(UserContext)
 	// create
 	const [token, setToken] = state.token
@@ -23,9 +21,6 @@ export default function ActiveEmail() {
 
 	// store
 	const loading = useSelector((state) => state.user.loading)
-	const isSuccess = useSelector((state) => state.user.isSuccess)
-	const isError = useSelector((state) => state.user.isError)
-	const message = useSelector((state) => state.user.message)
 
 	useEffect(() => {
 		async function activeEmail() {

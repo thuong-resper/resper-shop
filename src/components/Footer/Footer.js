@@ -1,8 +1,8 @@
 // Context
-import { UserContext } from 'contexts/UserContext'
 // image
 import { useContext } from 'react'
 import './styles.css'
+import { UserContext } from 'contexts/index.js'
 
 export default function Footer() {
 	const state = useContext(UserContext)

@@ -1,11 +1,11 @@
 import { Box, Button, Grid, Typography } from '@material-ui/core'
 import ContactMailIcon from '@material-ui/icons/ContactMail'
-import { useData } from 'contexts/DataContext'
-import { UserContext } from 'contexts/UserContext'
+import { useData } from 'contexts/DataContextProvider.js'
 import { useContext, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { useStyles } from './styles'
 import { SubLayout } from 'components/Layout'
+import { UserContext } from 'contexts/index.js'
 
 const tokenLocal = localStorage.getItem('token')
 

@@ -14,10 +14,9 @@ import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import { Form } from 'components/Form/Form'
 import { Input } from 'components/Input/Input'
 import { SignupBtn } from 'components/UI/Button/Button'
-import { UserContext } from 'contexts/UserContext'
 import { putResetPassword } from 'features/User/pathAPI'
 import { useSnackbar } from 'notistack'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useForm, useFormState } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
@@ -26,6 +25,7 @@ import { useStyles } from './styles'
 import './styles.css'
 import { SubLayout } from 'components/Layout'
 import { closeSnackbar } from 'features/User/UserSlice.js'
+import { UserContext } from 'contexts/index.js'
 
 //yup validation
 const schema = yup.object().shape({
@@ -53,12 +53,16 @@ const CreateAPassword = () => {
 	const [, setUser] = state.user
 	const [, setIdUser] = state.idUser
 	const [patchCart] = state.patchCart
+	const componentMounted = useRef(true)
 
 	//store
 	const { loading, isSuccess, isError, message, isAdmin } = useSelector((state) => state.user)
 	useEffect(() => {
 		message.length > 0 && enqueueSnackbar(message, { variant: isSuccess ? 'success' : 'error' })
-		dispatch(closeSnackbar())
+		return () => {
+			dispatch(closeSnackbar())
+			componentMounted.current = false
+		}
 	}, [message, isError, isSuccess])
 
 	// useEffect

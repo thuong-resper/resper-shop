@@ -5,12 +5,11 @@ import CustomizedBreadcrumbs from 'components/Breadcrumbs/Breadcrumbs'
 import CartList from 'components/Cart/CartList'
 import { MainLayout } from 'components/Layout/index.js'
 import SEO from 'components/SEO/SEO.js'
-import { UserContext } from 'contexts/UserContext'
 import { deleteCartProduct, updateCartProduct } from 'features/Cart/CartSlice'
-import { userCartAPI } from 'features/Cart/pathAPI'
 import React, { useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
+import { UserContext } from 'contexts/index.js'
 
 const useStyles = makeStyles((theme) => ({
 	wrapper_em: {
@@ -32,7 +31,6 @@ const CartPage = () => {
 	const classes = useStyles()
 	const history = useHistory()
 
-	const actionUserCart = (cart, token) => dispatch(userCartAPI(cart, token))
 	const actionDeleteCart = (index) => dispatch(deleteCartProduct(index))
 	const actionUpdateCartProduct = (dataCart) => dispatch(updateCartProduct(dataCart))
 
@@ -71,10 +69,8 @@ const CartPage = () => {
 			<CartList
 				dataCart={dataCart}
 				loadingUserCart={loadingUserCart}
-				token={token}
 				actionUpdateCartProduct={actionUpdateCartProduct}
 				actionDeleteCart={actionDeleteCart}
-				actionUserCart={actionUserCart}
 			/>
 		</MainLayout>
 	)

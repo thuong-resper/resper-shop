@@ -4,11 +4,10 @@ import MailOutlineIcon from '@material-ui/icons/MailOutline'
 import { Form } from 'components/Form/Form'
 import { Input } from 'components/Input/Input'
 import { SignupBtn } from 'components/UI/Button/Button'
-import { useData } from 'contexts/DataContext'
-import { UserContext } from 'contexts/UserContext'
+import { useData } from 'contexts/DataContextProvider.js'
 import { postForgotPassword } from 'features/User/pathAPI'
 import { useSnackbar } from 'notistack'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { useForm, useFormState } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory } from 'react-router-dom'
@@ -17,6 +16,7 @@ import { useStyles } from './styles'
 import './styles.css'
 import { SubLayout } from 'components/Layout'
 import { closeSnackbar } from 'features/User/UserSlice.js'
+import { UserContext } from 'contexts/index.js'
 
 //yup validation
 const schema = yup.object().shape({
@@ -33,6 +33,7 @@ const ForgetForm = ({ location }) => {
 
 	const state = useContext(UserContext)
 	const { data, setValues } = useData()
+	const componentMounted = useRef(true)
 
 	const [token] = state.token
 	const [patchCart] = state.patchCart
@@ -40,7 +41,10 @@ const ForgetForm = ({ location }) => {
 	const { isSuccess, isError, message } = useSelector((state) => state.user)
 	useEffect(() => {
 		message.length > 0 && enqueueSnackbar(message, { variant: isSuccess ? 'success' : 'error' })
-		dispatch(closeSnackbar())
+		return () => {
+			dispatch(closeSnackbar())
+			componentMounted.current = false
+		}
 	}, [message, isError, isSuccess])
 
 	const actionPostForgotPassword = (email) => dispatch(postForgotPassword(email))

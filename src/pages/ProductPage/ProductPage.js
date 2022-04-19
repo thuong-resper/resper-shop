@@ -1,25 +1,22 @@
 import { Grid, makeStyles } from '@material-ui/core'
-import { unwrapResult } from '@reduxjs/toolkit'
 import CustomizedBreadcrumbs from 'components/Breadcrumbs/Breadcrumbs'
 import ProductImageTab from 'components/Products/ProductImageTab/ProductImageTab'
-import { UserContext } from 'contexts/UserContext'
-import { addCartProduct, clearState } from 'features/Cart/CartSlice'
-import { getCommentOne } from 'features/Comment/pathAPI'
-import { getProductId, getRelated } from 'features/Product/pathApi'
-import { useSnackbar } from 'notistack'
-import NotFound from 'pages/NotFound/NotFound'
+import { addCartProduct } from 'features/Cart/CartSlice'
 import queryString from 'query-string'
 import React, { useContext, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-import SimpleBackdrop from '../../components/Backdrop/Backdrop'
-import ProductDescription from '../../components/Products/ProductDescription/ProductDescription'
+import { useDispatch } from 'react-redux'
+import { useHistory, useParams } from 'react-router-dom'
+import SimpleBackdrop from 'components/Backdrop/Backdrop'
+import ProductDescription from 'components/Products/ProductDescription/ProductDescription'
 import Comment from './Comment'
 import HistoryProduct from './HistoryProduct/HistoryProduct'
 import InfoProduct from './InfoProduct'
 import SeeMoreProduct from './SeeMoreProduct/SeeMoreProduct'
 import { MainLayout } from 'components/Layout'
+import { UserContext } from 'contexts/index.js'
+import { useGetProductById, useGetRelatedProducts } from 'features/Product/index.js'
 import SEO from 'components/SEO/SEO.js'
+import { useGetCommentById } from 'features/Comment/index.js'
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -58,34 +55,21 @@ const useStyles = makeStyles((theme) => ({
 
 const ProductPage = ({ location }) => {
 	const classes = useStyles()
-	const { id } = queryString.parse(location.search)
-	const page = Number(queryString.parse(location.search).page) || 1
-	const page_cmt = Number(queryString.parse(location.search).page_cmt) || 1
-	let historyProduct = JSON.parse(localStorage.getItem('history_product')) || []
-	// state default
 	const history = useHistory()
 	const dispatch = useDispatch()
-	// dispatch API
-	const actionGetProduct = (id) => dispatch(getProductId(id))
-	const getRelatedAPI = (params) => dispatch(getRelated(params))
-	const actionAddToCart = (cart) => dispatch(addCartProduct(cart))
-	// create state
+	const { id } = useParams()
+
 	const state = useContext(UserContext)
 	const { socket } = state
 	const [user] = state.user
 	const [token] = state.token
 	const items = 10
-	// Data Product ID
-	const loading = useSelector((state) => state.productId.loading)
-	const [dataProductsId, setDataProductsId] = useState(null)
 
-	// Data Product See More
-	const dataRelated = useSelector((state) => state.related.listProductSlider)
-	const lengthRelated = useSelector((state) => state.related.length)
-	const loadingRelated = useSelector((state) => state.related.loading)
+	const page = Number(queryString.parse(location.search).page) || 1
+	const page_cmt = Number(queryString.parse(location.search).page_cmt) || 1
+	let historyProduct = JSON.parse(localStorage.getItem('history_product')) || []
 
-	// Data Comment
-	const loadingComet = useSelector((state) => state.comment.loading)
+	const [, setDataProductsId] = useState(null)
 	const [lengthComment, setLengthComment] = useState(null)
 	const [dataComment, setDataComment] = useState([])
 	const [checkDeleteCmt, setCheckDeleteCmt] = useState(false)
@@ -94,40 +78,51 @@ const ProductPage = ({ location }) => {
 	const [reviewRating, setReviewRating] = useState(0)
 	const [loadingDeleteProduct] = useState(false)
 
-	// snackbar
-	const { enqueueSnackbar } = useSnackbar()
-	//store
-	const isSuccess = useSelector((state) => state.cart.isSuccess)
-	const isError = useSelector((state) => state.cart.isError)
-	const message = useSelector((state) => state.cart.message)
+	const { status, data, error, isFetching } = useGetProductById(id)
 
-	// snackbar
-	useEffect(() => {
-		return () => {
-			dispatch(clearState())
-		} // eslint-disable-next-line
-	}, [])
+	const params = {
+		limit: items,
+		page: page,
+		id: id,
+	}
+	const {
+		status: statusRelated,
+		data: dataRelated,
+		error: errorRelated,
+		isFetching: isFetchingRelated,
+	} = useGetRelatedProducts(params)
+
+	const paramsComment = {
+		_id_product: id,
+		page: page_cmt,
+		limit: 5,
+	}
+
+	const {
+		status: statusComment,
+		data: dataCommentFetched,
+		error: errorComment,
+		isFetching: isFetchingComment,
+	} = useGetCommentById(paramsComment)
 
 	useEffect(() => {
-		if (isError) {
-			enqueueSnackbar(message, { variant: 'error' })
-			dispatch(clearState())
+		if (statusComment === 'success') {
+			setDataComment(dataCommentFetched?.data)
+			setLengthComment(dataCommentFetched?.length)
+			setStarRating(dataCommentFetched?.starRating)
+			setSumStarRating(dataCommentFetched?.sumStarRating)
+			setReviewRating(dataCommentFetched?.reviewRating)
 		}
+	}, [statusComment, dataCommentFetched])
 
-		if (isSuccess) {
-			enqueueSnackbar(message, { variant: 'success' })
-			dispatch(clearState())
-		} // eslint-disable-next-line
-	}, [isError, isSuccess])
+	const actionAddToCart = (cart) => dispatch(addCartProduct(cart))
 
-	// Join room
 	useEffect(() => {
 		if (socket) {
 			socket.emit('joinRoom', id)
 		}
 	}, [socket, id])
 
-	// delete reply comment
 	useEffect(() => {
 		if (socket) {
 			socket.on('serverUserDeleteReplyComment', (msg) => {
@@ -146,7 +141,6 @@ const ProductPage = ({ location }) => {
 		}
 	}, [socket, dataComment])
 
-	// crete reply comment
 	useEffect(() => {
 		if (socket) {
 			socket.on('ServerUserCreateCommentReply', (msg) => {
@@ -198,7 +192,6 @@ const ProductPage = ({ location }) => {
 		}
 	}, [socket, dataComment])
 
-	// delete Comment Socket
 	useEffect(() => {
 		if (socket) {
 			socket.on('serverUserDeleteComment', (msg) => {
@@ -241,28 +234,6 @@ const ProductPage = ({ location }) => {
 		return () => socket.off('serverUserUpdateComment')
 	}, [socket, dataComment])
 
-	const fetchComment = async (idProduct) => {
-		const paramsComment = {
-			_id_product: idProduct,
-			page: page_cmt,
-			limit: 5,
-		}
-		const resultComment = await dispatch(getCommentOne(paramsComment))
-		const comment = unwrapResult(resultComment)
-		if (comment) {
-			setDataComment(comment.data)
-			setLengthComment(comment.length)
-			setStarRating(comment.starRating)
-			setSumStarRating(comment.sumStarRating)
-			setReviewRating(comment.reviewRating)
-		}
-	}
-	useEffect(() => {
-		if (id) {
-			fetchComment(id)
-		} // eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [page_cmt, id])
-
 	const showHistoryProduct = () => {
 		const historyProductOld = [...historyProduct]
 		historyProductOld.forEach((product, index) => {
@@ -270,7 +241,7 @@ const ProductPage = ({ location }) => {
 				historyProductOld.splice(index, 1)
 			}
 		})
-		historyProductOld.unshift(dataProductsId)
+		historyProductOld.unshift(data)
 		localStorage.setItem('history_product', JSON.stringify(historyProductOld))
 	}
 
@@ -279,45 +250,26 @@ const ProductPage = ({ location }) => {
 			top: 0,
 			behavior: 'smooth',
 		})
-		const fetchDataProduct = async (id) => {
-			try {
-				const product = await actionGetProduct(id)
-				const res = unwrapResult(product)
-				setDataProductsId(res)
-			} catch (err) {}
-		}
-		fetchDataProduct(id)
 		showHistoryProduct() // eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [id])
 
-	useEffect(() => {
-		const param = {
-			limit: items,
-			page: page,
-			id: id,
-		}
-		getRelatedAPI(param) // eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [page, id])
-
-	// onClick
 	const onChangePageSeenMoreProduct = (_page) => {
 		const data = {
-			id: id,
 			page: _page,
 			page_cmt: page_cmt,
 		}
 		const params = queryString.stringify(data)
-		const url = `/product?${params}`
+		const url = `/product/${id}?${params}`
 		history.push(url)
 	}
 	const onChangePageComment = (_page) => {
 		const data = {
-			id: id,
+			_id_product: id,
 			page_cmt: page_cmt + 1,
 			page: page,
 		}
 		const params = queryString.stringify(data)
-		const url = `/product?${params}`
+		const url = `/product/${id}?${params}`
 		history.push(url)
 	}
 	const actionCheckDeleteCmt = () => {
@@ -326,71 +278,81 @@ const ProductPage = ({ location }) => {
 
 	return (
 		<MainLayout>
-			{loading ? (
+			{!id || status === 'loading' ? (
 				<SimpleBackdrop />
-			) : dataProductsId ? (
+			) : status === 'error' ? (
+				<span>Error: {error.message}</span>
+			) : (
 				<>
 					<SEO
-						pageTitle={dataProductsId?.name}
-						image={dataProductsId?.image[0].url}
-						pageDescription={dataProductsId?.description}
-						pageUrl={`${process.env.REACT_APP_CLIENT_URL}/product?id=${dataProductsId?._id}`}
+						pageTitle={data?.name}
+						image={data?.image[0].url}
+						pageDescription={data?.description}
+						pageUrl={`${process.env.REACT_APP_CLIENT_URL}/product/${data?._id}`}
 					/>
+					{isFetching ? <SimpleBackdrop /> : null}
 					<Grid container direction="row">
 						<Grid item xs={12} className={classes.breadcrumb}>
-							<CustomizedBreadcrumbs
-								step1="Home"
-								step2={dataProductsId?.category.name}
-								infoProduct={dataProductsId}
-							/>
+							<CustomizedBreadcrumbs step1="Home" step2={data?.category.name} infoProduct={data} />
 						</Grid>
 					</Grid>
 					<div className={classes.container}>
 						<div className={classes.block_left}>
-							{dataProductsId.image ? (
+							{data.image ? (
 								<div className={classes.wrapper}>
-									<ProductImageTab product={dataProductsId} />
+									<ProductImageTab product={data} />
 								</div>
 							) : null}
 						</div>
 						<div className={classes.block_right}>
-							<InfoProduct dataProductsId={dataProductsId} actionAddToCart={actionAddToCart} />
+							<InfoProduct dataProductsId={data} actionAddToCart={actionAddToCart} />
 						</div>
 						<div className={classes.block_left}>
-							<ProductDescription product={dataProductsId} className={classes.wrapper} />
+							<ProductDescription product={data} className={classes.wrapper} />
 						</div>
 						<div className={classes.block_left}>
-							<Comment
-								infoProduct={dataProductsId}
-								lengthComment={lengthComment}
-								dataComment={dataComment}
-								onChangePageComment={onChangePageComment}
-								loadingComet={loadingComet}
-								socket={socket}
-								token={token}
-								user={user}
-								actionCheckDeleteCmt={actionCheckDeleteCmt}
-								sumStarRating={sumStarRating}
-								starRating={starRating}
-								nameProduct={dataProductsId.name}
-								reviewRating={reviewRating}
-							/>
+							{statusComment === 'loading' ? (
+								<div>Loading...</div>
+							) : statusComment === 'error' ? (
+								<span>Error: {errorComment.message}</span>
+							) : (
+								<>
+									{isFetchingComment ? <SimpleBackdrop /> : null}
+									<Comment
+										infoProduct={data}
+										lengthComment={lengthComment}
+										dataComment={dataComment}
+										onChangePageComment={onChangePageComment}
+										socket={socket}
+										token={token}
+										user={user}
+										actionCheckDeleteCmt={actionCheckDeleteCmt}
+										sumStarRating={sumStarRating}
+										starRating={starRating}
+										nameProduct={data?.name}
+										reviewRating={reviewRating}
+									/>
+								</>
+							)}
 						</div>
 					</div>
-					{/* related products */}
-					<SeeMoreProduct
-						items={items}
-						data={dataRelated}
-						onChangePage={onChangePageSeenMoreProduct}
-						lengthProductsType={lengthRelated}
-						loading={loadingRelated}
-						pageUrl={page}
-					/>
+					{statusRelated === 'loading' ? (
+						<div>Loading...</div>
+					) : statusRelated === 'error' ? (
+						<span>Error: {errorRelated.message}</span>
+					) : (
+						<SeeMoreProduct
+							items={items}
+							dataRelated={dataRelated}
+							onChangePage={onChangePageSeenMoreProduct}
+							loading={isFetchingRelated}
+							pageUrl={page}
+						/>
+					)}
 					<HistoryProduct historyProduct={historyProduct} _id={id} />
 				</>
-			) : (
-				<NotFound />
 			)}
+
 			{checkDeleteCmt && <SimpleBackdrop />}
 			{loadingDeleteProduct && <SimpleBackdrop />}
 		</MainLayout>

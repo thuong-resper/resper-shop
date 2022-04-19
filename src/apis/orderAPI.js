@@ -1,22 +1,22 @@
 import axiosClient from './axiosClient'
 
 const orderAPI = {
-	createOrderAPI: (order, token) => {
+	createOrderAPI: (order) => {
 		const url = '/api/user/order'
-		return axiosClient.post(url, order, token)
+		return axiosClient.post(url, order)
 	},
-	getOrderByIdAPI: (_id, token) => {
+	getOrderByIdAPI: (_id) => {
 		const url = `/api/user/order/${_id}`
-		return axiosClient.get(url, token)
+		return axiosClient.get(url)
 	},
 	getUserOrdersAPI: (params) => {
 		const url = '/api/user/orders'
 		return axiosClient.get(url, { params })
 	},
-	putToPaymentOrderAPI: (data, token) => {
+	putToPaymentOrderAPI: (data) => {
 		const { id } = data
 		const url = `/api/user/order/${id}/pay`
-		return axiosClient.put(url, data, token)
+		return axiosClient.put(url, data)
 	},
 	putToOrderAddressesAPI(data, token) {
 		// const url = '/api/admin/order-status'

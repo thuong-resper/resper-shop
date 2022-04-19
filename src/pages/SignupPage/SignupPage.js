@@ -13,10 +13,10 @@ import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import { Form } from 'components/Form/Form'
 import { Input } from 'components/Input/Input'
 import { SignupBtn } from 'components/UI/Button/Button'
-import { useData } from 'contexts/DataContext'
+import { useData } from 'contexts/DataContextProvider.js'
 import { registerUser } from 'features/User/pathAPI'
 import { useSnackbar } from 'notistack'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useForm, useFormState } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory } from 'react-router-dom'
@@ -24,6 +24,7 @@ import * as yup from 'yup'
 import { useStyles } from './styles'
 import './styles.css'
 import { SubLayout } from 'components/Layout'
+import { closeSnackbar } from 'features/User/UserSlice.js'
 
 //yup validation
 const schema = yup.object().shape({
@@ -56,16 +57,20 @@ const SignupPage = ({ location }) => {
 	const dispatch = useDispatch()
 	const { enqueueSnackbar } = useSnackbar()
 
-	// context data
 	const { setValues, data } = useData()
+	const componentMounted = useRef(true)
 
 	const actionRegisterAccount = (account) => dispatch(registerUser(account))
 
 	//store
-	const loading = useSelector((state) => state.user.loading)
-	const isSuccess = useSelector((state) => state.user.isSuccess)
-	const isError = useSelector((state) => state.user.isError)
-	const message = useSelector((state) => state.user.message)
+	const { loading, isSuccess, isError, message } = useSelector((state) => state.user)
+	useEffect(() => {
+		message.length > 0 && enqueueSnackbar(message, { variant: isSuccess ? 'success' : 'error' })
+		return () => {
+			dispatch(closeSnackbar())
+			componentMounted.current = false
+		}
+	}, [message, isError, isSuccess])
 
 	useEffect(() => {
 		if (tokenLocal) {

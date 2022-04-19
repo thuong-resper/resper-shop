@@ -95,7 +95,7 @@ const ManWatch = () => {
 										{loading ? (
 											<Box display="flex" justify="space-between">
 												{[...Array(4)].map((item, index) => (
-													<Box width="25%">
+													<Box width="25%" key={index}>
 														<SkeletonProduct />
 													</Box>
 												))}

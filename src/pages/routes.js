@@ -68,7 +68,7 @@ const UserProfile = lazy(() => {
 	return import('./UserPage/UserProfile')
 })
 
-const Page = [
+const UserPage = [
 	{
 		path: '/',
 		exact: true,
@@ -80,7 +80,7 @@ const Page = [
 		main: WatchPage,
 	},
 	{
-		path: '/product',
+		path: '/product/:id',
 		exact: true,
 		main: ProductPage,
 	},
@@ -155,4 +155,4 @@ const Page = [
 		main: UserProfile,
 	},
 ]
-export default Page
+export default UserPage

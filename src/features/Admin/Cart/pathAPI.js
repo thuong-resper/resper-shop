@@ -16,4 +16,3 @@ export const deleteCart = createAsyncThunk('delete', async (id_cart, token) => {
 export const messagesCart = createAsyncThunk('messages', async (data, token) => {
 	return await CartSlice.messagesCart(data, token)
 })
-// Products
