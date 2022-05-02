@@ -4,7 +4,6 @@ const Dashboard = lazy(() => import('./src/pages/Dashboard/Dashboard.js'))
 const Category = lazy(() => import('./src/pages/Category/Category.js'))
 const Coupon = lazy(() => import('./src/pages/Coupon/Coupon.js'))
 const Sub = lazy(() => import('./src/pages/Sub/Sub.js'))
-const SubEdit = lazy(() => import('./src/pages/Sub/SubEdit.js'))
 const ProductCreate = lazy(() => import('./src/pages/Product/ProductCreate.js'))
 const ProductEdit = lazy(() => import('./src/pages/Product/ProductEdit.js'))
 const AdminProduct = lazy(() => import('./src/pages/Product/AdminProduct.js'))
@@ -37,11 +36,6 @@ const AdminPage = [
 		path: '/admin/sub',
 		exact: true,
 		main: Sub,
-	},
-	{
-		path: '/admin/sub/:slug',
-		exact: true,
-		main: SubEdit,
 	},
 	{
 		path: '/admin/product',

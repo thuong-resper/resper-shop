@@ -10,6 +10,7 @@ import ProductSpecification from 'components/Products/ProductSpecification/Produ
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
+import { fVNDCurrency } from 'utils/formatNumber'
 
 const styles = {
 	wrapper: { backgroundColor: '#fff', borderRadius: '4px', marginBottom: '1.5rem' },
@@ -46,8 +47,6 @@ export default function InfoProduct({ dataProductsId, actionAddToCart }) {
 	const [form] = Form.useForm()
 	const [quantity, setQuantity] = useState(1)
 	const { enqueueSnackbar } = useSnackbar()
-
-	const formatter = new Intl.NumberFormat('vn')
 
 	const onFinish = (values) => {
 		try {
@@ -115,14 +114,12 @@ export default function InfoProduct({ dataProductsId, actionAddToCart }) {
 
 				<Box>
 					<Typography variant="h4" color="secondary">
-						{dataProductsId.price ? formatter.format(dataProductsId.price) : null}
-						<abbr style={{ textDecoration: 'underline', margin: '0 5px' }}>đ</abbr>
+						{dataProductsId.price ? fVNDCurrency(dataProductsId.price) : null}
 					</Typography>
 					<Typography variant="body2">
 						<span>
 							<span style={styles.priceCompare}>
-								$
-								{dataProductsId.priceCompare ? formatter.format(dataProductsId.priceCompare) : null}
+								${dataProductsId.priceCompare ? fVNDCurrency(dataProductsId.priceCompare) : null}
 							</span>
 							<span>
 								{(

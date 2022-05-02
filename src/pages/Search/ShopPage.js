@@ -243,7 +243,7 @@ export default function ShopPage({ location }) {
 		if (query.length > 0) {
 			params = {
 				query,
-				page: page || 1,
+				page: page || 0,
 				limit: items || 20,
 				sort,
 				category,
@@ -263,7 +263,7 @@ export default function ShopPage({ location }) {
 			}
 		} else {
 			params = {
-				page: page || 1,
+				page: page || 0,
 				limit: items || 20,
 				sort,
 				category,

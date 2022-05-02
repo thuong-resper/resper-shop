@@ -6,7 +6,7 @@ import SimpleBackdrop from 'components/Backdrop/Backdrop'
 
 const options = ['Chưa thực hiện', 'Đang xử lý', 'Đang vận chuyển', 'Đã hủy', 'Hoàn thành']
 
-const OrderUpdated = ({ order, handleStatusChange }) => {
+const OrderUpdated = ({ order }) => {
 	const [status, setStatus] = useState(options[0])
 	const [inputStatus, setInputStatus] = useState('')
 
@@ -42,9 +42,6 @@ const OrderUpdated = ({ order, handleStatusChange }) => {
 						id="status-input"
 						type="text"
 						placeholder={order?.orderStatus}
-						InputLabelProps={{
-							shrink: true,
-						}}
 						variant="outlined"
 						name="status"
 						size="small"

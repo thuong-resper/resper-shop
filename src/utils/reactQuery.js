@@ -1,9 +1,9 @@
 import axiosClient from 'apis/axiosClient.js'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from 'react-query'
 
 export const fetcher = ({ queryKey }) => {
 	const [url, params] = queryKey
-	return axiosClient.get(url, params)
+	return axiosClient.get(url, { params })
 }
 
 export const useFetch = (url, params, config) => {
@@ -11,6 +11,19 @@ export const useFetch = (url, params, config) => {
 		enabled: !!url,
 		...config,
 	})
+}
+
+export const useLoadMore = (url, params) => {
+	return useInfiniteQuery(
+		[url, params],
+		({ queryKey, pageParam = 1 }) => fetcher({ queryKey, pageParam }),
+		{
+			getPreviousPageParam: (firstPage) => firstPage.previousId ?? false,
+			getNextPageParam: (lastPage) => {
+				return lastPage.nextId ?? false
+			},
+		}
+	)
 }
 
 const useGenericMutation = (func, url, params, updater) => {

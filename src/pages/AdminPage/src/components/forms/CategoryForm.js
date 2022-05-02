@@ -11,9 +11,6 @@ const CategoryForm = ({ mutationAdd, handleSubmit, name, setName }) => {
 					size="small"
 					onChange={(e) => setName(e.target.value)}
 					placeholder="Tên danh mục"
-					InputLabelProps={{
-						shrink: true,
-					}}
 					variant="outlined"
 				/>
 

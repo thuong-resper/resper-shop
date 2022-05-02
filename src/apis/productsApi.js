@@ -2,7 +2,7 @@ import axiosClient from './axiosClient'
 
 const productAPI = {
 	getListProducts: (params) => {
-		const url = '/api/products'
+		const url = '/api/product'
 		return axiosClient.get(url, { params })
 	},
 	getRelated: (params) => {

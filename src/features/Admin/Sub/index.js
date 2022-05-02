@@ -1,6 +1,6 @@
-import { useDelete, useFetch, usePost, useUpdate } from 'utils/reactQuery.js'
-import { adminRoutes } from 'routes.js'
-import { pathToUrl } from 'utils/router.js'
+import { useDelete, useFetch, usePost, useUpdate } from 'utils/reactQuery'
+import { adminRoutes } from 'routes'
+import { pathToUrl } from 'utils/router'
 
 export const useGetSubs = () =>
 	useFetch(pathToUrl(adminRoutes.sub), undefined, { staleTime: 5 * 60 * 1000 })

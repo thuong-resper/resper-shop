@@ -16,9 +16,6 @@ const LocalSearch = ({ keyword, setKeyword, placeholder }) => {
 				onChange={handleSearchChange}
 				id="outlined-full-width"
 				placeholder={placeholder}
-				InputLabelProps={{
-					shrink: true,
-				}}
 				variant="outlined"
 			/>
 		</Box>

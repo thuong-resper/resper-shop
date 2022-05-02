@@ -5,6 +5,7 @@ import React from 'react'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Link } from 'react-router-dom'
 import SkeletonProduct from './Skeleton/SkeletonProduct'
+import { fVNDCurrency } from 'utils/formatNumber'
 
 const useStyles = makeStyles((theme) => ({
 	full: { width: '100%', height: '100%' },
@@ -142,7 +143,6 @@ const Product = (props) => {
 	const classes = useStyles()
 	const { product, loading } = props
 	const rate = product.rating / product.numReviews
-	const formatter = new Intl.NumberFormat('vn')
 
 	return (
 		<Grid item className={classes.full}>
@@ -164,8 +164,8 @@ const Product = (props) => {
 								<span>30 mm</span>
 							</div>
 							<div className={classes.price}>
-								<strong>{formatter.format(product.price)} ₫</strong>
-								<span>{formatter.format(product.priceCompare)}₫</span>
+								<strong>{fVNDCurrency(product.price)}</strong>
+								<span>{fVNDCurrency(product.priceCompare)}</span>
 								<i>
 									{(
 										-((product.priceCompare - product.price) / product.priceCompare) * 100

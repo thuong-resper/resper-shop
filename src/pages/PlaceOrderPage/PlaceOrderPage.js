@@ -16,6 +16,7 @@ import { UserContext } from 'contexts/index.js'
 import orderAPI from 'apis/orderAPI.js'
 import cartAPI from 'apis/cartAPI.js'
 import { useGetUserCart } from 'features/Cart/index.js'
+import { fVNDCurrency, fVNNumber } from 'utils/formatNumber'
 
 const useStyles = makeStyles((theme) => ({
 	right: {
@@ -89,7 +90,6 @@ const PlaceOrderPage = () => {
 	const classes = useStyles()
 	const dispatch = useDispatch()
 	const history = useHistory()
-	const formatter = new Intl.NumberFormat('vn')
 
 	const state = useContext(UserContext)
 	const [token] = state.token
@@ -230,7 +230,7 @@ const PlaceOrderPage = () => {
 																<Grid item xs={3} sm={2}>
 																	<div className={classes.price}>
 																		<Typography variant="h6" color="secondary">
-																			{formatter.format(item.product.price)}
+																			{fVNNumber(item.product.price)}&nbsp;
 																			<abbr
 																				style={{
 																					textDecoration: 'underline dotted',
@@ -241,7 +241,7 @@ const PlaceOrderPage = () => {
 																		</Typography>
 																		<Typography variant="body2">
 																			<span className={classes.priceCompare}>
-																				{formatter.format(item.product.priceCompare)}&nbsp;đ
+																				{fVNDCurrency(item.product.priceCompare)}
 																			</span>
 																			&nbsp;
 																			<i>
@@ -263,8 +263,8 @@ const PlaceOrderPage = () => {
 															</Grid>
 															<div className={classes.price}>
 																<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
-																	Tổng cộng: {formatter.format(item.product.price * item.quantity)}{' '}
-																	<u>đ</u>
+																	Tổng cộng:&nbsp;
+																	{fVNDCurrency(item.product.price * item.quantity)}
 																</Typography>
 															</div>
 														</div>
@@ -309,8 +309,8 @@ const PlaceOrderPage = () => {
 												)}
 												{totalAfterDiscount !== 0 && (
 													<Alert severity="success">
-														Bạn đã sử dụng voucher - Giá đã giảm:&nbsp; -
-														{formatter.format(total - totalAfterDiscount)} <u>đ</u>
+														Bạn đã sử dụng voucher - Giá đã giảm:&nbsp;
+														<strong>{fVNDCurrency(total - totalAfterDiscount)}</strong>
 													</Alert>
 												)}
 												<div className={classes.itemContent}>
@@ -321,10 +321,9 @@ const PlaceOrderPage = () => {
 														</Typography>
 														<Box textAlign="right">
 															<Typography variant="subtitle1" color="secondary">
-																{formatter.format(
+																{fVNDCurrency(
 																	totalAfterDiscount !== 0 ? totalAfterDiscount : total
-																)}{' '}
-																<u>đ</u>
+																)}
 															</Typography>
 															<small className={classes.fee}>
 																{/* VAT included, where applicable */}

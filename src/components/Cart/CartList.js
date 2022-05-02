@@ -12,6 +12,7 @@ import { Link, useHistory } from 'react-router-dom'
 import AlertDialogSlide from '../UI/Modal/CustomModal'
 import styles from './styles.module.css'
 import cartAPI from 'apis/cartAPI.js'
+import { fVNDCurrency, fVNNumber } from 'utils/formatNumber'
 
 const useStyles = makeStyles((theme) => ({
 	wrapper: {
@@ -94,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
 const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loadingUserCart }) => {
 	const history = useHistory()
 	const classes = useStyles()
-	const formatter = new Intl.NumberFormat('vn')
 	const [loading, setLoading] = useState(false)
 
 	let totalSumCart = 0
@@ -176,7 +176,7 @@ const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loading
 									<Grid item xs={3} sm={2}>
 										<div className={classes.price}>
 											<Typography variant="h6" color="secondary">
-												{formatter.format(item.product.price)}{' '}
+												{fVNNumber(item.product.price)}&nbsp;
 												<abbr
 													style={{
 														textDecoration: 'underline dotted',
@@ -187,7 +187,7 @@ const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loading
 											</Typography>
 											<Typography variant="body2">
 												<span className={classes.priceCompare}>
-													{formatter.format(item.product.priceCompare)}&nbsp;đ
+													{fVNDCurrency(item.product.priceCompare)}
 												</span>
 												&nbsp;
 												<i>
@@ -253,7 +253,7 @@ const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loading
 								</Grid>
 								<div className={classes.price}>
 									<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
-										Tổng cộng: {formatter.format(totalSum(item))} <u>đ</u>
+										Tổng cộng:&nbsp;{fVNDCurrency(totalSum(item))}
 									</Typography>
 								</div>
 							</div>
@@ -269,7 +269,7 @@ const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loading
 										<Typography variant="subtitle1">Tổng thanh toán</Typography>
 										<div className={styles.total}>
 											<Typography variant="subtitle1" color="secondary">
-												{formatter.format(showTotalAmount(dataCart))} <u>đ</u>
+												{fVNDCurrency(showTotalAmount(dataCart))}
 											</Typography>
 											<small className={styles.fee}>Đã bao gồm VAT nếu có</small>
 										</div>

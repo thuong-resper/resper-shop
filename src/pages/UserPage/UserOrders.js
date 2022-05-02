@@ -18,8 +18,8 @@ import ReactLoading from 'react-loading'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
-import { statusOrder } from 'staticOptions'
 import { UserContext } from 'contexts/index.js'
+import { fVNDCurrency } from 'utils/formatNumber'
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -48,7 +48,6 @@ const UserOrders = ({ location }) => {
 	const [loading, setLoading] = useState(false)
 	const [orders, setOrders] = useState([])
 	const [length, setLength] = useState(0)
-	const formatter = new Intl.NumberFormat('vn')
 
 	// dispatch API
 	const actionGetUserOrder = (params) => dispatch(getOrderUserAPI(params))
@@ -80,14 +79,6 @@ const UserOrders = ({ location }) => {
 		}
 		fetchOrders(params) // eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [page])
-
-	const translateToVn = (key) => {
-		for (let i = 0; i < statusOrder.length; i++) {
-			if (statusOrder[i].value === key) {
-				return statusOrder[i].vn
-			}
-		}
-	}
 
 	// function
 	const onChangePage = (page, newPage) => {
@@ -169,9 +160,7 @@ const UserOrders = ({ location }) => {
 															</p>
 														))}
 													</TableCell>
-													<TableCell align="left">
-														{formatter.format(c.totalPayable)}&nbsp;đ
-													</TableCell>
+													<TableCell align="left">{fVNDCurrency(c.totalPayable)}</TableCell>
 													<TableCell align="left">{c.orderStatus}</TableCell>
 												</TableRow>
 											))}

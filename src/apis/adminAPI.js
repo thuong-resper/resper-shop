@@ -121,7 +121,7 @@ const adminAPI = {
 		return axiosClient.post(url, coupon, token)
 	},
 	getCoupons: (token) => {
-		const url = '/api/coupons'
+		const url = '/api/coupon'
 		return axiosClient.get(url, null, token)
 	},
 	deleteCoupon: (couponId, token) => {

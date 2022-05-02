@@ -6,6 +6,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Link, useHistory } from 'react-router-dom'
 import SkeletonProduct from './Skeleton/SkeletonProduct'
 import Iconify from 'components/Iconify.js'
+import { fVNDCurrency } from 'utils/formatNumber'
 
 const useStyles = makeStyles((theme) => ({
 	full: { width: 240, height: 'auto', '&:hover': { boxShadow: '0 2px 12px rgb(0 0 0 / 12%)' } },
@@ -140,7 +141,6 @@ const ProductAdminItem = ({ product, loading, handleClickDeleteOpen }) => {
 	const classes = useStyles()
 	const history = useHistory()
 	const rate = product.rating / product.numReviews
-	const formatter = new Intl.NumberFormat('vn')
 
 	return (
 		<Grid item className={classes.full}>
@@ -184,8 +184,8 @@ const ProductAdminItem = ({ product, loading, handleClickDeleteOpen }) => {
 									<span>30 mm</span>
 								</div>
 								<div className={classes.price}>
-									<strong>{formatter.format(product.price)} ₫</strong>
-									<span>{formatter.format(product.priceCompare)}₫</span>
+									<strong>{fVNDCurrency(product.price)}</strong>
+									<span>{fVNDCurrency(product.priceCompare)}</span>
 									<i>
 										{(
 											-((product.priceCompare - product.price) / product.priceCompare) * 100

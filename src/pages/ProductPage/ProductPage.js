@@ -65,7 +65,7 @@ const ProductPage = ({ location }) => {
 	const [token] = state.token
 	const items = 10
 
-	const page = Number(queryString.parse(location.search).page) || 1
+	const page = Number(queryString.parse(location.search).page) || 0
 	const page_cmt = Number(queryString.parse(location.search).page_cmt) || 1
 	let historyProduct = JSON.parse(localStorage.getItem('history_product')) || []
 

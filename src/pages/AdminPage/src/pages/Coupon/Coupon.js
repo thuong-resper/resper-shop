@@ -4,220 +4,282 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogContentText,
 	DialogTitle,
 	IconButton,
-	makeStyles,
 	Typography,
 } from '@material-ui/core'
-import Paper from '@material-ui/core/Paper'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
-import { clearState } from 'features/Admin/Category/CategorySlice'
-import { createCoupon, deleteCoupon, getCoupons } from 'features/Admin/Coupon/pathAPI'
-import moment from 'moment-timezone'
 import { useSnackbar } from 'notistack'
-import React, { useContext, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import CouponForm from '../../components/forms/CouponForm'
-import LocalSearch from '../../components/forms/LocalSearch'
-import { UserContext } from 'contexts/index.js'
-import { AdminLayout } from 'components/Layout/index.js'
+import React, { useEffect, useState } from 'react'
+import { AdminContent, AdminLayout } from 'components/Layout/index.js'
 import SEO from 'components/SEO/SEO.js'
-
-const useStyles = makeStyles((theme) => ({
-	root: {
-		display: 'flex',
-	},
-	content: {
-		flexGrow: 1,
-		padding: theme.spacing(3),
-	},
-	item: {
-		padding: '0.5rem',
-		margin: '0.5rem 0',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		position: 'relative',
-		borderRadius: '0.5rem',
-		backgroundColor: '#e8eaf6',
-	},
-	dialog: { minWidth: '400px' },
-	itemBtn: { display: 'flex' },
-	table: {
-		minWidth: 650,
-	},
-}))
+import { useAddCoupon, useDeleteCoupon, useGetCoupons, usePatchCoupon } from 'features/Admin/Coupon'
+import { escapeRegExp } from 'utils/regex'
+import Iconify from 'components/Iconify'
+import SearchBar from 'components/Search/SearchBar'
+import { DataGrid } from '@material-ui/data-grid'
+import { OptionBtn } from 'components/UI/Button/Button'
+import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
+import moment from 'moment-timezone'
+import CouponForm from 'pages/AdminPage/src/components/forms/CouponForm'
+import { Skeleton } from '@material-ui/lab'
 
 const Coupon = () => {
-	// --Contexts
-	const state = useContext(UserContext)
-	const classes = useStyles()
-	const dispatch = useDispatch()
-	const [token] = state.token
 	const { enqueueSnackbar } = useSnackbar()
+	const [rows, setRows] = useState([])
+	const [searched, setSearched] = useState('')
+	const [pageSize, setPageSize] = useState(10)
+	const [item, setItem] = useState(null)
+	const [open, setOpen] = useState(false)
 	const [name, setName] = useState('')
 	const [discount, setDiscount] = useState(0)
 	const [expiry, setExpiry] = useState('2021-01-01T00:00')
 	const [openDelete, setOpenDelete] = useState(false)
-	const [couponId, setCouponId] = useState('')
-	const [keyword, setKeyword] = useState('')
+	const [id, setId] = useState(null)
 
-	// dispatch API
-	const actionGetCoupons = () => dispatch(getCoupons(token))
-	const actionCreateCoupon = (coupon, token) => dispatch(createCoupon(coupon, token))
-	const actionDeleteCoupon = (couponId, token) => dispatch(deleteCoupon(couponId, token))
-
-	//store
-	const coupons = useSelector((state) => state.coupon.coupons)
-	const isSuccess = useSelector((state) => state.coupon.isSuccess)
-	const isError = useSelector((state) => state.coupon.isError)
-	const message = useSelector((state) => state.coupon.message)
-	const loading = useSelector((state) => state.coupon.loading)
-
-	// snackbar
-	useEffect(() => {
-		return () => {
-			dispatch(clearState())
-		} // eslint-disable-next-line
-	}, [])
+	const { isLoading, data, error, isFetching } = useGetCoupons()
+	const mutationAdd = useAddCoupon((oldData, newData) => [...oldData, newData])
+	const mutationUpdate = usePatchCoupon((oldData, id) =>
+		oldData.map((x) => (x._id === id ? { ...x, name, expiry, discount } : x))
+	)
+	const mutationDelete = useDeleteCoupon((oldData, id) => oldData.filter((item) => item._id !== id))
 
 	useEffect(() => {
-		if (isError) {
-			enqueueSnackbar(message, { variant: 'error' })
-			dispatch(clearState())
+		if (data) {
+			setRows(data)
 		}
+	}, [data])
 
-		if (isSuccess) {
-			enqueueSnackbar(message, { variant: 'success' })
-			dispatch(clearState())
-			actionGetCoupons()
-		} // eslint-disable-next-line
-	}, [isError, isSuccess])
+	const columns = [
+		{ field: '_id', headerName: 'ID', width: 250 },
+		{ field: 'name', headerName: 'Mã coupon', width: 200 },
+		{
+			field: 'discount',
+			headerName: 'Giảm giá (%)',
+			width: 200,
+			type: 'number',
+		},
+		{
+			field: 'expiry',
+			headerName: 'Ngày hết hạn',
+			width: 200,
+			valueFormatter: ({ value }) => moment(value).format('DD/MM/YYYY'),
+		},
+		{
+			field: 'createdAt',
+			headerName: 'Ngày tạo',
+			width: 200,
+			valueFormatter: ({ value }) => moment(value).format('DD/MM/YYYY'),
+		},
+		{
+			field: 'action',
+			headerName: 'Hành động',
+			sortable: false,
+			width: 130,
+			align: 'center',
+			headerAlign: 'center',
+			filterable: false,
+			disableColumnMenu: true,
+			disableReorder: true,
+			renderCell: (params) => {
+				const onUpdate = () => {
+					setName(params.row.name)
+					setExpiry(params.row.expiry)
+					setDiscount(params.row.discount)
+					setId(params.row._id)
+					setItem(params.row)
+					setOpen(true)
+				}
+				const onDelete = () => {
+					setOpenDelete(true)
+					setId(params.row._id)
+				}
+				return (
+					<Box>
+						<IconButton size="small" onClick={onUpdate}>
+							<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
+						</IconButton>
+						<IconButton size="small" onClick={onDelete}>
+							<Iconify
+								icon="fluent:delete-16-filled"
+								width="1.5em"
+								height="1.5em"
+								color="#f50057"
+							/>
+						</IconButton>
+					</Box>
+				)
+			},
+		},
+	]
 
-	useEffect(() => {
-		actionGetCoupons() // eslint-disable-next-line
-	}, [])
+	const requestSearch = (searchedVal) => {
+		setSearched(searchedVal)
+		const searchRegex = new RegExp(escapeRegExp(searchedVal), 'i')
+		const filteredRows = data.filter((row) => {
+			return Object.keys(row).some((field) => {
+				return searchRegex.test(row[field].toString())
+			})
+		})
+		setRows(filteredRows)
+	}
 
-	const handleClickDeleteOpen = (_id) => {
-		setOpenDelete(true)
-		setCouponId(_id)
+	const cancelSearch = () => {
+		setSearched('')
+		requestSearch('')
+	}
+
+	const onClose = () => {
+		setOpen(false)
+		if (item) {
+			setItem(null)
+			setName('')
+			setDiscount(0)
+			setExpiry('2021-01-01T00:00')
+		}
 	}
 
 	const handleCloseDelete = () => {
 		setOpenDelete(false)
 	}
 
-	const handleSubmit = (e) => {
-		e.preventDefault()
-		const coupon = {
-			name,
-			discount,
-			expiry,
+	const handleCreate = async () => {
+		try {
+			await mutationAdd.mutateAsync({ _id: '###', name, discount, expiry })
+			setName('')
+			setDiscount(0)
+			setExpiry('2021-01-01T00:00')
+			setOpen(false)
+		} catch (e) {
+			enqueueSnackbar('Tạo mới thất bại', { variant: 'error' })
 		}
-		actionCreateCoupon(coupon, token)
-		actionGetCoupons()
-		setName('')
-		setDiscount('')
-		setExpiry('')
 	}
 
-	const handleRemove = () => {
-		actionDeleteCoupon(couponId, token)
-		actionGetCoupons()
-		handleCloseDelete()
+	const handleUpdate = async () => {
+		try {
+			await mutationUpdate.mutateAsync({ id, name, expiry, discount })
+			onClose()
+		} catch (e) {
+			enqueueSnackbar('Cập nhật thất bại', { variant: 'error' })
+		}
 	}
 
-	const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword)
+	const handleRemove = async () => {
+		try {
+			await mutationDelete.mutateAsync(id)
+			handleCloseDelete()
+		} catch (e) {
+			enqueueSnackbar('Xóa thất bại', { variant: 'error' })
+		}
+	}
 
 	return (
 		<AdminLayout>
-			<SEO pageTitle={'Admin | Khuyến mãi'} />
-			{loading && <SimpleBackdrop />}
-			<main className={classes.content}>
-				<Box display="flex" spacing={1}>
-					<CouponForm
-						handleSubmit={handleSubmit}
-						name={name}
-						setName={setName}
-						discount={discount}
-						setDiscount={setDiscount}
-						expiry={expiry}
-						setExpiry={setExpiry}
-						title="Tạo mới voucher"
-					/>
-					<LocalSearch keyword={keyword} setKeyword={setKeyword} placeholder="Tên voucher" />
-				</Box>
-
-				{/* step 5 */}
-				<Box m="0.5rem">
-					<Typography variant="body1">Danh sách Voucher&nbsp;({coupons.length})</Typography>
-
-					<TableContainer component={Paper}>
-						<Table className={classes.table} aria-label="simple table">
-							<TableHead>
-								<TableRow>
-									<TableCell>Tên voucher</TableCell>
-									<TableCell align="left">Ngày hết hạn</TableCell>
-									<TableCell align="left">Giảm giá&nbsp;(%)</TableCell>
-									<TableCell align="left">Hành động</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{coupons.length > 0 &&
-									coupons.filter(searched(keyword)).map((c, index) => (
-										<TableRow key={c.name}>
-											<TableCell component="th" scope="row">
-												{c.name}
-											</TableCell>
-											<TableCell align="left">
-												{moment(c.expiry).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY HH:mm:ss')}
-											</TableCell>
-											<TableCell align="left">{c.discount}</TableCell>
-											<TableCell align="left">
-												<IconButton onClick={() => handleClickDeleteOpen(c._id)} size="small">
-													<DeleteOutlineIcon color="secondary" />
-												</IconButton>
-											</TableCell>
-										</TableRow>
-									))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-
-					{/* Box delete */}
-					<Box>
-						<Dialog
-							open={openDelete}
-							onClose={handleCloseDelete}
-							aria-labelledby="alert-dialog-title"
-							aria-describedby="alert-dialog-description"
-						>
-							<DialogTitle id="alert-dialog-title">Xóa danh mục</DialogTitle>
-							<DialogContent>
-								<DialogContentText id="alert-dialog-description">
-									Bạn có chắc chắn xóa?
-								</DialogContentText>
-							</DialogContent>
-							<DialogActions>
-								<Button onClick={handleCloseDelete} color="primary">
-									Đóng
+			<AdminContent>
+				<SEO pageTitle={'Admin | Coupon'} />
+				<>
+					{error ? (
+						<span>Error: {error.message}</span>
+					) : (
+						<>
+							<Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+								{isLoading ? (
+									<Skeleton variant="rect" width={150} height={30} />
+								) : (
+									<Typography variant="h6">{`Coupon (${data.length})`}</Typography>
+								)}
+								<Button
+									variant="contained"
+									color="primary"
+									size="small"
+									onClick={() => setOpen(true)}
+									startIcon={
+										<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />
+									}
+								>
+									Tạo mới
 								</Button>
-								<Button onClick={handleRemove} color="primary" autoFocus>
-									Xác nhận
-								</Button>
-							</DialogActions>
-						</Dialog>
-					</Box>
-				</Box>
-			</main>
+							</Box>
+							<Box maxWidth={300}>
+								<SearchBar
+									value={searched}
+									onChange={(searchVal) => requestSearch(searchVal)}
+									onCancelSearch={() => cancelSearch()}
+									placeholder="Tìm kiếm"
+								/>
+							</Box>
+							<Box mt={2} width="100%">
+								<DataGrid
+									loading={isLoading}
+									rows={rows}
+									getRowId={(row) => row._id}
+									columns={columns}
+									pageSize={pageSize}
+									onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+									rowsPerPageOptions={[10, 20, 30]}
+									componentsProps={{
+										toolbar: {
+											value: searched,
+											onChange: (event) => requestSearch(event.target.value),
+											clearSearch: () => requestSearch(''),
+										},
+									}}
+									autoHeight
+									hideFooterSelectedRowCount
+									pagination
+								/>
+							</Box>
+							{/*Create or Update*/}
+							<Dialog
+								open={open}
+								onClose={onClose}
+								aria-labelledby="form-dialog-title-category"
+								fullWidth
+							>
+								<DialogTitle id="form-dialog-title">
+									{item ? `Cập nhật coupon: ${item.name}` : 'Tạo mới coupon'}
+								</DialogTitle>
+								<DialogContent>
+									<CouponForm
+										item={item}
+										name={name}
+										setName={setName}
+										discount={discount}
+										setDiscount={setDiscount}
+										expiry={expiry}
+										setExpiry={setExpiry}
+									/>
+								</DialogContent>
+								<DialogActions style={{ marginRight: '16px' }}>
+									<OptionBtn onClick={onClose} title="Hủy" color="default" />
+									<OptionBtn
+										onClick={item ? handleUpdate : handleCreate}
+										title="Xác nhận"
+										autoFocus
+										disabled={
+											(!name && !expiry && !discount) ||
+											(item &&
+												item.name === name &&
+												item.expiry === expiry &&
+												item.discount == discount)
+										}
+									/>
+								</DialogActions>
+							</Dialog>
+							{/*Delete*/}
+							<DialogOption
+								open={openDelete}
+								onClose={handleCloseDelete}
+								title="Xóa coupon"
+								content="Bạn có chắc chắn xóa?"
+								handleConfirm={handleRemove}
+							/>
+						</>
+					)}
+				</>
+
+				{isFetching ? <SimpleBackdrop /> : null}
+			</AdminContent>
 		</AdminLayout>
 	)
 }

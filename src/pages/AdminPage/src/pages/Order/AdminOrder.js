@@ -1,172 +1,163 @@
-import { Box, makeStyles, Typography } from '@material-ui/core'
-import Paper from '@material-ui/core/Paper'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import { Pagination } from '@material-ui/lab'
+import { Box, Typography } from '@material-ui/core'
 import moment from 'moment-timezone'
-import queryString from 'query-string'
-import React, { useContext, useEffect, useRef } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { UserContext } from 'contexts/index.js'
-import { AdminContent, AdminLayout } from 'components/Layout/index.js'
-import SEO from 'components/SEO/SEO.js'
-import SimpleBackdrop from 'components/Backdrop/Backdrop.js'
-import { usePaginatedAdminOrders } from 'features/Admin/Order/index.js'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import SearchBar from 'components/Search/SearchBar'
+import { DataGrid } from '@material-ui/data-grid'
+import { escapeRegExp } from 'utils/regex'
+import SimpleBackdrop from 'components/Backdrop/Backdrop'
+import { AdminContent, AdminLayout } from 'components/Layout'
+import { useGetOrders } from 'features/Admin/Order'
+import SEO from 'components/SEO/SEO'
+import { Skeleton } from '@material-ui/lab'
+
+function RowIdCell(props) {
+	return (
+		<Link style={{ color: '#007ff0', cursor: 'pointer' }} to={`/order/${props.row._id}`}>
+			{props.row._id}
+		</Link>
+	)
+}
+
+function RowProductCell(props) {
+	return props.row.products.map((p) => (
+		<Box key={p._id}>
+			{p.product.name}&nbsp;x&nbsp;{p.quantity}
+		</Box>
+	))
+}
 
 const columns = [
-	{ field: 'id', headerName: 'ID đơn hàng' },
+	{ field: '_id', headerName: 'ID', renderCell: RowIdCell },
 	{
-		field: 'Ngày mua',
-		headerName: 'First name',
-		width: 150,
-		editable: true,
-	},
-	{
-		field: 'lastName',
-		headerName: 'Last name',
-		width: 150,
-		editable: true,
-	},
-	{
-		field: 'age',
-		headerName: 'Age',
-		type: 'number',
-		width: 110,
-		editable: true,
-	},
-	{
-		field: 'fullName',
-		headerName: 'Full name',
-		description: 'This column has a value getter and is not sortable.',
+		field: 'products',
+		headerName: 'Sản phẩm',
+		minWidth: 300,
+		renderCell: RowProductCell,
 		sortable: false,
-		width: 160,
-		valueGetter: (params) =>
-			`${params.getValue(params.id, 'firstName') || ''} ${
-				params.getValue(params.id, 'lastName') || ''
-			}`,
+		filterable: false,
+		disableColumnMenu: true,
+		disableReorder: true,
+	},
+	{
+		field: 'totalPayable',
+		headerName: 'Tổng tiền',
+		type: 'number',
+		minWidth: 150,
+		format: (value) => value.toLocaleString('en-US'),
+	},
+	{
+		field: 'timeOrder',
+		headerName: 'Ngày mua',
+		minWidth: 150,
+		valueFormatter: ({ value }) => moment(value).format('DD/MM/YYYY'),
+	},
+	{
+		field: 'orderStatus',
+		headerName: 'Trạng thái',
+		minWidth: 150,
+	},
+	{
+		field: 'isPaid',
+		headerName: 'Đã thanh toán',
+		type: 'boolean',
+		minWidth: 150,
+	},
+	{
+		field: 'paidAt',
+		headerName: 'Thời gian thanh toán',
+		minWidth: 150,
+		valueFormatter: ({ value }) =>
+			moment(value).tz('Asia/Ho_Chi_Minh').format('DD/MM/YYYY HH:mm:ss'),
 	},
 ]
 
-const useStyles = makeStyles((theme) => ({
-	content: {
-		flexGrow: 1,
-		padding: theme.spacing(3),
-	},
-}))
-
-const AdminOrder = ({ location }) => {
-	const classes = useStyles()
-	const formatter = new Intl.NumberFormat('vn')
-
-	const divRef = useRef(null)
-	useEffect(() => {
-		divRef.current.scrollIntoView({ behavior: 'smooth' })
+const AdminOrder = () => {
+	const [rows, setRows] = useState([])
+	const [searched, setSearched] = useState('')
+	const [rowsState, setRowsState] = useState({
+		page: 0,
+		pageSize: 20,
 	})
+	const [rowCountState, setRowCountState] = useState(0)
 
-	const state = useContext(UserContext)
-	const history = useHistory()
-	const [token] = state.token
-	if (!token) {
-		history.push('/login?redirect=admin/order')
-	}
-
-	const page = Number(queryString.parse(location.search).page) || 1
 	const params = {
-		limit: 20,
-		page: page,
-	}
-	const { status, data, error, isFetching } = usePaginatedAdminOrders(params)
-
-	const onChangePage = (page, newPage) => {
-		const data = {
-			page: newPage,
-			limit: 20,
-		}
-		const params = queryString.stringify(data)
-		const url = `/admin/order?${params}`
-		history.push(url)
+		limit: rowsState.pageSize,
+		page: rowsState.page,
 	}
 
-	const showPagination = (length) => {
-		if (length > 0) {
-			return (
-				<Box display="flex" justifyContent="end" width="100%" m="0.5rem 0">
-					<Pagination
-						variant="outlined"
-						shape="rounded"
-						count={Math.ceil(length / 20)}
-						page={page}
-						onChange={onChangePage}
-					/>
-				</Box>
-			)
+	const { isLoading, data, error, isFetching } = useGetOrders(params)
+
+	useEffect(() => {
+		if (data) {
+			setRows(data.orders)
+			setRowCountState(data.length)
 		}
+	}, [data])
+
+	const requestSearch = (searchedVal) => {
+		setSearched(searchedVal)
+		const searchRegex = new RegExp(escapeRegExp(searchedVal), 'i')
+		const filteredRows = data.orders.filter((row) => {
+			return Object.keys(row).some((field) => {
+				return searchRegex.test(row[field].toString())
+			})
+		})
+		setRows(filteredRows)
+	}
+
+	const cancelSearch = () => {
+		setSearched('')
+		requestSearch('')
 	}
 
 	return (
 		<AdminLayout>
-			<div ref={divRef} />
 			<AdminContent>
-				{status === 'loading' ? (
-					<SimpleBackdrop />
+				<SEO pageTitle={'Admin | Đơn hàng'} />
+				{error ? (
+					<span>Error: {error.message}</span>
 				) : (
 					<>
-						{status === 'error' ? (
-							<span>Error: {error.message}</span>
-						) : (
-							<>
-								<SEO pageTitle={'Admin | Đơn hàng'} />
-								<Box mb={4}>
-									<Typography variant="h6">{`Đơn hàng (${data.length})`}</Typography>
-								</Box>
-								<TableContainer component={Paper}>
-									<Table className={classes.table} aria-label="simple table">
-										<TableHead>
-											<TableRow>
-												<TableCell>Mã đơn hàng</TableCell>
-												<TableCell align="left">Ngày mua</TableCell>
-												<TableCell align="left">Sản phẩm</TableCell>
-												<TableCell align="left">Tổng tiền</TableCell>
-												<TableCell align="left">Trạng thái</TableCell>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{data.orders.map((c) => (
-												<TableRow key={c._id} hover>
-													<TableCell component="th" scope="row">
-														<Link
-															style={{ color: '#007ff0', cursor: 'pointer' }}
-															to={`/order/${c._id}`}
-														>
-															{c._id}
-														</Link>
-													</TableCell>
-													<TableCell align="left">
-														{moment(c.timeOrder).format('DD/MM/YYYY')}
-													</TableCell>
-													<TableCell align="left">
-														{c?.products.map((p) => (
-															<p key={p._id}>
-																{p?.product.name}&nbsp;x&nbsp;{p.quantity}
-															</p>
-														))}
-													</TableCell>
-													<TableCell align="left">
-														{formatter.format(c.totalPayable)}&nbsp;đ
-													</TableCell>
-													<TableCell align="left">{c.orderStatus}</TableCell>
-												</TableRow>
-											))}
-										</TableBody>
-									</Table>
-								</TableContainer>
-								{showPagination(data.length)}
-							</>
-						)}
+						<Box mb={4}>
+							{isLoading ? (
+								<Skeleton variant="rect" width={150} height={30} />
+							) : (
+								<Typography variant="h6">{`Sản phẩm (${data.length})`}</Typography>
+							)}
+						</Box>
+						<Box maxWidth={300}>
+							<SearchBar
+								value={searched}
+								onChange={(searchVal) => requestSearch(searchVal)}
+								onCancelSearch={() => cancelSearch()}
+								placeholder="Tìm kiếm"
+							/>
+						</Box>
+						<Box mt={2} width="100%">
+							<DataGrid
+								loading={isLoading}
+								rows={rows}
+								getRowId={(row) => row._id}
+								columns={columns}
+								rowCount={rowCountState}
+								pagination
+								{...rowsState}
+								paginationMode="server"
+								onPageChange={(page) => setRowsState((prev) => ({ ...prev, page }))}
+								onPageSizeChange={(pageSize) => setRowsState((prev) => ({ ...prev, pageSize }))}
+								rowsPerPageOptions={[rowsState.pageSize]}
+								componentsProps={{
+									toolbar: {
+										value: searched,
+										onChange: (event) => requestSearch(event.target.value),
+										clearSearch: () => requestSearch(''),
+									},
+								}}
+								autoHeight
+								hideFooterSelectedRowCount
+							/>
+						</Box>
 					</>
 				)}
 				{isFetching ? <SimpleBackdrop /> : null}

@@ -13,6 +13,7 @@ import { useGetOrderById } from 'features/Order/index.js'
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import orderAPI from 'apis/orderAPI.js'
 import { useSnackbar } from 'notistack'
+import { fVNDCurrency, fVNNumber } from 'utils/formatNumber'
 
 const useStyles = makeStyles((theme) => ({
 	right: {
@@ -82,13 +83,12 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const convertVndToUsd = (num) => Number(num / 23000).toFixed(2)
-const formatter = new Intl.NumberFormat('vn')
 
 // paypal
 const currency = 'USD'
 const style = { layout: 'vertical' }
 
-const OrderPage = ({ location }) => {
+const OrderPage = () => {
 	const classes = useStyles()
 	const { id } = useParams()
 	const history = useHistory()
@@ -216,7 +216,7 @@ const OrderPage = ({ location }) => {
 												<Grid item xs={3} sm={2}>
 													<div className={classes.price}>
 														<Typography variant="h6" color="secondary">
-															{formatter.format(item.product.price)}
+															{fVNNumber(item.product.price)}&nbsp;
 															<abbr
 																style={{
 																	textDecoration: 'underline dotted',
@@ -227,7 +227,7 @@ const OrderPage = ({ location }) => {
 														</Typography>
 														<Typography variant="body2">
 															<span className={classes.priceCompare}>
-																{formatter.format(item.product.priceCompare)}&nbsp;đ
+																{fVNDCurrency(item.product.priceCompare)}&nbsp;
 															</span>
 															&nbsp;
 															<i>
@@ -249,7 +249,7 @@ const OrderPage = ({ location }) => {
 											</Grid>
 											<div className={classes.price}>
 												<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
-													Tổng cộng: {formatter.format(item.product.price * item.quantity)} <u>đ</u>
+													Tổng cộng:&nbsp; {fVNDCurrency(item.product.price * item.quantity)}
 												</Typography>
 											</div>
 										</div>
@@ -264,7 +264,7 @@ const OrderPage = ({ location }) => {
 											<Typography variant="body2">Tổng tiền hàng</Typography>
 											<Box textAlign="right">
 												<Typography variant="body2" color="secondary">
-													{formatter.format(showTotalAmount(dataOrder?.products))} <u>đ</u>
+													{fVNDCurrency(showTotalAmount(dataOrder?.products))}
 												</Typography>
 											</Box>
 										</div>
@@ -274,8 +274,7 @@ const OrderPage = ({ location }) => {
 												<Box textAlign="right">
 													<Typography variant="body2" color="secondary">
 														-&nbsp;
-														{formatter.format(dataOrder?.feeDiscount)}
-														<u>đ</u>
+														{fVNDCurrency(dataOrder?.feeDiscount)}
 													</Typography>
 												</Box>
 											</div>
@@ -287,7 +286,7 @@ const OrderPage = ({ location }) => {
 											</Typography>
 											<Box textAlign="right">
 												<Typography variant="subtitle1" color="secondary">
-													{formatter.format(dataOrder?.totalPayable)} <u>đ</u>
+													{fVNDCurrency(dataOrder?.totalPayable)}
 												</Typography>
 												<small className={classes.fee}>Đã bao gồm VAT nếu có</small>
 											</Box>
