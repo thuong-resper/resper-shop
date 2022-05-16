@@ -13,8 +13,8 @@ export const getCategory = createAsyncThunk('getCategory', async () => {
 	return await adminAPI.getCategory()
 })
 
-export const getCategorySubs = createAsyncThunk('getCategorySubs', async (_id) => {
-	return await adminAPI.getCategorySubs(_id)
+export const getCategorySubs = createAsyncThunk('getCategorySubs', async (id) => {
+	return await adminAPI.getCategorySubs(id)
 })
 
 export const updateCategory = createAsyncThunk('updateCategory', async (data, token) => {

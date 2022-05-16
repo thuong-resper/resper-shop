@@ -11,31 +11,6 @@ const useStyles = makeStyles((theme) => ({
 		left: 0,
 		overflow: 'auto',
 	},
-	menuList: {
-		padding: 8,
-	},
-	listItem: {
-		height: 48,
-		position: 'relative',
-		textTransform: 'capitalize',
-		color: '#637381',
-		borderRadius: 8,
-	},
-	activeRootStyle: {
-		color: '#2065d1',
-		fontWeight: 'bold',
-		backgroundColor: '#2065d114',
-		'&:hover': { color: '#2065d1' },
-	},
-
-	listItemIcon: {
-		width: 22,
-		height: 22,
-		color: 'inherit',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
 }))
 
 const AdminSidebar = () => {

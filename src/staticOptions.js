@@ -305,7 +305,7 @@ const colorOptions = [
 	{
 		value: 'white',
 		label: 'Trắng',
-		code: '#e4e3e1',
+		code: '#ffffff',
 	},
 	{
 		value: 'red',
@@ -428,6 +428,14 @@ const statusOrder = [
 	{ value: 'Completed', vn: 'Hoàn thành' },
 ]
 
+const categoryId = {
+	phone: '6139b459b9a9f76d315ecf58',
+	laptop: '6142bff8d0c33220905c8bd2',
+	tablet: '6142c006d0c33220905c8bd3',
+	watch: '61376edaa8d3c977efbcfa08',
+	smWatch: '61376ecfa8d3c977efbcfa07',
+}
+
 export {
 	formItemLayout,
 	phoneType,
@@ -450,4 +458,5 @@ export {
 	watchSc,
 	paymentOptions,
 	statusOrder,
+	categoryId,
 }

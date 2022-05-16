@@ -6,7 +6,7 @@ import CheckoutSteps from 'components/Checkout/CheckoutSteps'
 import { Form } from 'components/Form/Form'
 import { Input } from 'components/Input/Input'
 import { MainLayout } from 'components/Layout'
-import SEO from 'components/SEO/SEO.js'
+import SEO from 'components/SEO/SEO'
 import { SignupBtn } from 'components/UI/Button/Button.js'
 import dataCity from 'data.json'
 import { saveAddressAndPayment } from 'features/Cart/CartSlice'
@@ -15,10 +15,10 @@ import React, { useContext, useState } from 'react'
 import { useForm, useFormState } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
-import { paymentOptions } from 'staticOptions.js'
+import { paymentOptions } from 'staticOptions'
 import * as yup from 'yup'
-import { UserContext } from 'contexts/index.js'
-import SimpleBackdrop from 'components/Backdrop/Backdrop.js'
+import { UserContext } from 'contexts'
+import SimpleBackdrop from 'components/Backdrop/Backdrop'
 
 const useStyles = makeStyles((theme) => ({
 	layout: {
@@ -74,6 +74,7 @@ const defaultValues = {
 	numberPhone: '',
 	payment: '',
 }
+
 const ShippingPage = () => {
 	const history = useHistory()
 	const classes = useStyles()

@@ -3,13 +3,6 @@ import React from 'react'
 import { NavLink as RouterLink } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
-	menu: {
-		borderRight: '1px solid #e6e6e6',
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		overflow: 'hidden',
-	},
 	menuList: {
 		padding: 8,
 		height: '100vh',
@@ -40,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 function NavItem({ item }) {
 	const classes = useStyles()
-	const { title, path, icon, info, children } = item
+	const { title, path, icon, info } = item
 
 	return (
 		<ListItem

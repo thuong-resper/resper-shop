@@ -13,3 +13,9 @@ export const Input = forwardRef((props, ref) => {
 		/>
 	)
 })
+
+export const BasicInput = forwardRef((props, ref) => {
+	return (
+		<TextField margin="dense" variant="outlined" size="small" inputRef={ref} fullWidth {...props} />
+	)
+})

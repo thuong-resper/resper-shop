@@ -5,6 +5,11 @@ import { pathToUrl } from 'utils/router'
 export const useGetCategories = () =>
 	useFetch(pathToUrl(adminRoutes.category), undefined, { staleTime: 5 * 60 * 1000 })
 
+export const useGetSubsByCategory = (id) =>
+	useFetch(id ? pathToUrl(adminRoutes.getCategorySubs, { id }) : null, undefined, {
+		staleTime: 5 * 60 * 1000,
+	})
+
 export const useAddCategory = (updater) =>
 	usePost(pathToUrl(adminRoutes.category), undefined, updater)
 

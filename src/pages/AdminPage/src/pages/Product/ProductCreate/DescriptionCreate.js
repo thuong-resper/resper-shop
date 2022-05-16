@@ -1,10 +1,12 @@
 import React from 'react'
 import ReactQuill from 'react-quill'
 import '../../../../../../../node_modules/react-quill/dist/quill.snow.css'
+import { Box } from '@material-ui/core'
+import './quill.css'
 
 const DescriptionCreate = ({ body, handleChangeQuill }) => {
 	return (
-		<div>
+		<Box className="ql-app">
 			<p>Mô tả</p>
 			<ReactQuill
 				placeholder="Mô tả sản phẩm"
@@ -13,7 +15,7 @@ const DescriptionCreate = ({ body, handleChangeQuill }) => {
 				onChange={handleChangeQuill}
 				value={body}
 			/>
-		</div>
+		</Box>
 	)
 }
 

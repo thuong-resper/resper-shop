@@ -8,7 +8,6 @@ const ProductCreate = lazy(() => import('./src/pages/Product/ProductCreate.js'))
 const ProductEdit = lazy(() => import('./src/pages/Product/ProductEdit.js'))
 const AdminProduct = lazy(() => import('./src/pages/Product/AdminProduct.js'))
 const AdminOrder = lazy(() => import('./src/pages/Order/AdminOrder.js'))
-
 const AdminPage = [
 	// {
 

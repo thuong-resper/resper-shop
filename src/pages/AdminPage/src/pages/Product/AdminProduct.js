@@ -1,22 +1,9 @@
-import {
-	Box,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-	IconButton,
-	Typography,
-} from '@material-ui/core'
-import { deleteProduct } from 'features/Admin/Product/pathAPI'
-import { getListProducts } from 'features/Product/pathApi'
+import { Box, Button, IconButton, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import SEO from 'components/SEO/SEO.js'
 import { AdminContent, AdminLayout } from 'components/Layout/index.js'
-import { useGetProducts } from 'features/Admin/Product/index.js'
+import { useDeleteProduct, useGetProducts } from 'features/Admin/Product/index.js'
 import Iconify from 'components/Iconify.js'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { escapeRegExp } from 'utils/regex'
@@ -24,6 +11,8 @@ import SearchBar from 'components/Search/SearchBar'
 import { DataGrid } from '@material-ui/data-grid'
 import { fVNDCurrency } from 'utils/formatNumber'
 import { Skeleton } from '@material-ui/lab'
+import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
+import { useSnackbar } from 'notistack'
 
 function RowIdCell(props) {
 	return (
@@ -54,7 +43,7 @@ function RowProductImgCell(props) {
 }
 
 const AdminProduct = () => {
-	const dispatch = useDispatch()
+	const { enqueueSnackbar } = useSnackbar()
 	const [rows, setRows] = useState([])
 	const [searched, setSearched] = useState('')
 	const [rowsState, setRowsState] = useState({
@@ -62,6 +51,8 @@ const AdminProduct = () => {
 		pageSize: 20,
 	})
 	const [rowCountState, setRowCountState] = useState(0)
+	const [openDelete, setOpenDelete] = useState(false)
+	const [id, setId] = useState(null)
 
 	const columns = [
 		{ field: '_id', headerName: 'ID', renderCell: RowIdCell },
@@ -132,8 +123,8 @@ const AdminProduct = () => {
 					// setOpen(true)
 				}
 				const onDelete = () => {
-					// setOpenDelete(true)
-					// setId(params.row._id)
+					setOpenDelete(true)
+					setId(params.row._id)
 				}
 				return (
 					<Box>
@@ -157,13 +148,18 @@ const AdminProduct = () => {
 	const params = {
 		limit: rowsState.pageSize,
 		page: rowsState.page,
+		sort: '-_id',
 	}
 
 	const { isLoading, data, error, isFetching } = useGetProducts(params)
+	const mutationDelete = useDeleteProduct(params, (oldData, id) => {
+		oldData.data.filter((item) => item._id !== id)
+	})
+
 	useEffect(() => {
 		if (data) {
-			setRows(data.data)
-			setRowCountState(data.length)
+			setRows(data?.data)
+			setRowCountState(data?.length)
 		}
 	}, [data])
 
@@ -183,30 +179,17 @@ const AdminProduct = () => {
 		requestSearch('')
 	}
 
-	const actionGetAllProducts = (param) => dispatch(getListProducts(param))
-	const actionDeleteProduct = (id) => dispatch(deleteProduct(id))
-
-	const [product, setProduct] = useState('')
-	const [openDelete, setOpenDelete] = useState(false)
-
-	const handleClickDeleteOpen = (product) => {
-		setOpenDelete(true)
-		setProduct(product)
-	}
-
 	const handleCloseDelete = () => {
 		setOpenDelete(false)
 	}
 
 	const handleRemove = async () => {
-		await actionDeleteProduct(product._id)
-		handleCloseDelete()
-		const param = {
-			limit: rowsState.pageSize,
-			page: 1,
-			sort: '-_id',
+		try {
+			await mutationDelete.mutateAsync(id)
+			handleCloseDelete()
+		} catch (e) {
+			enqueueSnackbar('Xóa thất bại', { variant: 'error' })
 		}
-		actionGetAllProducts(param)
 	}
 
 	return (
@@ -214,89 +197,63 @@ const AdminProduct = () => {
 			<AdminContent>
 				<SEO pageTitle={'Admin | Sản phẩm'} />
 				<>
-					{error ? (
-						<span>Error: {error.message}</span>
-					) : (
-						<>
-							<Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
-								{isLoading ? (
-									<Skeleton variant="rect" width={150} height={30} />
-								) : (
-									<Typography variant="h6">{`Sản phẩm (${data.length})`}</Typography>
-								)}
-								<Link to="/admin/product/create">
-									<Button
-										variant="contained"
-										color="primary"
-										startIcon={
-											<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />
-										}
-									>
-										Thêm sản phẩm
-									</Button>
-								</Link>
-							</Box>
-							<Box maxWidth={300}>
-								<SearchBar
-									value={searched}
-									onChange={(searchVal) => requestSearch(searchVal)}
-									onCancelSearch={() => cancelSearch()}
-									placeholder="Tìm kiếm"
-								/>
-							</Box>
-							<Box mt={2} width="100%">
-								<DataGrid
-									loading={isLoading}
-									rows={rows}
-									getRowId={(row) => row._id}
-									columns={columns}
-									rowCount={rowCountState}
-									pagination
-									{...rowsState}
-									paginationMode="server"
-									onPageChange={(page) => setRowsState((prev) => ({ ...prev, page }))}
-									onPageSizeChange={(pageSize) => setRowsState((prev) => ({ ...prev, pageSize }))}
-									rowsPerPageOptions={[20]}
-									componentsProps={{
-										toolbar: {
-											value: searched,
-											onChange: (event) => requestSearch(event.target.value),
-											clearSearch: () => requestSearch(''),
-										},
-									}}
-									autoHeight
-									hideFooterSelectedRowCount
-								/>
-							</Box>
-							{/* Box delete */}
-							<Box>
-								<Dialog
-									open={openDelete}
-									onClose={handleCloseDelete}
-									aria-labelledby="alert-dialog-title"
-									aria-describedby="alert-dialog-description"
-								>
-									<DialogTitle id="alert-dialog-title">Xóa sản phẩm</DialogTitle>
-									<DialogContent>
-										<DialogContentText id="alert-dialog-description">
-											{`Bạn có chắc chắn xóa sản phẩm ${product.name}? `}
-										</DialogContentText>
-									</DialogContent>
-									<DialogActions>
-										<Button onClick={handleCloseDelete} color="primary">
-											Đóng
-										</Button>
-										<Button onClick={handleRemove} color="primary" autoFocus>
-											Xác nhận
-										</Button>
-									</DialogActions>
-								</Dialog>
-							</Box>
-						</>
-					)}
+					<Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
+						{isLoading || mutationDelete.isLoading ? (
+							<Skeleton variant="rect" width={150} height={30} />
+						) : (
+							<Typography variant="h6">{`Sản phẩm (${data?.length})`}</Typography>
+						)}
+						<Link to="/admin/product/create">
+							<Button
+								variant="contained"
+								color="primary"
+								startIcon={<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />}
+							>
+								Thêm sản phẩm
+							</Button>
+						</Link>
+					</Box>
+					<Box maxWidth={300}>
+						<SearchBar
+							value={searched}
+							onChange={(searchVal) => requestSearch(searchVal)}
+							onCancelSearch={() => cancelSearch()}
+							placeholder="Tìm kiếm"
+						/>
+					</Box>
+					<Box mt={2} width="100%">
+						<DataGrid
+							loading={isLoading}
+							rows={rows}
+							getRowId={(row) => row._id}
+							columns={columns}
+							rowCount={rowCountState}
+							pagination
+							{...rowsState}
+							paginationMode="server"
+							onPageChange={(page) => setRowsState((prev) => ({ ...prev, page }))}
+							onPageSizeChange={(pageSize) => setRowsState((prev) => ({ ...prev, pageSize }))}
+							rowsPerPageOptions={[20]}
+							componentsProps={{
+								toolbar: {
+									value: searched,
+									onChange: (event) => requestSearch(event.target.value),
+									clearSearch: () => requestSearch(''),
+								},
+							}}
+							autoHeight
+							hideFooterSelectedRowCount
+						/>
+					</Box>
+					{/* Box delete */}
+					<DialogOption
+						open={openDelete}
+						onClose={handleCloseDelete}
+						title="Xóa sản phẩm"
+						content="Bạn có chắc chắn xóa?"
+						handleConfirm={handleRemove}
+					/>
 				</>
-
-				{isFetching ? <span> Loading...</span> : null}
 			</AdminContent>
 		</AdminLayout>
 	)

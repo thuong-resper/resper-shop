@@ -76,8 +76,8 @@ const adminAPI = {
 		const url = `/api/category/:slug`
 		return axiosClient.get(url)
 	},
-	getCategorySubs: (_id) => {
-		const url = `/api/category/subs/${_id}`
+	getCategorySubs: (id) => {
+		const url = `/api/category/subs/${id}`
 		return axiosClient.get(url)
 	},
 	updateCategory: (data) => {
@@ -130,7 +130,7 @@ const adminAPI = {
 	},
 	// products
 	createProduct: (data) => {
-		const url = '/api/product'
+		const url = '/api/admin/product'
 		return axiosClient.post(url, data)
 	},
 	uploadImage: (data, token) => {

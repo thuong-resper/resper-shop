@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from 'react-query'
 import adminAPI from 'apis/adminAPI.js'
-import { adminProductKeys } from 'features/Admin/Product/queryKeys.js'
 import { useSnackbar } from 'notistack'
+import { adminRoutes } from 'routes'
 
-export function useCreateProduct(options) {
+export function useCreateProduct() {
 	const queryClient = useQueryClient()
 	const { enqueueSnackbar } = useSnackbar()
 
@@ -13,19 +13,19 @@ export function useCreateProduct(options) {
 
 	return useMutation(createProduct, {
 		onMutate: async (newProduct) => {
-			await queryClient.cancelQueries(adminProductKeys.all)
-			const previousProduct = queryClient.getQueryData(adminProductKeys.all)
-			queryClient.setQueryData(adminProductKeys.all, (oldProduct) => [...oldProduct, newProduct])
+			await queryClient.cancelQueries(adminRoutes.product)
+			const previousProduct = queryClient.getQueryData(adminRoutes.product)
+			queryClient.setQueryData(adminRoutes.product, (oldProduct) => [...oldProduct, newProduct])
 			return { previousProduct }
 		},
 		onSuccess: (data) => {
 			enqueueSnackbar(`Tạo mới thành công: ${data.name}`, { variant: 'success' })
 		},
 		onError: (err, newProduct, context) => {
-			queryClient.setQueryData(adminProductKeys.all, context.previousProduct)
+			queryClient.setQueryData(adminRoutes.product, context.previousProduct)
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries(adminProductKeys.all)
+			queryClient.invalidateQueries(adminRoutes.product)
 		},
 	})
 }
