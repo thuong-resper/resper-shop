@@ -13,10 +13,6 @@ export const updateProduct = createAsyncThunk('updateProduct', async (data, toke
 	return await adminAPI.updateProduct(data, token)
 })
 
-export const deleteProduct = createAsyncThunk('deleteProduct', async (id, token) => {
-	return await adminAPI.deleteProduct(id, token)
-})
-
 export const getProducts = createAsyncThunk('getProducts', async (id) => {
 	return await adminAPI.getProducts(id)
 })

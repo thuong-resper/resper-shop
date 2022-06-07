@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 import SearchBar from 'components/Search/SearchBar'
 import { DataGrid } from '@material-ui/data-grid'
 import { escapeRegExp } from 'utils/regex'
-import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import { AdminContent, AdminLayout } from 'components/Layout'
 import { useGetOrders } from 'features/Admin/Order'
 import SEO from 'components/SEO/SEO'
@@ -86,7 +85,7 @@ const AdminOrder = () => {
 		page: rowsState.page,
 	}
 
-	const { isLoading, data, error, isFetching } = useGetOrders(params)
+	const { isLoading, data, error } = useGetOrders(params)
 
 	useEffect(() => {
 		if (data) {
@@ -126,14 +125,12 @@ const AdminOrder = () => {
 								<Typography variant="h6">{`Sản phẩm (${data.length})`}</Typography>
 							)}
 						</Box>
-						<Box maxWidth={300}>
-							<SearchBar
-								value={searched}
-								onChange={(searchVal) => requestSearch(searchVal)}
-								onCancelSearch={() => cancelSearch()}
-								placeholder="Tìm kiếm"
-							/>
-						</Box>
+						<SearchBar
+							value={searched}
+							onChange={(searchVal) => requestSearch(searchVal)}
+							onCancelSearch={() => cancelSearch()}
+							placeholder="Tìm kiếm"
+						/>
 						<Box mt={2} width="100%">
 							<DataGrid
 								loading={isLoading}
@@ -160,7 +157,6 @@ const AdminOrder = () => {
 						</Box>
 					</>
 				)}
-				{isFetching ? <SimpleBackdrop /> : null}
 			</AdminContent>
 		</AdminLayout>
 	)

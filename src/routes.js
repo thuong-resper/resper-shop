@@ -12,7 +12,7 @@ export const adminRoutes = {
 	coupon: '/api/coupon/:id?',
 	order: '/api/admin/order',
 	product: '/api/product',
-	adminProduct: '/api/admin/product',
+	adminProduct: '/api/admin/product/:id?',
 	getCategorySubs: '/api/category/subs/:id?',
 	getSubsC: '/api/category/subs/:id?',
 }

@@ -133,30 +133,17 @@ const adminAPI = {
 		const url = '/api/admin/product'
 		return axiosClient.post(url, data)
 	},
-	uploadImage: (data, token) => {
-		const url = '/api/upload'
-		return axiosClient.post(url, data, token)
-	},
-	removeImage: (data, token) => {
-		const url = '/api/removeimage'
-		return axiosClient.post(url, data, token)
+	removeImage: (data) => {
+		const url = '/api/admin/product/remove-image'
+		return axiosClient.post(url, data)
 	},
 	getProducts: () => {
 		const url = '/api/products'
 		return axiosClient.get(url)
 	},
-	getProduct: (id) => {
-		const url = `/api/sub/${id}`
-		return axiosClient.get(url)
-	},
-	updateProduct: (data, token) => {
-		const { id_product } = data
-		const url = `/api/product/${id_product}`
-		return axiosClient.put(url, data, token)
-	},
-	deleteProduct: (id, token) => {
-		const url = `/api/product/${id}`
-		return axiosClient.delete(url, null, token)
+	updateProduct: (id, data) => {
+		const url = `/api/admin/product/${id}`
+		return axiosClient.post(url, data)
 	},
 }
 export default adminAPI

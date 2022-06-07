@@ -8,7 +8,6 @@ import {
 	IconButton,
 	Typography,
 } from '@material-ui/core'
-import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import { useSnackbar } from 'notistack'
 import React, { useEffect, useState } from 'react'
 import { AdminContent, AdminLayout } from 'components/Layout/index.js'
@@ -37,7 +36,7 @@ const Coupon = () => {
 	const [openDelete, setOpenDelete] = useState(false)
 	const [id, setId] = useState(null)
 
-	const { isLoading, data, error, isFetching } = useGetCoupons()
+	const { isLoading, data, error } = useGetCoupons()
 	const mutationAdd = useAddCoupon((oldData, newData) => [...oldData, newData])
 	const mutationUpdate = usePatchCoupon((oldData, id) =>
 		oldData.map((x) => (x._id === id ? { ...x, name, expiry, discount } : x))
@@ -190,24 +189,19 @@ const Coupon = () => {
 								)}
 								<Button
 									variant="contained"
-									color="primary"
 									size="small"
 									onClick={() => setOpen(true)}
-									startIcon={
-										<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />
-									}
+									startIcon={<Iconify icon="carbon:add" width="1em" height="1em" />}
 								>
 									Tạo mới
 								</Button>
 							</Box>
-							<Box maxWidth={300}>
-								<SearchBar
-									value={searched}
-									onChange={(searchVal) => requestSearch(searchVal)}
-									onCancelSearch={() => cancelSearch()}
-									placeholder="Tìm kiếm"
-								/>
-							</Box>
+							<SearchBar
+								value={searched}
+								onChange={(searchVal) => requestSearch(searchVal)}
+								onCancelSearch={() => cancelSearch()}
+								placeholder="Tìm kiếm"
+							/>
 							<Box mt={2} width="100%">
 								<DataGrid
 									loading={isLoading}
@@ -261,7 +255,7 @@ const Coupon = () => {
 											(item &&
 												item.name === name &&
 												item.expiry === expiry &&
-												item.discount == discount)
+												item.discount === discount)
 										}
 									/>
 								</DialogActions>
@@ -277,8 +271,6 @@ const Coupon = () => {
 						</>
 					)}
 				</>
-
-				{isFetching ? <SimpleBackdrop /> : null}
 			</AdminContent>
 		</AdminLayout>
 	)

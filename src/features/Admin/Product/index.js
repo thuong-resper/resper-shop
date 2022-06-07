@@ -4,6 +4,9 @@ import { adminRoutes } from 'routes'
 
 export const useGetProducts = (params) => useFetch(pathToUrl(adminRoutes.adminProduct), params)
 
+export const useGetProductById = (id) =>
+	useFetch(id ? pathToUrl(adminRoutes.adminProduct, { id }) : null, undefined)
+
 export const useAddProduct = (updater) =>
 	usePost(pathToUrl(adminRoutes.adminProduct), undefined, updater)
 

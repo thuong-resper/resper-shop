@@ -17,7 +17,6 @@ import { useSnackbar } from 'notistack'
 import { Autocomplete, Skeleton } from '@material-ui/lab'
 import SearchBar from 'components/Search/SearchBar'
 import SEO from 'components/SEO/SEO'
-import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import { AdminContent, AdminLayout } from 'components/Layout'
 import { OptionBtn } from 'components/UI/Button/Button'
 import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
@@ -54,7 +53,7 @@ const Sub = () => {
 	const [open, setOpen] = useState(false)
 	const [id, setId] = useState(null)
 
-	const { isLoading, data, error, isFetching } = useGetSubs()
+	const { isLoading, data, error } = useGetSubs()
 	const { data: dataCategories } = useGetCategories()
 	const mutationAdd = useAddSub((oldData, newData) => [...oldData, newData])
 	const mutationUpdate = usePatchSub((oldData, id) =>
@@ -200,24 +199,19 @@ const Sub = () => {
 								)}
 								<Button
 									variant="contained"
-									color="primary"
 									size="small"
 									onClick={() => setOpen(true)}
-									startIcon={
-										<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />
-									}
+									startIcon={<Iconify icon="carbon:add" width="1em" height="1em" />}
 								>
 									Tạo mới
 								</Button>
 							</Box>
-							<Box maxWidth={300}>
-								<SearchBar
-									value={searched}
-									onChange={(searchVal) => requestSearch(searchVal)}
-									onCancelSearch={() => cancelSearch()}
-									placeholder="Tìm kiếm"
-								/>
-							</Box>
+							<SearchBar
+								value={searched}
+								onChange={(searchVal) => requestSearch(searchVal)}
+								onCancelSearch={() => cancelSearch()}
+								placeholder="Tìm kiếm"
+							/>
 							<Box mt={2} width="100%">
 								<DataGrid
 									loading={isLoading}
@@ -296,7 +290,6 @@ const Sub = () => {
 						</>
 					)}
 				</>
-				{isFetching ? <SimpleBackdrop /> : null}
 			</AdminContent>
 		</AdminLayout>
 	)

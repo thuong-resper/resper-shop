@@ -23,6 +23,8 @@ const formItemLayout = {
 	},
 }
 
+const staleTime5m = 5 * 60 * 1000
+
 const phoneType = [
 	{
 		value: 'android',
@@ -402,6 +404,13 @@ const watchSex = [
 	{ value: 'child', label: 'Trẻ em' },
 ]
 
+const watchSexAutocomplete = [
+	{ value: 'Nam' },
+	{ value: 'Nữ' },
+	{ value: 'Cặp đôi' },
+	{ value: 'Trẻ em' },
+]
+
 const watchSc = [
 	{ value: '29', label: 'Dưới 29 mm' },
 	{ value: '2933', label: '29 - 33 mm' },
@@ -438,6 +447,7 @@ const categoryId = {
 
 export {
 	formItemLayout,
+	staleTime5m,
 	phoneType,
 	phoneSc,
 	phoneRam,
@@ -455,6 +465,7 @@ export {
 	tabletRam,
 	tabletRom,
 	watchSex,
+	watchSexAutocomplete,
 	watchSc,
 	paymentOptions,
 	statusOrder,

@@ -152,7 +152,7 @@ const ProductAdminItem = ({ product, loading, handleClickDeleteOpen }) => {
 						<div className={classes.wrapItem}>
 							<div className={classes.itemBtn}>
 								<IconButton
-									onClick={() => history.push(`/admin/product/edit/${product._id}`)}
+									onClick={() => history.push(`/admin/product/update/${product._id}`)}
 									size="small"
 								>
 									<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />

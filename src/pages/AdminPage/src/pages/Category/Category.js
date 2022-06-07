@@ -19,7 +19,6 @@ import { AdminContent, AdminLayout } from 'components/Layout'
 import Iconify from 'components/Iconify'
 import SearchBar from 'components/Search/SearchBar'
 import { OptionBtn } from 'components/UI/Button/Button'
-import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import SEO from 'components/SEO/SEO'
 import {
 	useAddCategory,
@@ -40,7 +39,7 @@ const Category = () => {
 	const [openDelete, setOpenDelete] = useState(false)
 	const [id, setId] = useState(null)
 
-	const { isLoading, data, error, isFetching } = useGetCategories()
+	const { isLoading, data, error } = useGetCategories()
 	const mutationAdd = useAddCategory((oldData, newData) => [...oldData, newData])
 	const mutationUpdate = usePatchCategory((oldData, id) =>
 		oldData.map((x) => (x._id === id ? { ...x, name } : x))
@@ -184,24 +183,19 @@ const Category = () => {
 								)}
 								<Button
 									variant="contained"
-									color="primary"
 									size="small"
 									onClick={() => setOpen(true)}
-									startIcon={
-										<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />
-									}
+									startIcon={<Iconify icon="carbon:add" width="1em" height="1em" />}
 								>
 									Tạo mới
 								</Button>
 							</Box>
-							<Box maxWidth={300}>
-								<SearchBar
-									value={searched}
-									onChange={(searchVal) => requestSearch(searchVal)}
-									onCancelSearch={() => cancelSearch()}
-									placeholder="Tìm kiếm"
-								/>
-							</Box>
+							<SearchBar
+								value={searched}
+								onChange={(searchVal) => requestSearch(searchVal)}
+								onCancelSearch={() => cancelSearch()}
+								placeholder="Tìm kiếm"
+							/>
 							<Box mt={2} width="100%">
 								<DataGrid
 									loading={isLoading}
@@ -264,8 +258,6 @@ const Category = () => {
 						</>
 					)}
 				</>
-
-				{isFetching ? <SimpleBackdrop /> : null}
 			</AdminContent>
 		</AdminLayout>
 	)

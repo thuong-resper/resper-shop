@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit'
 import { deleteCommentUser } from '../User/pathAPI'
 import {
 	createProduct,
-	deleteProduct,
 	getCommentProduct,
 	getProducts,
 	readProduct,
@@ -79,20 +78,6 @@ const ProductAdminSlice = createSlice({
 			state.loading = false
 			state.isError = true
 			state.message = 'Cập nhật thất bại'
-		},
-
-		[deleteProduct.pending]: (state) => {
-			state.loading = true
-		},
-		[deleteProduct.fulfilled]: (state, action) => {
-			state.loading = false
-			state.isSuccess = true
-			state.message = 'Xóa thành công'
-		},
-		[deleteProduct.rejected]: (state) => {
-			state.loading = false
-			state.isError = true
-			state.message = 'Xóa thất bại'
 		},
 
 		// get comment products

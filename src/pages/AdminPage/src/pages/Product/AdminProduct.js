@@ -1,6 +1,6 @@
 import { Box, Button, IconButton, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import SEO from 'components/SEO/SEO.js'
 import { AdminContent, AdminLayout } from 'components/Layout/index.js'
 import { useDeleteProduct, useGetProducts } from 'features/Admin/Product/index.js'
@@ -43,6 +43,7 @@ function RowProductImgCell(props) {
 }
 
 const AdminProduct = () => {
+	const history = useHistory()
 	const { enqueueSnackbar } = useSnackbar()
 	const [rows, setRows] = useState([])
 	const [searched, setSearched] = useState('')
@@ -95,12 +96,12 @@ const AdminProduct = () => {
 		{
 			field: 'subs',
 			headerName: 'Thương hiệu',
-			valueGetter: (params) => params.row.subs[0].name,
+			valueGetter: (params) => params.row.subs[0]?.name,
 		},
 		{
 			field: 'category',
 			headerName: 'Danh mục',
-			valueGetter: (params) => params.row.category.name,
+			valueGetter: (params) => params.row.category?.name,
 		},
 
 		{
@@ -114,14 +115,7 @@ const AdminProduct = () => {
 			disableColumnMenu: true,
 			disableReorder: true,
 			renderCell: (params) => {
-				const onUpdate = () => {
-					// setName(params.row.name)
-					// setExpiry(params.row.expiry)
-					// setDiscount(params.row.discount)
-					// setId(params.row._id)
-					// setItem(params.row)
-					// setOpen(true)
-				}
+				const onUpdate = () => history.push(`/admin/product/update/${params.row._id}`)
 				const onDelete = () => {
 					setOpenDelete(true)
 					setId(params.row._id)
@@ -151,7 +145,7 @@ const AdminProduct = () => {
 		sort: '-_id',
 	}
 
-	const { isLoading, data, error, isFetching } = useGetProducts(params)
+	const { isLoading, data, error } = useGetProducts(params)
 	const mutationDelete = useDeleteProduct(params, (oldData, id) => {
 		oldData.data.filter((item) => item._id !== id)
 	})
@@ -185,12 +179,14 @@ const AdminProduct = () => {
 
 	const handleRemove = async () => {
 		try {
-			await mutationDelete.mutateAsync(id)
 			handleCloseDelete()
+			await mutationDelete.mutateAsync(id)
 		} catch (e) {
 			enqueueSnackbar('Xóa thất bại', { variant: 'error' })
 		}
 	}
+
+	if (error) return 'Error: ' + error.message
 
 	return (
 		<AdminLayout>
@@ -203,27 +199,25 @@ const AdminProduct = () => {
 						) : (
 							<Typography variant="h6">{`Sản phẩm (${data?.length})`}</Typography>
 						)}
-						<Link to="/admin/product/create">
-							<Button
-								variant="contained"
-								color="primary"
-								startIcon={<Iconify icon="carbon:add" width="1.5em" height="1.5em" color="#fff" />}
-							>
-								Thêm sản phẩm
-							</Button>
-						</Link>
+						<Button
+							variant="contained"
+							size="small"
+							component={Link}
+							to="/admin/product/create"
+							startIcon={<Iconify icon="carbon:add" width="1em" height="1em" />}
+						>
+							Thêm sản phẩm
+						</Button>
 					</Box>
-					<Box maxWidth={300}>
-						<SearchBar
-							value={searched}
-							onChange={(searchVal) => requestSearch(searchVal)}
-							onCancelSearch={() => cancelSearch()}
-							placeholder="Tìm kiếm"
-						/>
-					</Box>
+					<SearchBar
+						value={searched}
+						onChange={(searchVal) => requestSearch(searchVal)}
+						onCancelSearch={() => cancelSearch()}
+						placeholder="Tìm kiếm"
+					/>
 					<Box mt={2} width="100%">
 						<DataGrid
-							loading={isLoading}
+							loading={isLoading || mutationDelete.isLoading}
 							rows={rows}
 							getRowId={(row) => row._id}
 							columns={columns}
