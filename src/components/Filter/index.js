@@ -1,1 +1,2 @@
-export * from './FilterTitle.js'
+export * from './FilterTitle'
+export * from './ProductFilterSidebar'

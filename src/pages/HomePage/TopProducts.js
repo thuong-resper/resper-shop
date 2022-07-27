@@ -4,12 +4,12 @@ import Product from 'components/Products/Product/Product'
 import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct'
 import ProductsSlider from 'components/ReactSlickSlider/ProductsSlider.js'
 import { AntTab, AntTabs } from 'components/Tab/Tab'
-import useWindowDimensions from 'hooks/useWindowDimensions'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './styles.css'
 import { useGetListProductsHome } from 'features/Product/index.js'
 import SimpleBackdrop from 'components/Backdrop/Backdrop.js'
+import { useWindowDimensions } from 'hooks'
 
 const TopProducts = ({ fetchedCategories, sort, limit }) => {
 	const { width } = useWindowDimensions()

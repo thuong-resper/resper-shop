@@ -4,7 +4,7 @@ import { pathToUrl } from 'utils/router'
 import { staleTime5m } from 'staticOptions'
 
 export const useGetCategories = () =>
-	useFetch(pathToUrl(adminRoutes.category), undefined, { staleTime: 5 * 60 * 1000 })
+	useFetch(pathToUrl(adminRoutes.category), undefined, { staleTime: staleTime5m })
 
 export const useGetSubsByCategory = (id) =>
 	useFetch(id ? pathToUrl(adminRoutes.getCategorySubs, { id }) : null, undefined, {

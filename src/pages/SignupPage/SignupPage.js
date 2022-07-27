@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory } from 'react-router-dom'
 import * as yup from 'yup'
 import { useStyles } from './styles'
-import './styles.css'
 import { SubLayout } from 'components/Layout'
 import { closeSnackbar } from 'features/User/UserSlice.js'
 
@@ -70,6 +69,7 @@ const SignupPage = ({ location }) => {
 			dispatch(closeSnackbar())
 			componentMounted.current = false
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [message, isError, isSuccess])
 
 	useEffect(() => {

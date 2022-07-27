@@ -2,18 +2,18 @@ import { Box, Grid, makeStyles } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import moment from 'moment-timezone'
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import SimpleAlerts from 'components/UI/Alerts/Alerts'
-import OrderUpdated from './OrderUpdated'
-import { MainLayout } from 'components/Layout'
-import SEO from 'components/SEO/SEO.js'
-import { UserContext } from 'contexts/index.js'
-import { useGetOrderById } from 'features/Order/index.js'
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
-import orderAPI from 'apis/orderAPI.js'
 import { useSnackbar } from 'notistack'
 import { fVNDCurrency, fVNNumber } from 'utils/formatNumber'
+import SEO from 'components/SEO/SEO'
+import { UserContext } from 'contexts'
+import { useGetOrderById } from 'features/Order'
+import OrderUpdated from 'pages/OrderPage/OrderUpdated'
+import orderAPI from 'apis/orderAPI'
+import { AuthLayout } from 'components/Layout'
 
 const useStyles = makeStyles((theme) => ({
 	right: {
@@ -91,29 +91,14 @@ const style = { layout: 'vertical' }
 const OrderPage = () => {
 	const classes = useStyles()
 	const { id } = useParams()
-	const history = useHistory()
 	const { enqueueSnackbar } = useSnackbar()
 
 	const state = useContext(UserContext)
 	const [user] = state.user
-	const [token] = state.user
-	useEffect(() => {
-		if (!token) {
-			history.push(`/login?redirect=order/${id}`)
-		}
-	}, [token, history, id])
+	const { isLoading, data, error, refetch } = useGetOrderById(user && id ? id : null) // has user before get an order
 
-	const [dataOrder, setDataOrder] = useState({})
 	const [loadingPayment, setLoadingPayment] = useState(false)
 	const [{ options, isPending }, dispatch] = usePayPalScriptReducer()
-
-	const { status, data, error, refetch } = useGetOrderById(id)
-	useEffect(() => {
-		if (status === 'success') {
-			setDataOrder(data)
-		}
-	}, [status, data])
-
 	useEffect(() => {
 		dispatch({
 			type: 'resetOptions',
@@ -122,6 +107,7 @@ const OrderPage = () => {
 				currency: currency,
 			},
 		})
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currency])
 
 	const successPaymentHandler = async (paymentResult) => {
@@ -148,202 +134,197 @@ const OrderPage = () => {
 		return sumOrder
 	}
 
+	if (isLoading) return <SimpleBackdrop />
+
+	if (error) return 'Error: ' + error.message
+
 	return (
-		<MainLayout>
+		<AuthLayout>
 			<SEO
 				pageTitle={'Đặt hàng'}
 				pageDescription={'Đặt hàng'}
 				pageUrl={`${process.env.REACT_APP_CLIENT_URL}/order/${id}`}
 			/>
 
-			{status === 'loading' ? (
-				<SimpleBackdrop />
-			) : (
-				<>
-					{status === 'error' ? (
-						<span>Error: {error.message}</span>
-					) : (
-						<Grid container spacing={2}>
-							{loadingPayment && <SimpleBackdrop />}
-							<Grid item xs={12} md={8}>
-								<div className={classes.item}>
-									<Typography variant="h6" gutterBottom>
-										Vận chuyển
-									</Typography>
-									<Typography variant="subtitle1">Thông tin giao hàng: {user?.address}</Typography>
-									<SimpleAlerts
-										severity="info"
-										title={`Trạng thái đơn hàng: ${dataOrder?.orderStatus}`}
-									/>
-								</div>
-								<div className={classes.item}>
-									<Typography variant="h6" gutterBottom>
-										Phương thức thanh toán
-									</Typography>
-									<Typography variant="subtitle1">{dataOrder?.paymentMethod}</Typography>
-									{dataOrder?.isPaid ? (
-										<SimpleAlerts
-											severity="info"
-											title={`Đã thanh toán ngày ${moment(dataOrder.paidAt)
-												.tz('Asia/Ho_Chi_Minh')
-												.format('DD/MM/YYYY HH:mm:ss')}`}
-										/>
-									) : (
-										<SimpleAlerts severity="error" title="Chưa thanh toán" />
-									)}
-								</div>
-								<div className={classes.item}>
-									<Typography variant="h6" gutterBottom>
-										Sản phẩm đặt mua
-									</Typography>
-									{dataOrder?.products?.map((item, index) => (
-										<div key={index}>
-											<Grid container justify="center" className={classes.itemContent}>
-												<Grid item xs={3} sm={2} className={classes.img}>
-													<Link to={`/product/${item.product._id}`}>
-														<img
-															alt={item.product.name}
-															className={classes.media}
-															src={item.product.image[0].url}
-														/>
-													</Link>
-												</Grid>
-												<Grid item xs={6} sm={6}>
-													<Link to={`/product/${item.product._id}`} className={classes.itemName}>
-														<Typography variant="body1">{item.product.name}</Typography>
-													</Link>
-												</Grid>
-												<Grid item xs={3} sm={2}>
-													<div className={classes.price}>
-														<Typography variant="h6" color="secondary">
-															{fVNNumber(item.product.price)}&nbsp;
-															<abbr
-																style={{
-																	textDecoration: 'underline dotted',
-																}}
-															>
-																đ
-															</abbr>
-														</Typography>
-														<Typography variant="body2">
-															<span className={classes.priceCompare}>
-																{fVNDCurrency(item.product.priceCompare)}&nbsp;
-															</span>
-															&nbsp;
-															<i>
-																{(
-																	-(
-																		(item.product.priceCompare - item.product.price) /
-																		item.product.priceCompare
-																	) * 100
-																).toFixed() + '%'}
-															</i>
-														</Typography>
-													</div>
-												</Grid>
-												<Grid item xs={12} sm={2} className={classes.qty}>
-													<Box p="0 0.5rem">
-														<Typography variant="body1">{item.quantity}</Typography>
-													</Box>
-												</Grid>
-											</Grid>
-											<div className={classes.price}>
-												<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
-													Tổng cộng:&nbsp; {fVNDCurrency(item.product.price * item.quantity)}
-												</Typography>
-											</div>
-										</div>
-									))}
-								</div>
-							</Grid>
-							<Grid item xs={12} md={4}>
-								<Box className={classes.right}>
-									<Typography variant="h6">Thanh toán</Typography>
-									<div className={classes.itemContent}>
-										<div className={classes.order_row}>
-											<Typography variant="body2">Tổng tiền hàng</Typography>
-											<Box textAlign="right">
-												<Typography variant="body2" color="secondary">
-													{fVNDCurrency(showTotalAmount(dataOrder?.products))}
-												</Typography>
-											</Box>
-										</div>
-										{dataOrder?.feeDiscount !== 0 && (
-											<div className={classes.order_row}>
-												<Typography variant="body2">Tổng cộng Voucher giảm giá</Typography>
-												<Box textAlign="right">
-													<Typography variant="body2" color="secondary">
-														-&nbsp;
-														{fVNDCurrency(dataOrder?.feeDiscount)}
-													</Typography>
-												</Box>
-											</div>
-										)}
-
-										<div className={classes.order_row}>
-											<Typography variant="subtitle1">
-												<b>Tổng thanh toán</b>
+			<Grid container spacing={2}>
+				{loadingPayment && <SimpleBackdrop />}
+				<Grid item xs={12} md={8}>
+					<div className={classes.item}>
+						{data?.delivery.length > 0 && (
+							<>
+								<Typography variant="h6" gutterBottom>
+									Vận chuyển
+								</Typography>
+								<Typography variant="subtitle1">
+									Thông tin giao hàng:{' '}
+									<b>{`${data.delivery[0].name} - ${data.delivery[0].phoneNumber}`}</b>
+									{` - ${data.delivery[0].address} - ${data.delivery[0].commune} - ${data.delivery[0].district} - ${data.delivery[0].city}`}
+								</Typography>
+							</>
+						)}
+						<SimpleAlerts severity="info" title={`Trạng thái đơn hàng: ${data?.orderStatus}`} />
+					</div>
+					<div className={classes.item}>
+						<Typography variant="h6" gutterBottom>
+							Phương thức thanh toán
+						</Typography>
+						<Typography variant="subtitle1">{data?.paymentMethod}</Typography>
+						{data?.isPaid ? (
+							<SimpleAlerts
+								severity="info"
+								title={`Đã thanh toán ngày ${moment(data.paidAt)
+									.tz('Asia/Ho_Chi_Minh')
+									.format('DD/MM/YYYY HH:mm:ss')}`}
+							/>
+						) : (
+							<SimpleAlerts severity="error" title="Chưa thanh toán" />
+						)}
+					</div>
+					<div className={classes.item}>
+						<Typography variant="h6" gutterBottom>
+							Sản phẩm đặt mua
+						</Typography>
+						{data?.products?.map((item, index) => (
+							<div key={index}>
+								<Grid container justify="center" className={classes.itemContent}>
+									<Grid item xs={3} sm={2} className={classes.img}>
+										<Link to={`/product/${item.product._id}`}>
+											<img
+												alt={item.product.name}
+												className={classes.media}
+												src={item.product.image[0].url}
+											/>
+										</Link>
+									</Grid>
+									<Grid item xs={6} sm={6}>
+										<Link to={`/product/${item.product._id}`} className={classes.itemName}>
+											<Typography variant="body1">{item.product.name}</Typography>
+										</Link>
+									</Grid>
+									<Grid item xs={3} sm={2}>
+										<div className={classes.price}>
+											<Typography variant="h6" color="secondary">
+												{fVNNumber(item.product.price)}&nbsp;
+												<abbr
+													style={{
+														textDecoration: 'underline dotted',
+													}}
+												>
+													đ
+												</abbr>
 											</Typography>
-											<Box textAlign="right">
-												<Typography variant="subtitle1" color="secondary">
-													{fVNDCurrency(dataOrder?.totalPayable)}
-												</Typography>
-												<small className={classes.fee}>Đã bao gồm VAT nếu có</small>
-											</Box>
+											<Typography variant="body2">
+												<span className={classes.priceCompare}>
+													{fVNDCurrency(item.product.priceCompare)}&nbsp;
+												</span>
+												&nbsp;
+												<i>
+													{(
+														-(
+															(item.product.priceCompare - item.product.price) /
+															item.product.priceCompare
+														) * 100
+													).toFixed() + '%'}
+												</i>
+											</Typography>
 										</div>
-										<Box>
-											{isPending && <SimpleBackdrop />}
-											{!dataOrder?.isPaid && (
-												<PayPalButtons
-													style={style}
-													disabled={false}
-													forceReRender={[
-														convertVndToUsd(dataOrder?.totalPayable),
-														currency,
-														style,
-													]}
-													fundingSource={undefined}
-													createOrder={(data, actions) => {
-														return actions.order
-															.create({
-																purchase_units: [
-																	{
-																		amount: {
-																			currency_code: currency,
-																			value: convertVndToUsd(dataOrder?.totalPayable),
-																		},
-																	},
-																],
-															})
-															.then((orderId) => {
-																console.log(orderId)
-																// Your code here after create the order
-																return orderId
-															})
-													}}
-													onApprove={function (data, actions) {
-														return actions.order.capture().then(() => successPaymentHandler(data))
-													}}
-												/>
-											)}
+									</Grid>
+									<Grid item xs={12} sm={2} className={classes.qty}>
+										<Box p="0 0.5rem">
+											<Typography variant="body1">{item.quantity}</Typography>
 										</Box>
-									</div>
-									{/*admin*/}
-									{user?.role === 1 && (
-										<Box>
-											<Typography variant="h6">Cập nhật đơn hàng</Typography>
-											<div className={classes.itemContent}>
-												<OrderUpdated order={dataOrder} />
-											</div>
-										</Box>
-									)}
+									</Grid>
+								</Grid>
+								<div className={classes.price}>
+									<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
+										Tổng cộng:&nbsp; {fVNDCurrency(item.product.price * item.quantity)}
+									</Typography>
+								</div>
+							</div>
+						))}
+					</div>
+				</Grid>
+				<Grid item xs={12} md={4}>
+					<Box className={classes.right}>
+						<Typography variant="h6">Thanh toán</Typography>
+						<div className={classes.itemContent}>
+							<div className={classes.order_row}>
+								<Typography variant="body2">Tổng tiền hàng</Typography>
+								<Box textAlign="right">
+									<Typography variant="body2" color="secondary">
+										{fVNDCurrency(showTotalAmount(data?.products))}
+									</Typography>
 								</Box>
-							</Grid>
-						</Grid>
-					)}
-				</>
-			)}
-		</MainLayout>
+							</div>
+							{data?.feeDiscount !== 0 && (
+								<div className={classes.order_row}>
+									<Typography variant="body2">Tổng cộng Voucher giảm giá</Typography>
+									<Box textAlign="right">
+										<Typography variant="body2" color="secondary">
+											-&nbsp;
+											{fVNDCurrency(data?.feeDiscount)}
+										</Typography>
+									</Box>
+								</div>
+							)}
+
+							<div className={classes.order_row}>
+								<Typography variant="subtitle1">
+									<b>Tổng thanh toán</b>
+								</Typography>
+								<Box textAlign="right">
+									<Typography variant="subtitle1" color="secondary">
+										{fVNDCurrency(data?.totalPayable)}
+									</Typography>
+									<small className={classes.fee}>Đã bao gồm VAT nếu có</small>
+								</Box>
+							</div>
+							<Box>
+								{isPending && <SimpleBackdrop />}
+								{!data?.isPaid && (
+									<PayPalButtons
+										style={style}
+										disabled={false}
+										forceReRender={[convertVndToUsd(data?.totalPayable), currency, style]}
+										fundingSource={undefined}
+										createOrder={(data, actions) => {
+											return actions.order
+												.create({
+													purchase_units: [
+														{
+															amount: {
+																currency_code: currency,
+																value: convertVndToUsd(data?.totalPayable),
+															},
+														},
+													],
+												})
+												.then((orderId) => {
+													console.log(orderId)
+													// Your code here after create the order
+													return orderId
+												})
+										}}
+										onApprove={function (data, actions) {
+											return actions.order.capture().then(() => successPaymentHandler(data))
+										}}
+									/>
+								)}
+							</Box>
+						</div>
+						{/*admin*/}
+						{user?.role === 1 && (
+							<Box>
+								<Typography variant="h6">Cập nhật đơn hàng</Typography>
+								<div className={classes.itemContent}>
+									<OrderUpdated order={data} />
+								</div>
+							</Box>
+						)}
+					</Box>
+				</Grid>
+			</Grid>
+		</AuthLayout>
 	)
 }
 

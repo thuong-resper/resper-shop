@@ -1,8 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit'
-import CategorySlice from 'features/Admin/Category/CategorySlice'
-import CouponSlice from 'features/Admin/Coupon/CouponSlice'
-import ProductAdminSlice from 'features/Admin/Product/ProductAdminSlice'
-import SubSlice from 'features/Admin/Sub/SubSlice'
 import CartSlice from 'features/Cart/CartSlice'
 import CommentSlice from 'features/Comment/CommentSlice'
 import OrderSlice from 'features/Order/OrderSlice'
@@ -19,10 +15,6 @@ const rootReducer = {
 	comment: CommentSlice,
 	order: OrderSlice,
 	search: SearchProductSlice,
-	category: CategorySlice,
-	coupon: CouponSlice,
-	sub: SubSlice,
-	productAdmin: ProductAdminSlice,
 }
 const store = configureStore({
 	reducer: rootReducer,

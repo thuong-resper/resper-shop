@@ -1,6 +1,6 @@
 import { Box, makeStyles } from '@material-ui/core'
 import React from 'react'
-import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar.js'
+import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar'
 
 const useStyles = makeStyles((theme) => ({
 	admin: {

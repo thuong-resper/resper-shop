@@ -13,10 +13,6 @@ const cartAPI = {
 		const url = '/api/user/cart'
 		return axiosClient.delete(url)
 	},
-	saveUserAddressAPI: (data) => {
-		const url = '/api/user/address'
-		return axiosClient.post(url, data)
-	},
 	applyCouponAPI: (coupon) => {
 		const url = '/api/user/cart/coupon'
 		return axiosClient.post(url, coupon)

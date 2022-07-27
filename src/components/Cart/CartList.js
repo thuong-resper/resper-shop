@@ -8,11 +8,12 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import RemoveIcon from '@material-ui/icons/Remove'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import React, { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import AlertDialogSlide from '../UI/Modal/CustomModal'
 import styles from './styles.module.css'
-import cartAPI from 'apis/cartAPI.js'
 import { fVNDCurrency, fVNNumber } from 'utils/formatNumber'
+import { useRouter } from 'hooks'
+import cartAPI from 'apis/cartAPI'
 
 const useStyles = makeStyles((theme) => ({
 	wrapper: {
@@ -92,8 +93,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
+
 const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loadingUserCart }) => {
-	const history = useHistory()
+	const router = useRouter()
 	const classes = useStyles()
 	const [loading, setLoading] = useState(false)
 
@@ -128,7 +130,7 @@ const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loading
 		const response = await cartAPI.userCartAPI({ cart: dataCart })
 		if (response?.ok) {
 			setLoading(false)
-			history.push('/shipping')
+			router.push('/placeorder')
 		}
 	}
 
@@ -155,7 +157,7 @@ const CartList = ({ dataCart, actionDeleteCart, actionUpdateCartProduct, loading
 						{dataCart.map((item, index) => (
 							<div className={classes.item} key={index}>
 								<Link to={`/products/${item.product.brand}`} className={classes.brand}>
-									<p to={`/products/${item.product.brand}`}>{item.product.brand}</p>
+									<p>{item.product.brand}</p>
 									<KeyboardArrowRightIcon color="disabled" />
 								</Link>
 								<Grid container justify="center" className={classes.itemContent}>

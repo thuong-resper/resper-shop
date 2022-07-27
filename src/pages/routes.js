@@ -44,10 +44,6 @@ const CreateAPassword = lazy(() => {
 	return import('./LoginPage/CreateAPassword')
 })
 
-const ShippingPage = lazy(() => {
-	return import('./ShippingPage/ShippingPage')
-})
-
 const PlaceOrderPage = lazy(() => {
 	return import('./PlaceOrderPage/PlaceOrderPage')
 })
@@ -123,11 +119,6 @@ const UserPage = [
 		path: '/cart',
 		exact: true,
 		main: CartPage,
-	},
-	{
-		path: '/shipping',
-		exact: true,
-		main: ShippingPage,
 	},
 	{
 		path: '/placeorder',

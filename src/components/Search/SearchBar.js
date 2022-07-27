@@ -73,6 +73,7 @@ const SearchBar = React.forwardRef(
 					inputProps.onFocus(e)
 				}
 			},
+			// eslint-disable-next-line react-hooks/exhaustive-deps
 			[inputProps.onFocus]
 		)
 
@@ -82,7 +83,7 @@ const SearchBar = React.forwardRef(
 				if (inputProps.onBlur) {
 					inputProps.onBlur(e)
 				}
-			},
+			}, // eslint-disable-next-line react-hooks/exhaustive-deps
 			[inputProps.onBlur]
 		)
 
@@ -92,7 +93,7 @@ const SearchBar = React.forwardRef(
 				if (inputProps.onChange) {
 					inputProps.onChange(e.target.value)
 				}
-			},
+			}, // eslint-disable-next-line react-hooks/exhaustive-deps
 			[inputProps.onChange]
 		)
 
@@ -119,7 +120,7 @@ const SearchBar = React.forwardRef(
 				if (inputProps.onKeyUp) {
 					inputProps.onKeyUp(e)
 				}
-			},
+			}, // eslint-disable-next-line react-hooks/exhaustive-deps
 			[handleRequestSearch, cancelOnEscape, handleCancel, inputProps.onKeyUp]
 		)
 
@@ -134,7 +135,7 @@ const SearchBar = React.forwardRef(
 
 		return (
 			<Paper className={classNames(classes.root, className)} style={style}>
-				<div className={classes.searchContainer}>
+				<div className={classNames(classes.searchContainer, className)}>
 					<Input
 						{...inputProps}
 						inputRef={inputRef}

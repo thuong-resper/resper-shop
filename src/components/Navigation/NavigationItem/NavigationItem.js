@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 const NavigationItem = ({ item }) => {
 	const classes = useStyles()
 	return (
-		<NavLink to={item.link} className={classes.menuItem} activeClassName={classes.active}>
+		<NavLink to={item.link} className={classes.menuItem}>
 			<div className={classes.itemIcon}>
 				<Iconify icon={item.icon} width="1.5em" height="1.5em" />
 			</div>

@@ -23,7 +23,96 @@ const formItemLayout = {
 	},
 }
 
+const sortOptions = [
+	{
+		label: 'Bán Chạy',
+		value: '-sold',
+		index: 0,
+	},
+	{
+		label: 'Hàng Mới',
+		value: '-_id',
+		index: 1,
+	},
+	{
+		label: 'Giá Thấp', //low to high
+		value: 'price',
+		index: 2,
+	},
+	{
+		label: 'Giá Cao', //high to low
+		value: '-price',
+		index: 3,
+	},
+]
+
 const staleTime5m = 5 * 60 * 1000
+
+const gender = [
+	{
+		value: 'Nam',
+		label: 'Nam',
+	},
+	{
+		value: 'Nữ',
+		label: 'Nữ',
+	},
+	{
+		value: 'Khác',
+		label: 'Khác',
+	},
+]
+
+const priceOptions = [
+	{
+		label: 'Dưới 2 triệu',
+		value: '0%2000000',
+		index: '0',
+	},
+	{
+		label: 'Từ 2 - 4 triệu',
+		value: '2000000%4000000',
+		index: '1',
+	},
+	{
+		label: 'Từ 4 - 7 triệu',
+		value: '4000000%7000000',
+		index: '2',
+	},
+	{
+		label: 'Từ 7 - 13 triệu',
+		value: '7000000%13000000',
+		index: '3',
+	},
+	{
+		label: 'Từ 13 - 20 triệu',
+		value: '13000000%20000000',
+		index: '4',
+	},
+	{
+		label: 'Trên 20 triệu',
+		value: '20000000%50000000',
+		index: '5',
+	},
+]
+
+const starOptions = [
+	{
+		label: 'từ 5 sao',
+		value: '5%5',
+		index: '0',
+	},
+	{
+		label: 'từ 4 sao',
+		value: '4%5',
+		index: '1',
+	},
+	{
+		label: 'từ 3 sao',
+		value: '3%5',
+		index: '2',
+	},
+]
 
 const phoneType = [
 	{
@@ -282,7 +371,7 @@ const smWatchFace = [
 ]
 
 const smWatchSc = [
-	{ value: '4000', label: 'Dưới 40 mm' },
+	{ value: '40', label: 'Dưới 40 mm' },
 	{ value: '4040', label: '40 - 42 mm' },
 	{ value: '4245', label: '42 - 45 mm' },
 	{ value: '45', label: 'Trên 45 mm' },
@@ -307,7 +396,7 @@ const colorOptions = [
 	{
 		value: 'white',
 		label: 'Trắng',
-		code: '#ffffff',
+		code: '#f0f0f0',
 	},
 	{
 		value: 'red',
@@ -418,15 +507,15 @@ const watchSc = [
 	{ value: '3740', label: '37 - 40 mm' },
 	{ value: '4042', label: '40 - 42 mm' },
 	{ value: '4245', label: '42 - 45 mm' },
-	{ value: '45', label: 'Trêm 45 mm' },
+	{ value: '45', label: 'Trên 45 mm' },
 ]
 
 const paymentOptions = [
 	{ value: 'cod', label: 'Thanh toán khi nhận hàng' },
 	{ value: 'paypal', label: 'Paypal' },
-	{ value: 'stripe', label: 'Stripe' },
 	{ value: 'credit', label: 'Thẻ tín dụng/ghi nợ' },
 	{ value: 'debit', label: 'Thẻ ATM nội địa (Internet Banking)' },
+	{ value: 'stripe', label: 'Stripe' },
 ]
 
 const statusOrder = [
@@ -445,9 +534,19 @@ const categoryId = {
 	smWatch: '61376ecfa8d3c977efbcfa07',
 }
 
+const userRole = [
+	{ value: 0, label: 'Người dùng' },
+	{ value: 1, label: 'Quản trị viên' },
+	{ value: 2, label: 'Chủ shop' },
+]
+
 export {
 	formItemLayout,
+	sortOptions,
 	staleTime5m,
+	gender,
+	priceOptions,
+	starOptions,
 	phoneType,
 	phoneSc,
 	phoneRam,
@@ -470,4 +569,5 @@ export {
 	paymentOptions,
 	statusOrder,
 	categoryId,
+	userRole,
 }

@@ -1,10 +1,12 @@
-import { Box, IconButton, makeStyles, SwipeableDrawer } from '@material-ui/core'
+import { Avatar, Box, IconButton, makeStyles, SwipeableDrawer, Typography } from '@material-ui/core'
 import ListIcon from '@material-ui/icons/List'
-import React from 'react'
+import React, { useContext } from 'react'
 import { AdminSidebarItems } from './MainMenuData'
-import NavSection from 'components/Navigation/MainMenu/NavSection.js'
 import clsx from 'clsx'
-import useWindowDimensions from 'hooks/useWindowDimensions'
+import { UserContext } from 'contexts'
+import { Logo } from 'components/Header/Logo'
+import { useWindowDimensions } from 'hooks'
+import NavSection from 'components/Navigation/MainMenu/NavSection'
 
 const useStyles = makeStyles((theme) => ({
 	menu: {
@@ -14,9 +16,7 @@ const useStyles = makeStyles((theme) => ({
 		left: 0,
 		overflow: 'auto',
 	},
-	list: {
-		width: 250,
-	},
+
 	fullList: {
 		width: 'auto',
 	},
@@ -25,6 +25,8 @@ const useStyles = makeStyles((theme) => ({
 const AdminSidebar = () => {
 	const classes = useStyles()
 	const { width } = useWindowDimensions()
+	const userState = useContext(UserContext)
+	const [user] = userState.user
 	const [state, setState] = React.useState({
 		top: false,
 		left: false,
@@ -42,13 +44,39 @@ const AdminSidebar = () => {
 
 	const list = (anchor) => (
 		<div
-			className={clsx(classes.list, {
+			className={clsx({
 				[classes.fullList]: anchor === 'top' || anchor === 'bottom',
 			})}
 			onClick={toggleDrawer(anchor, false)}
 			onKeyDown={toggleDrawer(anchor, false)}
 		>
-			<NavSection nav={AdminSidebarItems} />
+			<Box>
+				<Box m={2}>
+					<Logo />
+				</Box>
+				<Box
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						padding: '8px 16px',
+						margin: '16px 8px',
+						borderRadius: 12,
+						backgroundColor: '#919eab1f',
+					}}
+				>
+					<Avatar
+						alt={user.name}
+						src={user.avatar}
+						style={{
+							marginRight: 16,
+						}}
+					/>
+					<Typography variant="body1">
+						<b>{user.name}</b>
+					</Typography>
+				</Box>
+				<NavSection nav={AdminSidebarItems} />
+			</Box>
 		</div>
 	)
 
@@ -56,8 +84,33 @@ const AdminSidebar = () => {
 		<Box>
 			{width > 600 ? (
 				<Box className={classes.menu}>
-					<div>user</div>
-					<NavSection nav={AdminSidebarItems} />
+					<Box>
+						<Box m={2}>
+							<Logo />
+						</Box>
+						<Box
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								padding: '8px 16px',
+								margin: '16px 8px',
+								borderRadius: 12,
+								backgroundColor: '#919eab1f',
+							}}
+						>
+							<Avatar
+								alt={user.name}
+								src={user.avatar}
+								style={{
+									marginRight: 16,
+								}}
+							/>
+							<Typography variant="body1">
+								<b>{user.name}</b>
+							</Typography>
+						</Box>
+						<NavSection nav={AdminSidebarItems} />
+					</Box>
 				</Box>
 			) : (
 				<Box>

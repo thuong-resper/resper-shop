@@ -46,7 +46,7 @@ const LoginPage = ({ location }) => {
 	const { setValues, data } = useData()
 
 	const [token, setToken] = state.token
-	const [, setUser] = state.user
+	const [setUser] = state.user
 	const [, setIdUser] = state.idUser
 	const componentMounted = useRef(true)
 
@@ -57,13 +57,12 @@ const LoginPage = ({ location }) => {
 			dispatch(closeSnackbar())
 			componentMounted.current = false
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [message, isError, isSuccess])
-
-	const redirect = location.search ? location.search.slice(location.search.indexOf('=') + 1) : '/'
 
 	useEffect(() => {
 		if (tokenLocal || token) {
-			history.push(redirect)
+			history.push('/')
 		}
 		document.getElementById('email').addEventListener('blur', (e) => {
 			let email = e.target.value.toLowerCase()

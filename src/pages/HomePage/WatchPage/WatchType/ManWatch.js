@@ -6,7 +6,6 @@ import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduc
 import ProductsSlider from 'components/ReactSlickSlider/ProductsSlider.js'
 import { AntTabBlack, AntTabs } from 'components/Tab/Tab.js'
 import { getListProducts } from 'features/Product/pathApi.js'
-import useWindowDimensions from 'hooks/useWindowDimensions.js'
 import 'pages/HomePage/styles.css'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -14,6 +13,7 @@ import { Link } from 'react-router-dom'
 import { ManWatch as fetchedCategories } from '../../StaticParam.js'
 import img1 from '../Images/DHNammobile-720x240.jpg'
 import img from '../Images/DHphaimanh-330x428.png'
+import { useWindowDimensions } from 'hooks'
 
 const ManWatch = () => {
 	const dispatch = useDispatch()
@@ -69,7 +69,7 @@ const ManWatch = () => {
 									<SeeMoreButtonMobile
 										key={c.index}
 										title={c.index === value ? `${c.label} nam` : null}
-										link={c.index === value ? `products?category=${c.id}&sex=${c.sex}` : null}
+										link={c.index === value ? `shop?category=${c.id}&sex=${c.sex}` : null}
 									/>
 								))}
 							</Grid>
@@ -81,7 +81,7 @@ const ManWatch = () => {
 									{fetchedCategories.map((c) => (
 										<Link
 											key={c.index}
-											to={`products?category=${c.id}&sex=${c.sex}`}
+											to={`shop?category=${c.id}&sex=${c.sex}`}
 											className="seemore"
 										>
 											{c.index === value ? (

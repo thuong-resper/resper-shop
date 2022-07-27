@@ -9,18 +9,18 @@ import Search from 'components/Search/Search'
 import MenuListUser from './Menu/Menu'
 import { useStyles } from './styles'
 import { Logo } from './Logo'
-import { UserContext } from 'contexts/index.js'
+import { UserContext } from 'contexts'
 
-const Header = (props) => {
+const Header = () => {
 	const classes = useStyles()
 	const state = useContext(UserContext)
+	const [loadingUser] = state.loadingUser
 	const { socket } = state
 	const [user, setUser] = state.user
 	const [idUser, setIdUser] = state.idUser
 	const [token, setToken] = state.token
 	const [, setPatchCart] = state.patchCart
 	const dataCart = useSelector((state) => state.cart.dataCart)
-	const loadingGetProfile = useSelector((state) => state.user.loadingGetProfile)
 
 	useEffect(() => {
 		Aos.init({
@@ -48,7 +48,7 @@ const Header = (props) => {
 								setIdUser={setIdUser}
 								token={token}
 								setToken={setToken}
-								loadingGetProfile={loadingGetProfile}
+								loadingGetProfile={loadingUser}
 							/>
 						</Toolbar>
 					</AppBar>

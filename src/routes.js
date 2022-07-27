@@ -10,15 +10,23 @@ export const adminRoutes = {
 	category: '/api/category/:id?',
 	sub: '/api/sub/:id?',
 	coupon: '/api/coupon/:id?',
-	order: '/api/admin/order',
+	order: '/api/admin/order/:id?',
 	product: '/api/product',
 	adminProduct: '/api/admin/product/:id?',
 	getCategorySubs: '/api/category/subs/:id?',
 	getSubsC: '/api/category/subs/:id?',
+	user: '/api/admin/user/:id?',
 }
 
-export const pageRoutes = {
-	main: '/',
+export const clientRoutes = {
+	profile: '/api/user/profile',
+	userAddress: '/api/user/address',
+	cart: '/api/user/cart',
+	order: '/api/user/order/:id?',
+	myOrder: '/api/user/orders',
+	category: '/api/category',
+	categorySubs: 'api/category/subs/:id',
+	search: '/api/search',
 	auth: '/auth',
 	appointment: '/appointment/:id',
 }

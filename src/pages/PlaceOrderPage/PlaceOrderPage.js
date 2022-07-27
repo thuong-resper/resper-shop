@@ -1,37 +1,32 @@
-import { Box, Button, Grid, TextField } from '@material-ui/core'
+import { Box, Button, Grid, IconButton, TextField, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import { Alert } from '@material-ui/lab'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
-import CustomizedBreadcrumbs from 'components/Breadcrumbs/Breadcrumbs'
-import CheckoutSteps from 'components/Checkout/CheckoutSteps'
 import { cartClearItems } from 'features/Cart/CartSlice'
 import React, { useContext, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Link, useHistory } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 import SEO from 'components/SEO/SEO.js'
-import { MainLayout } from 'components/Layout'
-import { UserContext } from 'contexts/index.js'
+import { AuthLayout } from 'components/Layout'
 import orderAPI from 'apis/orderAPI.js'
 import cartAPI from 'apis/cartAPI.js'
-import { useGetUserCart } from 'features/Cart/index.js'
 import { fVNDCurrency, fVNNumber } from 'utils/formatNumber'
+import Iconify from 'components/Iconify'
+import { useGetUserCart } from 'features/Cart'
+import { NoProductsAdded } from 'components/Cart'
+import { useGetUserProfile } from 'features/User'
+import { AddressDialog } from 'components/Dialog'
+import { UserContext } from 'contexts'
+import { useRouter } from 'hooks'
+import { PaymentOptions } from 'components/Tab'
 
 const useStyles = makeStyles((theme) => ({
-	right: {
-		border: '1px solid #0000001a',
-		borderRadius: '0.5rem',
-		padding: '0.5rem',
-		margin: '0.5rem 0',
-		[theme.breakpoints.down('xs')]: { padding: '0.5rem', order: 1 },
-	},
-	item: {
-		position: 'relative',
-		border: '1px solid #0000001a',
-		borderRadius: '0.5rem',
-		padding: '0.5rem',
-		marginTop: '0.5rem',
+	closeButton: {
+		position: 'absolute',
+		right: theme.spacing(1),
+		top: theme.spacing(1),
+		color: theme.palette.grey[500],
 	},
 	orderItem: { borderBottom: '1px solid #0000001a' },
 	media: {
@@ -46,8 +41,6 @@ const useStyles = makeStyles((theme) => ({
 		display: 'block',
 		'& p': { [theme.breakpoints.down('xs')]: { fontSize: '15px' } },
 	},
-	itemCoupon: { display: 'flex', alignItems: 'center' },
-	fieldCoupon: { width: '10rem', [theme.breakpoints.down('xs')]: { width: '10.5rem' } },
 	price: {
 		'& h6': { [theme.breakpoints.down('xs')]: { fontSize: '15px' } },
 	},
@@ -86,37 +79,52 @@ const useStyles = makeStyles((theme) => ({
 	},
 }))
 
+function BoxItem({ children }) {
+	return (
+		<Box
+			style={{
+				padding: 16,
+				marginTop: 8,
+				position: 'relative',
+				border: '1px solid #0000001a',
+				borderRadius: '0.5rem',
+			}}
+		>
+			{children}
+		</Box>
+	)
+}
+
 const PlaceOrderPage = () => {
 	const classes = useStyles()
 	const dispatch = useDispatch()
-	const history = useHistory()
-
+	const router = useRouter()
 	const state = useContext(UserContext)
-	const [token] = state.token
 	const [user] = state.user
-	if (!token) {
-		history.push('/login?redirect=placeorder')
-	}
 
-	const actionCartClearItems = () => dispatch(cartClearItems())
-
-	const { addressRedux, paymentMethod } = useSelector((state) => state.cart)
-
+	const [loading, setLoading] = useState(false)
 	const [products, setProducts] = useState([])
 	const [total, setTotal] = useState(0)
 	const [coupon, setCoupon] = useState('')
 	const [totalAfterDiscount, setTotalAfterDiscount] = useState(0)
 	const [discountError, setDiscountError] = useState('')
-	const [loading, setLoading] = useState(false)
+	const [openAddressForm, setOpenAddressForm] = useState(false)
 
-	const { status, data, error, isFetching } = useGetUserCart()
+	const { data: userData } = useGetUserProfile()
+	const { isLoading, data, error } = useGetUserCart(user || null)
+
+	const actionCartClearItems = () => dispatch(cartClearItems())
 
 	useEffect(() => {
-		if (status === 'success') {
+		if (data) {
 			setProducts(data?.products)
 			setTotal(data?.cartTotal)
 		}
-	}, [status, data])
+	}, [data])
+
+	const onClose = () => {
+		setOpenAddressForm(false)
+	}
 
 	const applyDiscountCoupon = async (e) => {
 		setLoading(true)
@@ -138,8 +146,9 @@ const PlaceOrderPage = () => {
 		setLoading(true)
 		const order = {
 			totalPayable: totalAfterDiscount !== 0 ? totalAfterDiscount : total,
-			paymentMethod: paymentMethod ? paymentMethod : user?.paymentMethod,
+			paymentMethod: userData.paymentMethod || 'Thanh toán khi nhận hàng',
 			feeDiscount: totalAfterDiscount !== 0 ? total - totalAfterDiscount : 0,
+			delivery: userData.address,
 		}
 
 		const response = await orderAPI.createOrderAPI(order)
@@ -156,220 +165,203 @@ const PlaceOrderPage = () => {
 			// remove from local storage & redux
 			actionCartClearItems()
 			setTimeout(() => {
-				history.push(`/order/${response._id}`)
+				router.push(`/order/${response._id}`)
 			}, 1000)
 		}
 	}
 
+	if (isLoading) return <SimpleBackdrop />
+
+	if (error) return 'Error: ' + error.message
+
 	return (
-		<MainLayout>
+		<AuthLayout>
 			<SEO
 				pageTitle={'Đặt hàng'}
 				pageDescription={'Đặt hàng'}
 				pageUrl={`${process.env.REACT_APP_CLIENT_URL}/placeorder`}
 			/>
+			{loading && <SimpleBackdrop />}
+			{products?.length > 0 ? (
+				<Grid container spacing={2}>
+					<Grid item xs={12} md={8}>
+						<BoxItem>
+							<Box display="flex" justifyContent="space-between" alignItems="center">
+								<Typography variant="h6" gutterBottom>
+									Địa chỉ nhận hàng
+								</Typography>
+								<Tooltip title={userData?.address ? 'Thay đổi' : 'Tạo mới'}>
+									<IconButton onClick={() => setOpenAddressForm(true)}>
+										<Iconify
+											icon={userData?.address ? 'eva:edit-2-fill' : 'carbon:add'}
+											width="1.5rem"
+											height="1.5rem"
+											color="#2065d1"
+										/>
+									</IconButton>
+								</Tooltip>
+							</Box>
+							{userData?.address && (
+								<Typography>
+									<b>{`${userData?.address.name} - ${userData?.address.phoneNumber}`}</b>
+									{` - ${userData?.address.address} - ${userData?.address.commune} - ${userData?.address.district} - ${userData?.address.city}`}
+								</Typography>
+							)}
+						</BoxItem>
+						{/*Create or update the address*/}
+						<AddressDialog
+							open={openAddressForm}
+							onClose={onClose}
+							address={userData.address || null}
+						/>
 
-			{status === 'loading' ? (
-				<SimpleBackdrop />
-			) : (
-				<>
-					{status === 'error' ? (
-						<span>Error: {error.message}</span>
-					) : (
-						<div>
-							{products?.length > 0 ? (
-								<Box>
-									{loading && <SimpleBackdrop />}
-									<Box p="8px 0">
-										<CheckoutSteps step1 step2 step3 />
-									</Box>
-									{isFetching ? <SimpleBackdrop /> : null}
-									<Grid container spacing={2}>
-										<Grid item xs={12} md={8}>
-											<Box className={classes.item}>
-												<Typography variant="h6" gutterBottom>
-													Vận chuyển
-												</Typography>
-												<Typography variant="subtitle1">
-													Thông tin giao hàng:&nbsp;{addressRedux ? addressRedux : user?.address}
-												</Typography>
-											</Box>
-											<Box className={classes.item}>
-												<Typography variant="h6" gutterBottom>
-													Phương thức thanh toán:
-												</Typography>
-												<Typography variant="subtitle1">
-													{paymentMethod ? paymentMethod : user?.paymentMethod}
-												</Typography>
-											</Box>
-											<Box className={classes.item}>
-												<Typography variant="h6" gutterBottom>
-													Sản phẩm đặt mua
-												</Typography>
-												{products?.length > 0 &&
-													products.map((item, index) => (
-														<div key={index} className={classes.orderItem}>
-															<Grid container justify="center">
-																<Grid item xs={3} sm={2} className={classes.img}>
-																	<Link to={`/product/${item.product._id}`}>
-																		<img
-																			alt={item.product.name}
-																			className={classes.media}
-																			src={item.product.image[0].url}
-																		/>
-																	</Link>
-																</Grid>
-																<Grid item xs={6} sm={6}>
-																	<Link
-																		to={`/product/${item.product._id}`}
-																		className={classes.itemName}
-																	>
-																		<Typography variant="body1">{item.product.name}</Typography>
-																	</Link>
-																</Grid>
-																<Grid item xs={3} sm={2}>
-																	<div className={classes.price}>
-																		<Typography variant="h6" color="secondary">
-																			{fVNNumber(item.product.price)}&nbsp;
-																			<abbr
-																				style={{
-																					textDecoration: 'underline dotted',
-																				}}
-																			>
-																				đ
-																			</abbr>
-																		</Typography>
-																		<Typography variant="body2">
-																			<span className={classes.priceCompare}>
-																				{fVNDCurrency(item.product.priceCompare)}
-																			</span>
-																			&nbsp;
-																			<i>
-																				{(
-																					-(
-																						(item.product.priceCompare - item.product.price) /
-																						item.product.priceCompare
-																					) * 100
-																				).toFixed() + '%'}
-																			</i>
-																		</Typography>
-																	</div>
-																</Grid>
-																<Grid item xs={12} sm={2} className={classes.qty}>
-																	<Box p="0 0.5rem">
-																		<Typography variant="body1">{item.quantity}</Typography>
-																	</Box>
-																</Grid>
-															</Grid>
-															<div className={classes.price}>
-																<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
-																	Tổng cộng:&nbsp;
-																	{fVNDCurrency(item.product.price * item.quantity)}
-																</Typography>
-															</div>
-														</div>
-													))}
-											</Box>
+						<BoxItem>
+							<PaymentOptions user={userData} />
+						</BoxItem>
+						<BoxItem>
+							<Typography variant="h6" gutterBottom>
+								Sản phẩm đặt mua
+							</Typography>
+							{products.map((item, index) => (
+								<div key={index} className={classes.orderItem}>
+									<Grid container justify="center">
+										<Grid item xs={3} sm={2} className={classes.img}>
+											<Link to={`/product/${item.product._id}`}>
+												<img
+													alt={item.product.name}
+													className={classes.media}
+													src={item.product.image[0].url}
+												/>
+											</Link>
 										</Grid>
-										<Grid item xs={12} md={4}>
-											<Box className={classes.right}>
-												<Typography variant="h6">Thành tiền</Typography>
-												<div className={classes.itemContent}>
-													<div className={classes.order_row}>
-														<Typography className={classes.itemCoupon} variant="subtitle1">
-															Mã Voucher
-														</Typography>
-														<TextField
-															hiddenLabel
-															className={classes.fieldCoupon}
-															id="filled-hidden-label-small"
-															variant="outlined"
-															size="small"
-															onChange={(e) => {
-																setCoupon(e.target.value)
-																setDiscountError('')
-															}}
-															value={coupon}
-														/>
-														<Button
-															variant="outlined"
-															size="small"
-															onClick={applyDiscountCoupon}
-															disabled={coupon.length === 0}
-														>
-															Áp dụng
-														</Button>
-													</div>
-												</div>
-												{discountError && (
-													<Alert severity="error">
-														Rất tiếc! Không thể tìm thấy mã voucher này. Bạn vui lòng kiểm tra lại
-														mã đăng nhập hoặc có thể mã đã hết hạn sử dụng.
-													</Alert>
-												)}
-												{totalAfterDiscount !== 0 && (
-													<Alert severity="success">
-														Bạn đã sử dụng voucher - Giá đã giảm:&nbsp;
-														<strong>{fVNDCurrency(total - totalAfterDiscount)}</strong>
-													</Alert>
-												)}
-												<div className={classes.itemContent}>
-													<div className={classes.order_row}>
-														<Typography variant="subtitle1">
-															{/* Total */}
-															Tổng thanh toán
-														</Typography>
-														<Box textAlign="right">
-															<Typography variant="subtitle1" color="secondary">
-																{fVNDCurrency(
-																	totalAfterDiscount !== 0 ? totalAfterDiscount : total
-																)}
-															</Typography>
-															<small className={classes.fee}>
-																{/* VAT included, where applicable */}
-																Đã bao gồm VAT nếu có
-															</small>
-														</Box>
-													</div>
-												</div>
-												<Button
-													variant="contained"
-													color="secondary"
-													className={classes.button}
-													disabled={products?.length === 0}
-													onClick={checkOutOrder}
-												>
-													{/* CONFIRM CART */}
-													Tiến hành đặt hàng
-												</Button>
+										<Grid item xs={6} sm={6}>
+											<Link to={`/product/${item.product._id}`} className={classes.itemName}>
+												<Typography variant="body1">{item.product.name}</Typography>
+											</Link>
+										</Grid>
+										<Grid item xs={3} sm={2}>
+											<div className={classes.price}>
+												<Typography variant="h6" color="secondary">
+													{fVNNumber(item.product.price)}&nbsp;
+													<abbr
+														style={{
+															textDecoration: 'underline dotted',
+														}}
+													>
+														đ
+													</abbr>
+												</Typography>
+												<Typography variant="body2">
+													<span className={classes.priceCompare}>
+														{fVNDCurrency(item.product.priceCompare)}
+													</span>
+													&nbsp;
+													<i>
+														{(
+															-(
+																(item.product.priceCompare - item.product.price) /
+																item.product.priceCompare
+															) * 100
+														).toFixed() + '%'}
+													</i>
+												</Typography>
+											</div>
+										</Grid>
+										<Grid item xs={12} sm={2} className={classes.qty}>
+											<Box p="0 0.5rem">
+												<Typography variant="body1">{item.quantity}</Typography>
 											</Box>
 										</Grid>
 									</Grid>
-								</Box>
-							) : (
-								<Grid container justify="center" alignItems="flex-start">
-									<Box width={'100%'} p={2}>
-										<CustomizedBreadcrumbs step1="Trang chủ" step2="Đặt hàng" />
-									</Box>
-									<Box m="0 auto" fontSize="5rem" textAlign="center" color="#d3d3d4">
-										<ShoppingCartIcon fontSize="inherit" />
-										<Box m="1rem 0">
-											<Typography variant="subtitle1" gutterBottom>
-												{/* No products added to the cart */}
-												Không có sản phẩm nào
-											</Typography>
-										</Box>
-										<Button variant="contained" size="large" onClick={() => history.push('/')}>
-											Mua sắm
+									<div className={classes.price}>
+										<Typography variant="subtitle1" style={{ textAlign: 'right' }}>
+											Tổng cộng:&nbsp;
+											{fVNDCurrency(item.product.price * item.quantity)}
+										</Typography>
+									</div>
+								</div>
+							))}
+						</BoxItem>
+					</Grid>
+					<Grid item xs={12} md={4}>
+						<BoxItem>
+							<Typography variant="h6">Thành tiền</Typography>
+							<Box marginBottom={1}>
+								<Grid container alignItems="center" spacing={1}>
+									<Grid item xs>
+										<Typography>Mã Voucher</Typography>
+									</Grid>
+									<Grid item xs={5}>
+										<TextField
+											hiddenLabel
+											id="filled-hidden-label-small"
+											variant="outlined"
+											size="small"
+											onChange={(e) => {
+												setCoupon(e.target.value)
+												setDiscountError('')
+											}}
+											value={coupon}
+										/>
+									</Grid>
+									<Grid item xs>
+										<Button
+											variant="outlined"
+											onClick={applyDiscountCoupon}
+											disabled={coupon.length === 0}
+											className={classes.button}
+										>
+											Áp dụng
 										</Button>
-									</Box>
+									</Grid>
 								</Grid>
+							</Box>
+							{discountError && (
+								<Alert severity="error">
+									Rất tiếc! Không thể tìm thấy mã voucher này. Bạn vui lòng kiểm tra lại mã đăng
+									nhập hoặc có thể mã đã hết hạn sử dụng.
+								</Alert>
 							)}
-						</div>
-					)}
-				</>
+							{totalAfterDiscount !== 0 && (
+								<Alert severity="success">
+									Bạn đã sử dụng voucher - Giá đã giảm:&nbsp;
+									<strong>{fVNDCurrency(total - totalAfterDiscount)}</strong>
+								</Alert>
+							)}
+							<div>
+								<div className={classes.order_row}>
+									<Typography variant="subtitle1">
+										{/* Total */}
+										Tổng thanh toán
+									</Typography>
+									<Box textAlign="right">
+										<Typography variant="subtitle1" color="secondary">
+											{fVNDCurrency(totalAfterDiscount !== 0 ? totalAfterDiscount : total)}
+										</Typography>
+										<small className={classes.fee}>
+											{/* VAT included, where applicable */}
+											Đã bao gồm VAT nếu có
+										</small>
+									</Box>
+								</div>
+							</div>
+							<Button
+								variant="contained"
+								color="secondary"
+								className={classes.button}
+								disabled={products?.length === 0 || !userData?.address}
+								onClick={checkOutOrder}
+							>
+								{/* CONFIRM CART */}
+								Tiến hành đặt hàng
+							</Button>
+						</BoxItem>
+					</Grid>
+				</Grid>
+			) : (
+				<NoProductsAdded />
 			)}
-		</MainLayout>
+		</AuthLayout>
 	)
 }
 

@@ -1,0 +1,10 @@
+.avatar-note {
+    margin: 16px auto 0;
+    line-height: 1.5;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #637381;
+    display: block;
+    text-align: center;
+    max-width: 13rem;
+}

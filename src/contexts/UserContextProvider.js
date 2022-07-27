@@ -1,17 +1,16 @@
-import { unwrapResult } from '@reduxjs/toolkit'
-import { getProfile } from 'features/User/pathAPI'
 import { useSnackbar } from 'notistack'
 import { createContext, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import userAPI from 'apis/userAPI'
 import io from 'socket.io-client'
 
 const UserContext = createContext(null)
 const tokenLocal = localStorage.getItem('token')
 const UserContextProvider = ({ children }) => {
-	const dispatch = useDispatch()
 	const { enqueueSnackbar } = useSnackbar()
 	const [token, setToken] = useState(null)
+	const [loading, setLoading] = useState(false)
 	const [user, setUser] = useState(null)
+	const [admin, setAdmin] = useState(false)
 	const [socket, setSocket] = useState(null)
 	const [patchCart, setPatchCart] = useState(null)
 	const [idUser, setIdUser] = useState(null)
@@ -50,49 +49,58 @@ const UserContextProvider = ({ children }) => {
 	}, [socket])
 
 	useEffect(() => {
+		const socketIo = io(
+			// development
+			// process.env.REACT_APP_API_DEV,
+			// production
+			process.env.REACT_APP_API_URL,
+			{
+				withCredentials: true,
+				extraHeaders: {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Header': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+					'Access-Control-Allow-Methods': 'PUT, POST, DELETE, GET',
+				},
+			}
+		)
+		if (socketIo) {
+			setSocket(socketIo)
+		}
+	}, [])
+
+	useEffect(() => {
 		async function setProfile() {
-			const socketIo = io(
-				// development
-				process.env.REACT_APP_API_DEV,
-				// production
-				// process.env.REACT_APP_API_URL,
-				{
-					withCredentials: true,
-					extraHeaders: {
-						'Access-Control-Allow-Origin': '*',
-						'Access-Control-Header':
-							'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-						'Access-Control-Allow-Methods': 'PUT, POST, DELETE, GET',
-					},
-				}
-			)
-			if (socketIo) {
-				setSocket(socketIo)
-			}
 			if (tokenLocal) {
-				try {
-					const actionResult = await dispatch(getProfile())
-					const currentUser = unwrapResult(actionResult)
-					if (currentUser) {
-						setUser(currentUser.user)
+				await userAPI
+					.profile()
+					.then((res) => {
 						setToken(tokenLocal)
-						setIdUser(currentUser.user._id)
-					}
-				} catch (e) {
-					localStorage.removeItem('token')
-					window.location.reload()
-				}
+						setUser(res)
+						setIdUser(res._id)
+						setLoading(false)
+						if (res.role === 1) {
+							setAdmin(true)
+						}
+					})
+					.catch((e) => {
+						setLoading(false)
+						localStorage.removeItem('token')
+						window.location.reload()
+					})
+				return () => socket.close()
 			}
-			return () => socket.close()
 		}
 
-		setProfile() // eslint-disable-next-line
+		setProfile()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	const state = {
 		patchCart: [patchCart, setPatchCart],
 		token: [token, setToken],
+		loadingUser: [loading],
 		user: [user, setUser],
+		admin: [admin, setAdmin],
 		idUser: [idUser, setIdUser],
 		socket,
 		UserOnline: [countUserOnline],

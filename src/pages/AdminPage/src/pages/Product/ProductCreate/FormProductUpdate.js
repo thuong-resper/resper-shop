@@ -190,6 +190,7 @@ const FormProductUpdate = ({ refetch, item }) => {
 			fields.forEach((field) => setValue(field, item[field]))
 			setListImgUrl(item.image.map(({ url }) => url))
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	const FILES_LIMIT = 15 - item?.image.length

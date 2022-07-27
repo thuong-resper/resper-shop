@@ -1,10 +1,9 @@
 import { Box, Button, IconButton, Typography } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import SEO from 'components/SEO/SEO.js'
-import { AdminContent, AdminLayout } from 'components/Layout/index.js'
-import { useDeleteProduct, useGetProducts } from 'features/Admin/Product/index.js'
-import Iconify from 'components/Iconify.js'
+import { AdminContent, AdminLayout } from 'components/Layout'
+import { useDeleteProduct, useGetProducts } from 'features/Admin/Product'
+import Iconify from 'components/Iconify'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { escapeRegExp } from 'utils/regex'
 import SearchBar from 'components/Search/SearchBar'
@@ -13,6 +12,8 @@ import { fVNDCurrency } from 'utils/formatNumber'
 import { Skeleton } from '@material-ui/lab'
 import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
 import { useSnackbar } from 'notistack'
+import SEO from 'components/SEO/SEO'
+import SimplePopover from 'pages/AdminPage/src/components/Popover/Popover'
 
 function RowIdCell(props) {
 	return (
@@ -96,11 +97,13 @@ const AdminProduct = () => {
 		{
 			field: 'subs',
 			headerName: 'Thương hiệu',
+			width: 130,
 			valueGetter: (params) => params.row.subs[0]?.name,
 		},
 		{
 			field: 'category',
 			headerName: 'Danh mục',
+			width: 130,
 			valueGetter: (params) => params.row.category?.name,
 		},
 
@@ -108,7 +111,6 @@ const AdminProduct = () => {
 			field: 'action',
 			headerName: 'Hành động',
 			sortable: false,
-			width: 130,
 			align: 'center',
 			headerAlign: 'center',
 			filterable: false,
@@ -121,19 +123,21 @@ const AdminProduct = () => {
 					setId(params.row._id)
 				}
 				return (
-					<Box>
-						<IconButton size="small" onClick={onUpdate}>
-							<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
-						</IconButton>
-						<IconButton size="small" onClick={onDelete}>
-							<Iconify
-								icon="fluent:delete-16-filled"
-								width="1.5em"
-								height="1.5em"
-								color="#f50057"
-							/>
-						</IconButton>
-					</Box>
+					<SimplePopover>
+						<Box p={0.5}>
+							<IconButton size="small" onClick={onUpdate}>
+								<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
+							</IconButton>
+							<IconButton size="small" onClick={onDelete}>
+								<Iconify
+									icon="fluent:delete-16-filled"
+									width="1.5em"
+									height="1.5em"
+									color="#f50057"
+								/>
+							</IconButton>
+						</Box>
+					</SimplePopover>
 				)
 			},
 		},

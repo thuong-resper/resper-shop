@@ -13,9 +13,17 @@ const userAPI = {
 		const url = '/api/user/change-password'
 		return axiosClient.post(url, password, token)
 	},
-	profile: () => {
+	profile: (token) => {
 		const url = '/api/user/profile'
-		return axiosClient.get(url)
+		return axiosClient.get(url, token)
+	},
+	saveAddress: (data) => {
+		const url = '/api/user/address'
+		return axiosClient.post(url, data)
+	},
+	savePaymentMethod: (data) => {
+		const url = '/api/user/payment'
+		return axiosClient.post(url, data)
 	},
 	register: (data) => {
 		const url = '/api/user/register'

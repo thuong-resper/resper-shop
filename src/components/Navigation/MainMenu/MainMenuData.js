@@ -1,4 +1,3 @@
-import { faArchive, faHeart, faUserCheck } from '@fortawesome/free-solid-svg-icons'
 import Iconify from 'components/Iconify'
 
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />
@@ -72,17 +71,17 @@ export const AdminSidebarItems = [
 export const UserSidebarItems = [
 	{
 		title: 'Thông tin tài khoản',
-		icon: faUserCheck,
-		link: '/user/profile',
+		path: '/user/profile',
+		icon: getIcon('carbon:user-avatar-filled'),
 	},
 	{
 		title: 'Đơn hàng của tôi',
-		icon: faArchive,
-		link: '/user/orders',
+		path: '/user/orders',
+		icon: getIcon('fa:first-order'),
 	},
 	{
 		title: 'Yêu thích',
-		icon: faHeart,
-		link: '/admin/category',
+		path: '/user/liked',
+		icon: getIcon('bxs:dashboard'),
 	},
 ]

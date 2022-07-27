@@ -24,6 +24,7 @@ import { useAddSub, useDeleteSub, useGetSubs, usePatchSub } from 'features/Admin
 import { useGetCategories } from 'features/Admin/Category'
 import Iconify from 'components/Iconify'
 import { escapeRegExp } from 'utils/regex'
+import SimplePopover from 'pages/AdminPage/src/components/Popover/Popover'
 
 const useStyles = makeStyles((theme) => ({
 	dialogContent: {
@@ -105,19 +106,21 @@ const Sub = () => {
 					setId(params.row._id)
 				}
 				return (
-					<Box>
-						<IconButton size="small" onClick={onUpdate}>
-							<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
-						</IconButton>
-						<IconButton size="small" onClick={onDelete}>
-							<Iconify
-								icon="fluent:delete-16-filled"
-								width="1.5em"
-								height="1.5em"
-								color="#f50057"
-							/>
-						</IconButton>
-					</Box>
+					<SimplePopover>
+						<Box p={0.5}>
+							<IconButton size="small" onClick={onUpdate}>
+								<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
+							</IconButton>
+							<IconButton size="small" onClick={onDelete}>
+								<Iconify
+									icon="fluent:delete-16-filled"
+									width="1.5em"
+									height="1.5em"
+									color="#f50057"
+								/>
+							</IconButton>
+						</Box>
+					</SimplePopover>
 				)
 			},
 		},

@@ -3,20 +3,22 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import TimeLoadingToRedirect from 'pages/TimeLoadingToRedirect'
 import React, { Suspense, useContext, useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import SimpleBackdrop from './components/Backdrop/Backdrop'
 import './global.css'
 import NotFound from './pages/NotFound/NotFound'
-import { UserContext } from 'contexts/index.js'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
-import AdminPage from 'pages/AdminPage/routesAdmin.js'
-import UserPage from 'pages/routes.js'
+import UserPage from 'pages/routes'
+import AdminPage from 'pages/AdminPage/routesAdmin'
+import { UserContext } from 'contexts'
+import MomentUtils from '@date-io/moment'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers'
+import MessengerCustomerChat from 'react-messenger-customer-chat'
 
 const App = () => {
 	const state = useContext(UserContext)
-	const isAdmin = useSelector((state) => state.user.isAdmin)
 	const [token] = state.token
+	const [admin] = state.admin
 
 	useEffect(() => {
 		AOS.init({
@@ -43,7 +45,7 @@ const App = () => {
 					key={index}
 					exact={page.exact}
 					path={page.path}
-					component={isAdmin && token ? page.main : NotFound}
+					component={admin && token ? page.main : NotFound}
 				/>
 			))
 		}
@@ -58,16 +60,23 @@ const App = () => {
 
 	return (
 		<PayPalScriptProvider deferLoading={true} options={paypalOptions}>
-			<CssBaseline />
-			<Suspense fallback={<SimpleBackdrop />}>
-				<Switch>
-					{showPageUser(UserPage)}
-					{isAdmin && token && showPageAdmin(AdminPage)}
-					<Route path="*" component={NotFound} exact />
-					<Redirect to="/" from="/" />
-				</Switch>
-			</Suspense>
-			{/*<MessengerCustomerChat pageId="972426273088823" appId="461020245337447" />*/}
+			<MuiPickersUtilsProvider utils={MomentUtils}>
+				<CssBaseline />
+				<div>
+					<Suspense fallback={<SimpleBackdrop />}>
+						<Switch>
+							{showPageUser(UserPage)}
+							{showPageAdmin(AdminPage)}
+							<Route path="*" component={NotFound} exact />
+							<Redirect to="/" from="/" />
+						</Switch>
+					</Suspense>
+					<MessengerCustomerChat
+						pageId={process.env.REACT_APP_PAGE_ID}
+						appId={process.env.REACT_APP_APP_ID}
+					/>
+				</div>
+			</MuiPickersUtilsProvider>
 		</PayPalScriptProvider>
 	)
 }

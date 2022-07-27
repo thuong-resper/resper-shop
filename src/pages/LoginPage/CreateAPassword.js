@@ -63,6 +63,7 @@ const CreateAPassword = () => {
 			dispatch(closeSnackbar())
 			componentMounted.current = false
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [message, isError, isSuccess])
 
 	// useEffect

@@ -28,14 +28,13 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
 import MenuIcon from '@material-ui/icons/Menu'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ShopIcon from '@material-ui/icons/Shop'
-import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import WhatshotIcon from '@material-ui/icons/Whatshot'
 import Aos from 'aos'
 import clsx from 'clsx'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
 import { useRouter } from 'hooks/useRouter'
-import useWindowDimensions from 'hooks/useWindowDimensions'
+import { useWindowDimensions } from 'hooks'
 import { useSnackbar } from 'notistack'
 import React, { useEffect, useState } from 'react'
 import { Link, withRouter } from 'react-router-dom'
@@ -44,54 +43,27 @@ import { useStyles } from './styles'
 const dashboardItems = [
 	{
 		id: 1,
-		title: 'Premium',
+		title: 'Nam',
 		subtitles: [
-			{ name: 'Orient', link: '/products?brand=orient' },
-			{ name: 'Citizen', link: '/products?brand=citizen' },
-			{ name: 'Daumier', link: '/products?brand=daumier' },
-			{ name: 'Mathey Tissot', link: '/products?brand=mathey-tissot' },
-			{ name: 'Swiss Military', link: '/products?brand=swiss-military' },
-			{ name: 'Bulova', link: '/products?brand=bulova' },
+			{
+				name: 'Đồng hồ',
+				link: '/shop?category=61376edaa8d3c977efbcfa08&sex=man',
+			},
+			{ name: 'Smartwatch', link: '/shop?category=61376ecfa8d3c977efbcfa07&sex=man' },
+			{ name: 'Điện thoại', link: '/shop?category=6139b459b9a9f76d315ecf58&sex=man' },
 		],
 	},
 	{
 		id: 2,
-		title: 'Men',
+		title: 'Nữ',
 		subtitles: [
-			{ name: 'Fashion', link: '/products?category=fashion&sex=men' },
-			{ name: 'Smart', link: '/products?category=smart&sex=men' },
+			{
+				name: 'Đồng hồ',
+				link: '/shop?category=61376edaa8d3c977efbcfa08&sex=woman',
+			},
+			{ name: 'Smartwatch', link: '/shop?category=61376ecfa8d3c977efbcfa07&sex=woman' },
+			{ name: 'Điện thoại', link: '/shop?category=6139b459b9a9f76d315ecf58&sex=woman' },
 		],
-	},
-	{
-		id: 3,
-		title: 'Women',
-		subtitles: [
-			{ name: 'Fashion', link: '/products?category=fashion&sex=women' },
-			{ name: 'Smart', link: '/products?category=smart&sex=women' },
-		],
-	},
-	{
-		id: 4,
-		title: 'Couple',
-		subtitles: [
-			{ name: 'Leather strap', link: '/products?category=couple&st=leather' },
-			{ name: 'Metal strap', link: '/products?category=couple&st=metal' },
-			{ name: 'Kim', link: '/products?category=couple&st=kim' },
-		],
-	},
-	{
-		id: 5,
-		title: 'Kids',
-		subtitles: [
-			{ name: 'Rubber strap', link: '/products?category=kids&st=rubber' },
-			{ name: 'Plastic strap', link: '/products?category=kids&st=plastic' },
-			{ name: 'Electronic', link: '/products?category=kids&st=electronic' },
-		],
-	},
-	{
-		id: 6,
-		title: 'Watch Straps',
-		subtitles: [{ name: 'All straps', link: '/products?category=straps' }],
 	},
 ]
 
@@ -108,11 +80,6 @@ const dashboardUserItems = [
 	},
 	{
 		id: 3,
-		title: 'Yêu thích',
-		link: '/user/favorites',
-	},
-	{
-		id: 4,
 		title: 'Cài đặt',
 		link: '/user/settings',
 	},
@@ -161,7 +128,7 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 			setIdUser(null)
 			localStorage.removeItem('token')
 			setLoading(false)
-			enqueueSnackbar('Logout success', { variant: 'success' })
+			enqueueSnackbar('Đăng xuất thành công', { variant: 'success' })
 		}, 1500)
 	}
 
@@ -245,8 +212,8 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 					<ListItemIcon>
 						<WhatshotIcon />
 					</ListItemIcon>
-					<Link to="/products/trending" onClick={toggleDrawer('right', false)}>
-						<ListItemText primary="Trending" />
+					<Link to="/shop" onClick={toggleDrawer('right', false)}>
+						<ListItemText primary="Nổi bật" />
 					</Link>
 				</ListItem>
 				{user ? (
@@ -255,18 +222,18 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 							<FavoriteBorderIcon />
 						</ListItemIcon>
 						<Link to="/favorites" onClick={toggleDrawer('right', false)}>
-							<ListItemText primary="Favorites" />
+							<ListItemText primary="Yêu thích" />
 						</Link>
 					</ListItem>
 				) : (
 					<Box m={4} fontSize={20} color="text.secondary">
-						Become a member for the best products, sale, and stories in life.{' '}
+						Trở thành thành viên để nhận các ưu đãi tốt nhất&nbsp;
 						<Link to="/membership" onClick={toggleDrawer('right', false)} style={{ color: '#333' }}>
-							Learn More
+							Xem thêm
 						</Link>
 						<Box mt={4} display="flex" justifyContent="center">
 							<Link to="/membership" onClick={toggleDrawer('right', false)} className={classes.btn}>
-								Join Us
+								Tham gia
 							</Link>
 							<Link
 								to="/login"
@@ -284,15 +251,7 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 						<ShoppingCartIcon />
 					</ListItemIcon>
 					<Link to="/cart" onClick={toggleDrawer('right', false)}>
-						<ListItemText primary="Cart" />
-					</Link>
-				</ListItem>
-				<ListItem button>
-					<ListItemIcon>
-						<ShoppingBasketIcon />
-					</ListItemIcon>
-					<Link to="/orders" onClick={toggleDrawer('right', false)}>
-						<ListItemText primary="Orders" />
+						<ListItemText primary="Giỏ hàng" />
 					</Link>
 				</ListItem>
 				<ListItem button>
@@ -320,7 +279,7 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 					<ListItemIcon>
 						<ChevronLeftIcon />
 					</ListItemIcon>
-					<ListItemText primary={'All'} />
+					<ListItemText primary={'Quay lại'} />
 				</ListItem>
 				<Box mt={3} mb={3} pl={2} fontSize={20} color="text.primary">
 					{user ? user.name : null}
@@ -416,34 +375,8 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 
 	return (
 		<>
-			{/* loading get profile */}
-			{loadingGetProfile && (
-				<Box display="flex" justifyContent="flex-end">
-					<CircularProgress color="inherit" size={24} />
-				</Box>
-			)}
-			{/* no token show sign in button */}
-			{!token && !loadingGetProfile && (
-				<>
-					{width > 600 ? (
-						<Button
-							edge="end"
-							className={classes.button}
-							aria-label="account of current user"
-							color="inherit"
-							aria-owns={anchorEl ? 'simple-menu' : undefined}
-							aria-haspopup="true"
-							onClick={() => router.push('/login')}
-							startIcon={<AccountCircle />}
-						>
-							Đăng nhập
-						</Button>
-					) : null}
-				</>
-			)}
-
 			{/* menu list user desktop */}
-			{!loadingGetProfile && (
+			{user ? (
 				<div className="main-user">
 					<div className="profile-login">
 						{/* show menu user when have token */}
@@ -472,6 +405,27 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 						)}
 					</div>
 				</div>
+			) : (
+				<>
+					{loadingGetProfile ? (
+						<Box display="flex" justifyContent="flex-end">
+							<CircularProgress color="inherit" size={24} />
+						</Box>
+					) : width > 600 ? (
+						<Button
+							edge="end"
+							className={classes.button}
+							aria-label="account of current user"
+							color="inherit"
+							aria-owns={anchorEl ? 'simple-menu' : undefined}
+							aria-haspopup="true"
+							onClick={() => router.push('/login')}
+							startIcon={<AccountCircle />}
+						>
+							Đăng nhập
+						</Button>
+					) : null}
+				</>
 			)}
 			<Popper
 				open={openGrow}

@@ -1,12 +1,6 @@
 import { AppBar, Box, Grid } from '@material-ui/core'
 import { unwrapResult } from '@reduxjs/toolkit'
-import SeeMoreButtonMobile from 'components/Button/SeeMoreButtonMobile/SeeMoreButtonMobile.js'
-import Product from 'components/Products/Product/Product.js'
-import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct.js'
-import ProductsSlider from 'components/ReactSlickSlider/ProductsSlider.js'
 import { AntTab, AntTabs } from 'components/Tab/Tab.js'
-import { getListProducts } from 'features/Product/pathApi.js'
-import useWindowDimensions from 'hooks/useWindowDimensions.js'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -14,6 +8,12 @@ import { PremiumWatchSub as subs } from '../../StaticParam.js'
 import img from '../Images/DHCaocapDesk-330x428.png'
 import img1 from '../Images/DHCaocapmobile2x-720x240-1.jpg'
 import './styles.css'
+import { useWindowDimensions } from 'hooks'
+import { getListProducts } from 'features/Product/pathApi.js'
+import SkeletonProduct from 'components/Products/Product/Skeleton/SkeletonProduct.js'
+import Product from 'components/Products/Product/Product.js'
+import SeeMoreButtonMobile from 'components/Button/SeeMoreButtonMobile/SeeMoreButtonMobile.js'
+import ProductsSlider from 'components/ReactSlickSlider/ProductsSlider.js'
 
 const category = '61376edaa8d3c977efbcfa08' //fashion watches
 
@@ -71,7 +71,7 @@ const PremiumWatch = () => {
 									<SeeMoreButtonMobile
 										key={c.index}
 										title={c.index === value ? `Đồng hồ cao cấp ${c.name}` : null}
-										link={c.index === value ? `products?category=${category}&subs=${c._id}` : null}
+										link={c.index === value ? `shop?category=${category}&subs=${c._id}` : null}
 									/>
 								))}
 							</Grid>
@@ -83,7 +83,7 @@ const PremiumWatch = () => {
 									{subs.map((c) => (
 										<Link
 											key={c.index}
-											to={`products?category=${category}&subs=${c._id}`}
+											to={`shop?category=${category}&subs=${c._id}`}
 											className="seemore"
 										>
 											{c.index === value ? (

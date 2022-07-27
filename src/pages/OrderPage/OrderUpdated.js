@@ -1,8 +1,8 @@
 import { Box, Button, TextField, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import { Autocomplete } from '@material-ui/lab'
-import { useUpdateOrder } from 'features/Order/index.js'
 import SimpleBackdrop from 'components/Backdrop/Backdrop'
+import { usePatchOrderStatus } from 'features/Order'
 
 const options = ['Chưa thực hiện', 'Đang xử lý', 'Đang vận chuyển', 'Đã hủy', 'Hoàn thành']
 
@@ -10,14 +10,16 @@ const OrderUpdated = ({ order }) => {
 	const [status, setStatus] = useState(options[0])
 	const [inputStatus, setInputStatus] = useState('')
 
-	const updated = useUpdateOrder()
+	const updated = usePatchOrderStatus(order._id, (oldData, newData) =>
+		Object.assign(oldData, { orderStatus: newData.orderStatus })
+	)
 
 	const handleUpdateStatus = async () => {
 		const data = {
 			orderId: order._id,
 			orderStatus: status,
 		}
-		updated.mutate(data)
+		await updated.mutateAsync(data)
 	}
 
 	return (
@@ -49,7 +51,12 @@ const OrderUpdated = ({ order }) => {
 				)}
 			/>
 			<Box m="0.5rem 0" textAlign="right">
-				<Button variant="contained" color="primary" onClick={handleUpdateStatus}>
+				<Button
+					variant="contained"
+					color="primary"
+					disabled={status === order.orderStatus}
+					onClick={handleUpdateStatus}
+				>
 					Lưu
 				</Button>
 			</Box>

@@ -1,8 +1,8 @@
 import { Grid, makeStyles, Typography } from '@material-ui/core'
 import Product from 'components/Products/Product/Product'
-import useWindowDimensions from 'hooks/useWindowDimensions'
 import React from 'react'
 import ProductsSlider from 'components/ReactSlickSlider/ProductsSlider.js'
+import { useWindowDimensions } from 'hooks'
 
 const useStyles = makeStyles((theme) => ({
 	wrapper: {
