@@ -1,92 +1,31 @@
-import { Box, makeStyles, TextField, Typography } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import UserSidebar from 'components/Navigation/MainMenu/UserSidebar';
-import { UserContext } from 'contexts/UserContext';
-import React, { useContext } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useHistory } from 'react-router';
+import { Box, Typography } from '@material-ui/core'
+import React from 'react'
+import SEO from 'components/SEO/SEO'
+import UserCreateForm from 'pages/AdminPage/src/pages/User/form/UserCreateForm'
+import { UserLayout } from 'components/Layout/UserLayout'
+import { useGetUserProfile } from 'features/User'
+import SimpleBackdrop from 'components/Backdrop/Backdrop'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-}));
+const UserProfile = () => {
+	const { isLoading, data, error } = useGetUserProfile()
 
-const UserProfile = ({ location }) => {
-  const state = useContext(UserContext);
-  const classes = useStyles();
-  const history = useHistory();
-  const [token] = state.token;
-  const [user] = state.user;
+	if (isLoading) return <SimpleBackdrop />
 
-  if (!token) {
-    history.push('/login?redirect=user/profile');
-  }
+	if (error) return 'Error: ' + error.message
 
-  return (
-    <>
-      <Helmet>
-        <title>My Account</title>
-      </Helmet>
-      <div className={classes.root}>
-        <UserSidebar />
-        <main className={classes.content}>
-          {/* step 5 */}
-          <Box m="0.5rem">
-            <Box mb="1rem">
-              <Typography variant="h5">Thông tin tài khoản</Typography>
-            </Box>
-            <Paper>
-              <Box m="1rem" display="flex" flexDirection="column">
-                <Box m="1rem 0" display="flex" alignItems="center">
-                  <Typography variant="subtitle1" style={{ width: '100px' }}>
-                    Họ tên
-                  </Typography>
-                  <TextField
-                    multiline
-                    variant="outlined"
-                    size="small"
-                    defaultValue={user?.name}
-                    style={{ width: '400px' }}
-                  />
-                </Box>
+	return (
+		<UserLayout>
+			<SEO pageTitle={'Hồ sơ của tôi'} />
+			<Box>
+				<Box>
+					<Typography variant="h6">Hồ sơ của tôi</Typography>
+				</Box>
+				<Box marginTop={4}>
+					<UserCreateForm user={data} />
+				</Box>
+			</Box>
+		</UserLayout>
+	)
+}
 
-                <Box mb="1rem" display="flex" alignItems="center">
-                  <Typography variant="subtitle1" style={{ width: '100px' }}>
-                    Email
-                  </Typography>
-                  <TextField
-                    multiline
-                    variant="outlined"
-                    size="small"
-                    defaultValue={user?.email}
-                    style={{ width: '400px' }}
-                  />
-                </Box>
-
-                <Box mb="1rem" display="flex" alignItems="center">
-                  <Typography variant="subtitle1" style={{ width: '100px' }}>
-                    Thanh toán
-                  </Typography>
-                  <TextField
-                    multiline
-                    variant="outlined"
-                    size="small"
-                    defaultValue={user?.paymentMethod}
-                    style={{ width: '400px' }}
-                  />
-                </Box>
-              </Box>
-            </Paper>
-          </Box>
-        </main>
-      </div>
-    </>
-  );
-};
-
-export default UserProfile;
+export default UserProfile

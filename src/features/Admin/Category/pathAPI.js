@@ -1,37 +1,30 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import adminAPI from 'apis/adminAPI';
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import adminAPI from 'apis/adminAPI'
 
 export const createCategory = createAsyncThunk('createCategory', async (data, token) => {
-  const response = await adminAPI.createCategory(data, token);
-  return response;
-});
+	return await adminAPI.createCategory(data, token)
+})
 
 export const getCategories = createAsyncThunk('getCategories', async () => {
-  const response = await adminAPI.getCategories();
-  return response;
-});
+	return await adminAPI.getCategories()
+})
 
 export const getCategory = createAsyncThunk('getCategory', async () => {
-  const response = await adminAPI.getCategory();
-  return response;
-});
+	return await adminAPI.getCategory()
+})
 
-export const getCategorySubs = createAsyncThunk('getCategorySubs', async (_id) => {
-  const response = await adminAPI.getCategorySubs(_id);
-  return response;
-});
+export const getCategorySubs = createAsyncThunk('getCategorySubs', async (id) => {
+	return await adminAPI.getCategorySubs(id)
+})
 
 export const updateCategory = createAsyncThunk('updateCategory', async (data, token) => {
-  const response = await adminAPI.updateCategory(data, token);
-  return response;
-});
+	return await adminAPI.updateCategory(data, token)
+})
 
 export const deleteCategory = createAsyncThunk('deleteCategory', async (slug, token) => {
-  const response = await adminAPI.deleteCategory(slug, token);
-  return response;
-});
+	return await adminAPI.deleteCategory(slug, token)
+})
 
 export const getSubs = createAsyncThunk('getSubs', async () => {
-  const response = await adminAPI.getSubs();
-  return response;
-});
+	return await adminAPI.getSubs()
+})

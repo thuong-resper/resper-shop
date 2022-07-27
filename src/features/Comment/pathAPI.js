@@ -1,12 +1,10 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import commentAPI from "apis/commentAPI";
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import commentAPI from 'apis/commentAPI'
 
 export const getCommentOne = createAsyncThunk('getCommentOne', async (params) => {
-  const response = await commentAPI.getCommentOne(params);
-  return response;
-});
+	return await commentAPI.getCommentOne(params)
+})
 
 export const deleteComment = createAsyncThunk('deleteComment', async (data, token) => {
-  const response = await commentAPI.deleteComment(data, token);
-  return response;
+	return await commentAPI.deleteComment(data, token)
 })

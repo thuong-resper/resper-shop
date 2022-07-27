@@ -3,13 +3,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import SearchIcon from '@material-ui/icons/Search'
 import { updateSearch } from 'features/Search/SearchProductSlice'
+import { useRouter } from 'hooks'
+import queryString from 'query-string'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-
-const defaultValues = {
-	name: '',
-}
 
 export const useStyles = makeStyles((theme) => ({
 	search: {
@@ -25,20 +22,17 @@ export const useStyles = makeStyles((theme) => ({
 
 const Search = () => {
 	const classes = useStyles()
-	const history = useHistory()
+	const router = useRouter()
 	const dispatch = useDispatch()
+	const pathname = queryString.parse(router.location.search, { arrayFormat: 'comma' }) ?? null
+	const defaultValues = {
+		name: pathname.query ?? '',
+	}
 	const [formValues, setFormValues] = useState(defaultValues)
 
-	// dispatch
 	const actionSaveSearch = (keyword) => dispatch(updateSearch(keyword))
-	const [isFormValid, setIsFormValid] = useState(true)
 	const handleInputChange = (e) => {
 		const { name, value } = e.target
-		if (e.target.value.trim() === '') {
-			setIsFormValid(true)
-		} else {
-			setIsFormValid(false)
-		}
 		setFormValues({
 			...formValues,
 			[name]: value,
@@ -50,29 +44,21 @@ const Search = () => {
 		const keyword = formValues.name
 		actionSaveSearch(keyword)
 		const url = `/shop?query=${search}`
-		history.push(url)
+		router.push(url)
 	}
 	return (
 		<form onSubmit={handleSubmit} className={classes.search}>
 			<TextField
 				variant="outlined"
 				size="small"
-				id="name-input"
 				name="name"
-				placeholder="Tìm kiếm..."
-				type="text"
+				placeholder="Tìm kiếm theo tên, mô tả..."
 				value={formValues.name}
 				onChange={handleInputChange}
 				InputProps={{
 					endAdornment: (
 						<InputAdornment position="end">
-							<IconButton
-								type="submit"
-								aria-label="submit answer"
-								data-testid="submit"
-								size="small"
-								disabled={isFormValid}
-							>
+							<IconButton type="submit" size="small">
 								<SearchIcon />
 							</IconButton>
 						</InputAdornment>

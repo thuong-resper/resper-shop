@@ -1,191 +1,152 @@
-import { Box, makeStyles, Typography } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import { Pagination } from '@material-ui/lab';
-import { unwrapResult } from '@reduxjs/toolkit';
-import UserSidebar from 'components/Navigation/MainMenu/UserSidebar';
-import { UserContext } from 'contexts/UserContext';
-import { getOrderUserAPI } from 'features/Order/pathAPI';
-import moment from 'moment';
-import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import ReactLoading from 'react-loading';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
-import { statusOrder } from 'staticOptions';
+import { Box, Typography } from '@material-ui/core'
+import { Skeleton } from '@material-ui/lab'
+import moment from 'moment-timezone'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import SEO from 'components/SEO/SEO'
+import { UserLayout } from 'components/Layout/UserLayout'
+import { useGetUserOrders } from 'features/Order'
+import { escapeRegExp } from 'utils/regex'
+import { DataGrid } from '@material-ui/data-grid'
+import SearchBar from 'components/Search/SearchBar'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-}));
+function RowIdCell(props) {
+	return (
+		<Link style={{ color: '#007ff0', cursor: 'pointer' }} to={`/order/${props.row._id}`}>
+			{props.row._id}
+		</Link>
+	)
+}
+
+function RowProductCell(props) {
+	return props.row.products.map((p) => (
+		<Box key={p._id}>
+			{p.product.name}&nbsp;x&nbsp;{p.quantity}
+		</Box>
+	))
+}
+
+const columns = [
+	{ field: '_id', headerName: 'ID', renderCell: RowIdCell },
+	{
+		field: 'products',
+		headerName: 'Sản phẩm',
+		minWidth: 300,
+		renderCell: RowProductCell,
+		sortable: false,
+		filterable: false,
+		disableColumnMenu: true,
+		disableReorder: true,
+	},
+	{
+		field: 'totalPayable',
+		headerName: 'Tổng tiền',
+		type: 'number',
+		minWidth: 150,
+		format: (value) => value.toLocaleString('en-US'),
+	},
+	{
+		field: 'timeOrder',
+		headerName: 'Ngày mua',
+		minWidth: 150,
+		valueFormatter: ({ value }) => moment(value).format('DD/MM/YYYY'),
+	},
+	{
+		field: 'orderStatus',
+		headerName: 'Trạng thái',
+		minWidth: 150,
+	},
+]
 
 const UserOrders = ({ location }) => {
-  const page = Number(queryString.parse(location.search).page) || 1;
-  // --Contexts
-  const state = useContext(UserContext);
-  const classes = useStyles();
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const [token] = state.token;
+	const [rows, setRows] = useState([])
+	const [searched, setSearched] = useState('')
+	const [rowsState, setRowsState] = useState({
+		page: 0,
+		pageSize: 20,
+	})
+	const [rowCountState, setRowCountState] = useState(0)
 
-  if (!token) {
-    history.push('/login?redirect=user/orders');
-  }
+	const params = {
+		limit: rowsState.pageSize,
+		page: rowsState.page,
+	}
 
-  const items = 10;
-  const [loading, setLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [length, setLength] = useState(0);
-  const formatter = new Intl.NumberFormat('vn');
+	const { isLoading, data, error } = useGetUserOrders(params)
 
-  // dispatch API
-  const actionGetUserOrder = (params) => dispatch(getOrderUserAPI(params));
+	useEffect(() => {
+		if (data) {
+			setRows(data.orders)
+			setRowCountState(data.length)
+		}
+	}, [data])
 
-  // scroll to top
-  const divRef = useRef(null);
+	const requestSearch = (searchedVal) => {
+		setSearched(searchedVal)
+		const searchRegex = new RegExp(escapeRegExp(searchedVal), 'i')
+		const filteredRows = data.orders.filter((row) => {
+			return Object.keys(row).some((field) => {
+				return searchRegex.test(row[field].toString())
+			})
+		})
+		setRows(filteredRows)
+	}
 
-  useEffect(() => {
-    divRef.current.scrollIntoView({ behavior: 'smooth' });
-  });
+	const cancelSearch = () => {
+		setSearched('')
+		requestSearch('')
+	}
 
-  useEffect(() => {
-    const fetchOrders = async (params) => {
-      try {
-        setLoading(true);
+	return (
+		<>
+			<UserLayout>
+				<SEO pageTitle={'Đơn hàng của tôi'} />
+				{error ? (
+					<span>Error: {error.message}</span>
+				) : (
+					<>
+						<Box mb={4}>
+							{isLoading ? (
+								<Skeleton variant="rect" width={150} height={30} />
+							) : (
+								<Typography variant="h6">{`Đơn hàng (${data?.length})`}</Typography>
+							)}
+						</Box>
+						<SearchBar
+							value={searched}
+							onChange={(searchVal) => requestSearch(searchVal)}
+							onCancelSearch={() => cancelSearch()}
+							placeholder="Tìm kiếm"
+						/>
+						<Box mt={2} width="100%">
+							<DataGrid
+								loading={isLoading}
+								rows={rows}
+								getRowId={(row) => row._id}
+								columns={columns}
+								rowCount={rowCountState}
+								pagination
+								{...rowsState}
+								paginationMode="server"
+								onPageChange={(page) => setRowsState((prev) => ({ ...prev, page }))}
+								onPageSizeChange={(pageSize) => setRowsState((prev) => ({ ...prev, pageSize }))}
+								rowsPerPageOptions={[rowsState.pageSize]}
+								componentsProps={{
+									toolbar: {
+										value: searched,
+										onChange: (event) => requestSearch(event.target.value),
+										clearSearch: () => requestSearch(''),
+									},
+								}}
+								autoHeight
+								hideFooterSelectedRowCount
+							/>
+						</Box>
+					</>
+				)}
+			</UserLayout>
+		</>
+	)
+}
 
-        const orders = await actionGetUserOrder(params);
-        const res = unwrapResult(orders);
-        if (res) {
-          setLoading(false);
-          setOrders(res.orders);
-          setLength(res.length);
-        }
-      } catch (err) {}
-    };
-    const params = {
-      limit: items,
-      page: page,
-    };
-    fetchOrders(params); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
-
-  const translateToVn = (key) => {
-    for (let i = 0; i < statusOrder.length; i++) {
-      if (statusOrder[i].value === key) {
-        return statusOrder[i].vn;
-      }
-    }
-  };
-
-  // function
-  const onChangePage = (page, newPage) => {
-    const data = {
-      page: newPage,
-      limit: items || 20,
-    };
-    const params = queryString.stringify(data);
-    const url = `/user/orders?${params}`;
-    history.push(url);
-  };
-
-  const showPagination = (length) => {
-    if (length > 0) {
-      return (
-        <Box display="flex" justifyContent="end" width="100%" m="0.5rem 0">
-          <Pagination
-            variant="outlined"
-            shape="rounded"
-            count={Math.ceil(length / items)}
-            page={page}
-            onChange={onChangePage}
-          />
-        </Box>
-      );
-    }
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>My Orders</title>
-      </Helmet>
-      <div className={classes.root} ref={divRef}>
-        <UserSidebar />
-        <main className={classes.content}>
-          {/* step 5 */}
-          <Box m="0.5rem">
-            <Box mb="1rem">
-              <Typography variant="h5">
-                {loading ? 'Loading...' : `Đơn hàng của tôi (${length})`}
-              </Typography>
-            </Box>
-            {loading ? (
-              <Box display="flex" justifyContent="center">
-                <ReactLoading type="balls" color="#007ff0" />
-              </Box>
-            ) : (
-              <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Mã đơn hàng</TableCell>
-                      <TableCell align="left">Ngày mua</TableCell>
-                      <TableCell align="left">Sản phẩm</TableCell>
-                      <TableCell align="left">Tổng tiền</TableCell>
-                      <TableCell align="left">Trạng thái</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {orders?.length > 0 &&
-                      orders?.map((c, index) => (
-                        <TableRow key={c._id} hover>
-                          <TableCell component="th" scope="row">
-                            <Link
-                              style={{ color: '#007ff0', cursor: 'pointer' }}
-                              to={`/order/${c._id}`}
-                            >
-                              {c._id}
-                            </Link>
-                          </TableCell>
-                          <TableCell align="left">
-                            {moment(c.timeOrder).format('DD/MM/YYYY')}
-                          </TableCell>
-                          <TableCell align="left">
-                            {c?.products.map((p) => (
-                              <p key={p._id}>
-                                {p?.product.name}&nbsp;x&nbsp;{p.quantity}
-                              </p>
-                            ))}
-                          </TableCell>
-                          <TableCell align="left">
-                            {formatter.format(c.totalPayable)}&nbsp;đ
-                          </TableCell>
-                          <TableCell align="left">{translateToVn(c.orderStatus)}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-
-            {!loading && showPagination(length)}
-          </Box>
-        </main>
-      </div>
-    </>
-  );
-};
-
-export default UserOrders;
+export default UserOrders

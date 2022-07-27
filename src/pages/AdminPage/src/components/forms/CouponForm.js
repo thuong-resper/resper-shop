@@ -1,71 +1,40 @@
-import { Box, Button, InputAdornment, TextField, Typography } from '@material-ui/core';
-import React from 'react';
+import { Box, InputAdornment, TextField } from '@material-ui/core'
+import React from 'react'
 
-const CouponForm = ({
-  handleSubmit,
-  name,
-  setName,
-  discount,
-  setDiscount,
-  expiry,
-  setExpiry,
-  title,
-}) => (
-  <form onSubmit={handleSubmit} style={{ margin: '0.5rem', minWidth: '120px' }}>
-    <Typography variant="body1">{title}</Typography>
-    <Box display="flex">
-      <TextField
-        value={name}
-        size="small"
-        inputProps={{ minLength: 6, maxLength: 12 }}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Tên voucher"
-        margin="dense"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        variant="outlined"
-        style={{ minWidth: '10rem', marginRight: '0.5rem' }}
-      />
-      <TextField
-        size="small"
-        onChange={(e) => setDiscount(e.target.value)}
-        placeholder="Giảm giá"
-        margin="dense"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        type="number"
-        variant="outlined"
-        InputProps={{
-          startAdornment: <InputAdornment position="start">%</InputAdornment>,
-          inputProps: {
-            max: 50,
-            min: 0,
-          },
-        }}
-        style={{ minWidth: '10rem', marginRight: '0.5rem' }}
-      />
-      <TextField
-        value={expiry}
-        id="datetime-local"
-        type="datetime-local"
-        size="small"
-        onChange={(e) => setExpiry(e.target.value)}
-        margin="dense"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        variant="outlined"
-        style={{ minWidth: '10rem', marginRight: '0.5rem' }}
-      />
-    </Box>
+const CouponForm = ({ item, name, setName, discount, setDiscount, expiry, setExpiry }) => (
+	<Box display="flex" flexDirection="column">
+		<TextField
+			value={name}
+			size="small"
+			onChange={(e) => setName(e.target.value)}
+			placeholder="Mã coupon"
+			variant="outlined"
+		/>
+		<TextField
+			value={discount}
+			size="small"
+			style={{ margin: '8px 0' }}
+			onChange={(e) => setDiscount(e.target.value)}
+			placeholder="Giảm giá"
+			type="number"
+			variant="outlined"
+			InputProps={{
+				startAdornment: <InputAdornment position="start">%</InputAdornment>,
+				inputProps: {
+					max: 50,
+					min: 0,
+				},
+			}}
+		/>
+		<TextField
+			value={expiry}
+			id="datetime-local"
+			type="datetime-local"
+			size="small"
+			onChange={(e) => setExpiry(e.target.value)}
+			variant="outlined"
+		/>
+	</Box>
+)
 
-    <br />
-    <Button variant="contained" color="primary" type="submit">
-      Lưu
-    </Button>
-  </form>
-);
-
-export default CouponForm;
+export default CouponForm

@@ -1,0 +1,32 @@
+export const adminRoutes = {
+	// getTokenByPassword: '/api/getTokenByPassword',
+	// getProfile: '/api/getProfile',
+	// getUserList: '/api/getUserList',
+	// appointment: '/api/appointment/:id',
+	// getServices: '/api/getServices',
+	// getCarDetail: '/api/getCarDetail/:id',
+	// getInsurance: '/api/getInsurance/:id',
+	// job: '/api/job/:id?',
+	category: '/api/category/:id?',
+	sub: '/api/sub/:id?',
+	coupon: '/api/coupon/:id?',
+	order: '/api/admin/order/:id?',
+	product: '/api/product',
+	adminProduct: '/api/admin/product/:id?',
+	getCategorySubs: '/api/category/subs/:id?',
+	getSubsC: '/api/category/subs/:id?',
+	user: '/api/admin/user/:id?',
+}
+
+export const clientRoutes = {
+	profile: '/api/user/profile',
+	userAddress: '/api/user/address',
+	cart: '/api/user/cart',
+	order: '/api/user/order/:id?',
+	myOrder: '/api/user/orders',
+	category: '/api/category',
+	categorySubs: 'api/category/subs/:id',
+	search: '/api/search',
+	auth: '/auth',
+	appointment: '/appointment/:id',
+}

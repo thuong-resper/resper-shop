@@ -1,7 +1,4 @@
 import store from 'app/store'
-import { DataProvider } from 'contexts/DataContext'
-import { UserContextProvider } from 'contexts/UserContext'
-import NotistackWrapper from 'NotistackWrapper'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -12,18 +9,32 @@ import './index.css'
 import * as serviceWorker from './serviceWorker'
 
 import { HelmetProvider } from 'react-helmet-async'
+import {
+	AppContextProvider,
+	DataProvider,
+	ReactQueryContextProvider,
+	ReactRouterContextProvider,
+	UserContextProvider,
+} from 'contexts/index.js'
+import NotistackWrapper from 'NotistackWrapper'
 
 const app = (
 	<Provider store={store}>
-		<HelmetProvider>
-			<NotistackWrapper>
-				<DataProvider>
-					<UserContextProvider>
-						<App />
-					</UserContextProvider>
-				</DataProvider>
-			</NotistackWrapper>
-		</HelmetProvider>
+		<ReactRouterContextProvider>
+			<HelmetProvider>
+				<ReactQueryContextProvider>
+					<AppContextProvider>
+						<NotistackWrapper>
+							<UserContextProvider>
+								<DataProvider>
+									<App />
+								</DataProvider>
+							</UserContextProvider>
+						</NotistackWrapper>
+					</AppContextProvider>
+				</ReactQueryContextProvider>
+			</HelmetProvider>
+		</ReactRouterContextProvider>{' '}
 	</Provider>
 )
 

@@ -1,176 +1,260 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import { Pagination } from '@material-ui/lab';
-import SimpleBackdrop from 'components/Backdrop/Backdrop';
-import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
-import ProductAdminItem from 'components/Products/Product/ProductAdminItem';
-import { UserContext } from 'contexts/UserContext';
-import { deleteProduct } from 'features/Admin/Product/pathAPI';
-import { getListProducts } from 'features/Product/pathApi';
-import queryString from 'query-string';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Box, Button, IconButton, Typography } from '@material-ui/core'
+import React, { useEffect, useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+import { AdminContent, AdminLayout } from 'components/Layout'
+import { useDeleteProduct, useGetProducts } from 'features/Admin/Product'
+import Iconify from 'components/Iconify'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import { escapeRegExp } from 'utils/regex'
+import SearchBar from 'components/Search/SearchBar'
+import { DataGrid } from '@material-ui/data-grid'
+import { fVNDCurrency } from 'utils/formatNumber'
+import { Skeleton } from '@material-ui/lab'
+import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
+import { useSnackbar } from 'notistack'
+import SEO from 'components/SEO/SEO'
+import SimplePopover from 'pages/AdminPage/src/components/Popover/Popover'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-}));
+function RowIdCell(props) {
+	return (
+		<Link style={{ color: '#007ff0', cursor: 'pointer' }} to={`/product/${props.row._id}`}>
+			{props.row._id}
+		</Link>
+	)
+}
 
-const AdminProduct = ({ location }) => {
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const history = useHistory();
+function RowPriceCompareCell(props) {
+	return (
+		<Box>
+			<span>{fVNDCurrency(props.row.priceCompare)}</span>&nbsp;
+			<i>
+				{(-((props.row.priceCompare - props.row.price) / props.row.priceCompare) * 100).toFixed() +
+					'%'}
+			</i>
+		</Box>
+	)
+}
 
-  const page = Number(queryString.parse(location.search).page) || 1;
-  const items = 20;
+function RowProductImgCell(props) {
+	return (
+		<Box width={50} height={50}>
+			<LazyLoadImage effect="blur" alt={props.row.name} src={props.row.image[0].url} />
+		</Box>
+	)
+}
 
-  // dispatch api
-  const actionGetAllProducts = (param) => dispatch(getListProducts(param));
-  const actionDeleteProduct = (id) => dispatch(deleteProduct(id));
+const AdminProduct = () => {
+	const history = useHistory()
+	const { enqueueSnackbar } = useSnackbar()
+	const [rows, setRows] = useState([])
+	const [searched, setSearched] = useState('')
+	const [rowsState, setRowsState] = useState({
+		page: 0,
+		pageSize: 20,
+	})
+	const [rowCountState, setRowCountState] = useState(0)
+	const [openDelete, setOpenDelete] = useState(false)
+	const [id, setId] = useState(null)
 
-  // context
-  const state = useContext(UserContext);
-  const [token] = state.token;
-  // state
-  const [product, setProduct] = useState('');
-  const [openDelete, setOpenDelete] = useState(false);
+	const columns = [
+		{ field: '_id', headerName: 'ID', renderCell: RowIdCell },
+		{
+			field: 'image',
+			headerName: 'Hình ảnh',
+			minWidth: 100,
+			align: 'center',
+			headerAlign: 'center',
+			sortable: false,
+			filterable: false,
+			disableColumnMenu: true,
+			disableReorder: true,
+			renderCell: RowProductImgCell,
+		},
+		{ field: 'name', headerName: 'Tên sảm phẩm', width: 200 },
+		{
+			field: 'price',
+			headerName: 'Giá',
+			type: 'number',
+			valueFormatter: ({ value }) => fVNDCurrency(value),
+		},
+		{
+			field: 'priceCompare',
+			headerName: 'Giá chưa giảm',
+			type: 'number',
+			minWidth: 150,
+			renderCell: RowPriceCompareCell,
+		},
+		{
+			field: 'quantity',
+			headerName: 'Số lượng',
+			type: 'number',
+		},
+		{
+			field: 'sold',
+			headerName: 'Đã bán',
+			type: 'number',
+		},
+		{
+			field: 'subs',
+			headerName: 'Thương hiệu',
+			width: 130,
+			valueGetter: (params) => params.row.subs[0]?.name,
+		},
+		{
+			field: 'category',
+			headerName: 'Danh mục',
+			width: 130,
+			valueGetter: (params) => params.row.category?.name,
+		},
 
-  useEffect(() => {
-    const param = {
-      limit: items,
-      page: page,
-      sort: '-_id',
-    };
-    actionGetAllProducts(param); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+		{
+			field: 'action',
+			headerName: 'Hành động',
+			sortable: false,
+			align: 'center',
+			headerAlign: 'center',
+			filterable: false,
+			disableColumnMenu: true,
+			disableReorder: true,
+			renderCell: (params) => {
+				const onUpdate = () => history.push(`/admin/product/update/${params.row._id}`)
+				const onDelete = () => {
+					setOpenDelete(true)
+					setId(params.row._id)
+				}
+				return (
+					<SimplePopover>
+						<Box p={0.5}>
+							<IconButton size="small" onClick={onUpdate}>
+								<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
+							</IconButton>
+							<IconButton size="small" onClick={onDelete}>
+								<Iconify
+									icon="fluent:delete-16-filled"
+									width="1.5em"
+									height="1.5em"
+									color="#f50057"
+								/>
+							</IconButton>
+						</Box>
+					</SimplePopover>
+				)
+			},
+		},
+	]
 
-  // scroll to top
-  const divRef = useRef(null);
+	const params = {
+		limit: rowsState.pageSize,
+		page: rowsState.page,
+		sort: '-_id',
+	}
 
-  useEffect(() => {
-    divRef.current.scrollIntoView({ behavior: 'smooth' });
-  });
-  //store
-  const data = useSelector((state) => state.ListProducts.data);
-  const loading = useSelector((state) => state.ListProducts.loading);
-  const length = useSelector((state) => state.ListProducts.length);
+	const { isLoading, data, error } = useGetProducts(params)
+	const mutationDelete = useDeleteProduct(params, (oldData, id) => {
+		oldData.data.filter((item) => item._id !== id)
+	})
 
-  const onChangePagination = (event, page) => {
-    const data = {
-      page: page,
-      limit: items,
-      sort: '-_id',
-    };
-    const params = queryString.stringify(data);
-    const url = `/admin/product?${params}`;
-    history.push(url);
-  };
+	useEffect(() => {
+		if (data) {
+			setRows(data?.data)
+			setRowCountState(data?.length)
+		}
+	}, [data])
 
-  const handleClickDeleteOpen = (product) => {
-    setOpenDelete(true);
-    setProduct(product);
-  };
+	const requestSearch = (searchedVal) => {
+		setSearched(searchedVal)
+		const searchRegex = new RegExp(escapeRegExp(searchedVal), 'i')
+		const filteredRows = data.data.filter((row) => {
+			return Object.keys(row).some((field) => {
+				return searchRegex.test(row[field].toString())
+			})
+		})
+		setRows(filteredRows)
+	}
 
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
+	const cancelSearch = () => {
+		setSearched('')
+		requestSearch('')
+	}
 
-  const handleRemove = async () => {
-    await actionDeleteProduct(product._id, token);
-    handleCloseDelete();
-    const param = {
-      limit: items,
-      page: 1,
-      sort: '-_id',
-    };
-    actionGetAllProducts(param); // eslint-disable-next-line react-hooks/exhaustive-deps
-  };
-  return (
-    <>
-      <Helmet>
-        <title>Product</title>
-      </Helmet>
-      <div className={classes.root} ref={divRef}>
-        {loading && <SimpleBackdrop />}
-        <AdminSidebar />
-        <main className={classes.content}>
-          <Box mb={1} display="flex" justifyContent="space-between">
-            <Typography variant="h5">Tất cả sản phẩm&nbsp;({length})</Typography>
-            <Link to="/admin/product/create">
-              <Button variant="contained" color="primary" startIcon={<AddIcon />}>
-                Thêm sản phẩm
-              </Button>
-            </Link>
-          </Box>
+	const handleCloseDelete = () => {
+		setOpenDelete(false)
+	}
 
-          <Grid container justify="flex-start">
-            {data.map((item, index) => (
-              <Grid item xs={3} key={index}>
-                <ProductAdminItem
-                  product={item}
-                  loading={loading}
-                  handleClickDeleteOpen={handleClickDeleteOpen}
-                />
-              </Grid>
-            ))}
-          </Grid>
-          {/* Box delete */}
-          <Box>
-            <Dialog
-              open={openDelete}
-              onClose={handleCloseDelete}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">Xóa sản phẩm</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  {`Bạn có chắc chắn xóa sản phẩm ${product.name}? `}
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseDelete} color="primary">
-                  Đóng
-                </Button>
-                <Button onClick={handleRemove} color="primary" autoFocus>
-                  Xác nhận
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Box>
-          {length > 0 && (
-            <Box display="flex" justifyContent="flex-end" width="100%" m="0.5rem">
-              <Pagination
-                count={Math.ceil(length / items)}
-                page={page}
-                variant="outlined"
-                shape="rounded"
-                onChange={onChangePagination}
-              />
-            </Box>
-          )}
-        </main>
-      </div>
-    </>
-  );
-};
+	const handleRemove = async () => {
+		try {
+			handleCloseDelete()
+			await mutationDelete.mutateAsync(id)
+		} catch (e) {
+			enqueueSnackbar('Xóa thất bại', { variant: 'error' })
+		}
+	}
 
-export default AdminProduct;
+	if (error) return 'Error: ' + error.message
+
+	return (
+		<AdminLayout>
+			<AdminContent>
+				<SEO pageTitle={'Admin | Sản phẩm'} />
+				<>
+					<Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
+						{isLoading || mutationDelete.isLoading ? (
+							<Skeleton variant="rect" width={150} height={30} />
+						) : (
+							<Typography variant="h6">{`Sản phẩm (${data?.length})`}</Typography>
+						)}
+						<Button
+							variant="contained"
+							size="small"
+							component={Link}
+							to="/admin/product/create"
+							startIcon={<Iconify icon="carbon:add" width="1em" height="1em" />}
+						>
+							Thêm sản phẩm
+						</Button>
+					</Box>
+					<SearchBar
+						value={searched}
+						onChange={(searchVal) => requestSearch(searchVal)}
+						onCancelSearch={() => cancelSearch()}
+						placeholder="Tìm kiếm"
+					/>
+					<Box mt={2} width="100%">
+						<DataGrid
+							loading={isLoading || mutationDelete.isLoading}
+							rows={rows}
+							getRowId={(row) => row._id}
+							columns={columns}
+							rowCount={rowCountState}
+							pagination
+							{...rowsState}
+							paginationMode="server"
+							onPageChange={(page) => setRowsState((prev) => ({ ...prev, page }))}
+							onPageSizeChange={(pageSize) => setRowsState((prev) => ({ ...prev, pageSize }))}
+							rowsPerPageOptions={[20]}
+							componentsProps={{
+								toolbar: {
+									value: searched,
+									onChange: (event) => requestSearch(event.target.value),
+									clearSearch: () => requestSearch(''),
+								},
+							}}
+							autoHeight
+							hideFooterSelectedRowCount
+						/>
+					</Box>
+					{/* Box delete */}
+					<DialogOption
+						open={openDelete}
+						onClose={handleCloseDelete}
+						title="Xóa sản phẩm"
+						content="Bạn có chắc chắn xóa?"
+						handleConfirm={handleRemove}
+					/>
+				</>
+			</AdminContent>
+		</AdminLayout>
+	)
+}
+
+export default AdminProduct

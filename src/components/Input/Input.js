@@ -1,18 +1,21 @@
-import TextField from '@material-ui/core/TextField';
-import React, { forwardRef } from 'react';
+import TextField from '@material-ui/core/TextField'
+import React, { forwardRef } from 'react'
 
 export const Input = forwardRef((props, ref) => {
-  return (
-    <TextField
-      InputLabelProps={{
-        shrink: true,
-      }}
-      variant="outlined"
-      margin="normal"
-      size="small"
-      inputRef={ref}
-      fullWidth
-      {...props}
-    />
-  );
-});
+	return (
+		<TextField
+			variant="outlined"
+			margin={props.margin || 'normal'}
+			size="small"
+			inputRef={ref}
+			fullWidth
+			{...props}
+		/>
+	)
+})
+
+export const BasicInput = forwardRef((props, ref) => {
+	return (
+		<TextField margin="dense" variant="outlined" size="small" inputRef={ref} fullWidth {...props} />
+	)
+})

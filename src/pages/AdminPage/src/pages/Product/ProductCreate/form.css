@@ -1,0 +1,46 @@
+.MuiDropzonePreviewList-removeButton {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.box-delete-img {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.item-delete-img {
+    width: 100px;
+    max-height: 100px;
+    position: relative
+}
+
+.btn-delete-img {
+    display: none;
+    color: rgba(0, 0, 0, 0.87);
+    box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
+    border-radius: 50%;
+    background-color: #e0e0e0 !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+}
+
+.item-delete-img:hover {
+    opacity: .5;
+    transition: .5s ease;
+}
+
+.item-delete-img:hover .btn-delete-img {
+    display: flex;
+    transition: .5s ease;
+}
+
+
+

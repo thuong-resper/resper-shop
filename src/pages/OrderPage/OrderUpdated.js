@@ -1,46 +1,67 @@
-import { Box, FormControl, InputLabel, Select, Typography } from '@material-ui/core';
-import React from 'react';
-import { statusOrder } from 'staticOptions';
+import { Box, Button, TextField, Typography } from '@material-ui/core'
+import React, { useState } from 'react'
+import { Autocomplete } from '@material-ui/lab'
+import SimpleBackdrop from 'components/Backdrop/Backdrop'
+import { usePatchOrderStatus } from 'features/Order'
 
-const OrderUpdated = ({ order, handleStatusChange }) => {
-  const translateToVn = (key) => {
-    for (let i = 0; i < statusOrder.length; i++) {
-      if (statusOrder[i].value === key) {
-        return statusOrder[i].vn;
-      }
-    }
-  };
-  return (
-    <div>
-      <Box p="1rem 0">
-        <Typography variant="h6">Cập nhật đơn hàng</Typography>
-        <Box m="1rem 0" display="flex" justifyContent="space-between">
-          <Typography variant="subtitle1">Trạng thái</Typography>
-          <FormControl variant="outlined" size="small">
-            <InputLabel htmlFor="outlined-age-native-simple">
-              {translateToVn(order?.orderStatus)}
-            </InputLabel>
-            <Select
-              native
-              inputProps={{
-                name: 'age',
-                id: 'outlined-age-native-simple',
-              }}
-              onChange={(e) => handleStatusChange(order?._id, e.target.value)}
-              label="Trạng thái"
-            >
-              <option aria-label="None" value="" />
-              <option value="Not Processed">Chưa thực hiện</option>
-              <option value="Processing">Đang xử lý</option>
-              <option value="Dispatched">Đang vận chuyển</option>
-              <option value="Cancelled">Đã hủy</option>
-              <option value="Completed">Hoàn thành</option>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-    </div>
-  );
-};
+const options = ['Chưa thực hiện', 'Đang xử lý', 'Đang vận chuyển', 'Đã hủy', 'Hoàn thành']
 
-export default OrderUpdated;
+const OrderUpdated = ({ order }) => {
+	const [status, setStatus] = useState(options[0])
+	const [inputStatus, setInputStatus] = useState('')
+
+	const updated = usePatchOrderStatus(order._id, (oldData, newData) =>
+		Object.assign(oldData, { orderStatus: newData.orderStatus })
+	)
+
+	const handleUpdateStatus = async () => {
+		const data = {
+			orderId: order._id,
+			orderStatus: status,
+		}
+		await updated.mutateAsync(data)
+	}
+
+	return (
+		<Box mt={1}>
+			{updated.isLoading && <SimpleBackdrop />}
+			<Typography variant="body1">Trạng thái</Typography>
+			<Autocomplete
+				value={status}
+				onChange={(event, newValue) => {
+					setStatus(newValue)
+				}}
+				inputValue={inputStatus}
+				onInputChange={(event, newInputValue) => {
+					setInputStatus(newInputValue)
+				}}
+				id="status"
+				options={options}
+				autoHighlight
+				renderInput={(params) => (
+					<TextField
+						{...params}
+						id="status-input"
+						type="text"
+						placeholder={order?.orderStatus}
+						variant="outlined"
+						name="status"
+						size="small"
+					/>
+				)}
+			/>
+			<Box m="0.5rem 0" textAlign="right">
+				<Button
+					variant="contained"
+					color="primary"
+					disabled={status === order.orderStatus}
+					onClick={handleUpdateStatus}
+				>
+					Lưu
+				</Button>
+			</Box>
+		</Box>
+	)
+}
+
+export default OrderUpdated

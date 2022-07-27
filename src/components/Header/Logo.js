@@ -1,9 +1,9 @@
 import React from 'react'
-import useWindowDimensions from '../../hooks/useWindowDimensions.js'
 import { useRouter } from '../../hooks/useRouter.js'
 import { makeStyles } from '@material-ui/core/styles'
 import logo from '../../assets/images/logo.PNG'
 import symbol from '../../assets/images/symbol.PNG'
+import { useWindowDimensions } from 'hooks'
 
 const useStyles = makeStyles((theme) => ({
 	logo: {

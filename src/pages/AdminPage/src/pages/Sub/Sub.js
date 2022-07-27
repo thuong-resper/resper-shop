@@ -1,247 +1,301 @@
 import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  makeStyles,
-  TextField,
-  Typography
-} from '@material-ui/core';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import EditIcon from '@material-ui/icons/Edit';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import SimpleBackdrop from 'components/Backdrop/Backdrop';
-import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar';
-import { UserContext } from 'contexts/UserContext';
-import { getCategories } from 'features/Admin/Category/pathAPI';
-import { createSub, deleteSub, getSubs } from 'features/Admin/Sub/pathAPI';
-import { clearState } from 'features/Admin/Sub/SubSlice';
-import { useSnackbar } from 'notistack';
-import React, { useContext, useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
-import LocalSearch from '../../components/forms/LocalSearch';
+	Box,
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	IconButton,
+	makeStyles,
+	TextField,
+	Typography,
+} from '@material-ui/core'
+import moment from 'moment-timezone'
+import React, { useEffect, useState } from 'react'
+import { DataGrid } from '@material-ui/data-grid'
+import { useSnackbar } from 'notistack'
+import { Autocomplete, Skeleton } from '@material-ui/lab'
+import SearchBar from 'components/Search/SearchBar'
+import SEO from 'components/SEO/SEO'
+import { AdminContent, AdminLayout } from 'components/Layout'
+import { OptionBtn } from 'components/UI/Button/Button'
+import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
+import { useAddSub, useDeleteSub, useGetSubs, usePatchSub } from 'features/Admin/Sub'
+import { useGetCategories } from 'features/Admin/Category'
+import Iconify from 'components/Iconify'
+import { escapeRegExp } from 'utils/regex'
+import SimplePopover from 'pages/AdminPage/src/components/Popover/Popover'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    width: 200,
-  },
-  item: {
-    padding: '0.5rem',
-    margin: '0.5rem 0',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'relative',
-    borderRadius: '0.5rem',
-    backgroundColor: '#e8eaf6',
-  },
-  autoComplete: { margin: '0.5rem 0 0.25rem 0.5rem', width: '200px' },
-  option: { backgroundColor: '#e8eaf6' },
-  itemBtn: { display: 'flex' },
-}));
+	dialogContent: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		[theme.breakpoints.down('sm')]: {
+			flexDirection: 'column',
+			'& div': {
+				width: '100% !important',
+			},
+		},
+	},
+}))
 
 const Sub = () => {
-  // --Contexts
-  const state = useContext(UserContext);
-  const classes = useStyles();
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const [token] = state.token;
-  const { enqueueSnackbar } = useSnackbar();
+	const classes = useStyles()
+	const { enqueueSnackbar } = useSnackbar()
 
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('');
-  const [inputValue, setInputValue] = React.useState('');
-  const [slug, setSlug] = useState('');
-  const [openDelete, setOpenDelete] = useState(false);
-  // step 1
-  const [keyword, setKeyword] = useState('');
+	const [rows, setRows] = useState([])
+	const [searched, setSearched] = useState('')
+	const [pageSize, setPageSize] = useState(10)
+	const [name, setName] = useState('')
+	const [category, setCategory] = useState(null)
+	const [inputValue, setInputValue] = React.useState('')
+	const [item, setItem] = useState(null)
+	const [openDelete, setOpenDelete] = useState(false)
+	const [open, setOpen] = useState(false)
+	const [id, setId] = useState(null)
 
-  // dispatch API
-  const actionGetCategories = () => dispatch(getCategories());
-  const actionGetSubs = () => dispatch(getSubs());
-  const actionCreateSub = (data, token) => dispatch(createSub(data, token));
-  const actionDeleteSub = (slug, token) => dispatch(deleteSub(slug, token));
+	const { isLoading, data, error } = useGetSubs()
+	const { data: dataCategories } = useGetCategories()
+	const mutationAdd = useAddSub((oldData, newData) => [...oldData, newData])
+	const mutationUpdate = usePatchSub((oldData, id) =>
+		oldData.map((x) => (x._id === id ? { ...x, name, parent: category } : x))
+	)
+	const mutationDelete = useDeleteSub((oldData, id) => oldData.filter((item) => item._id !== id))
 
-  //store
-  const categories = useSelector((state) => state.category.categories);
-  const subs = useSelector((state) => state.sub.subs);
-  const isSuccess = useSelector((state) => state.sub.isSuccess);
-  const isError = useSelector((state) => state.sub.isError);
-  const message = useSelector((state) => state.sub.message);
-  const loading = useSelector((state) => state.sub.loading);
+	useEffect(() => {
+		if (data) {
+			setRows(data)
+		}
+	}, [data])
 
-  // snackbar
-  useEffect(() => {
-    return () => {
-      dispatch(clearState());
-    }; // eslint-disable-next-line
-  }, []);
+	const columns = [
+		{ field: '_id', headerName: 'ID', width: 250 },
+		{ field: 'name', headerName: 'Thương hiệu', width: 250 },
+		{
+			field: 'parent',
+			headerName: 'Danh mục',
+			width: 250,
+			valueGetter: (params) => params.row?.parent?.name,
+		},
+		{
+			field: 'createdAt',
+			headerName: 'Ngày tạo',
+			width: 250,
+			valueFormatter: ({ value }) => moment(value).format('DD/MM/YYYY'),
+		},
+		{
+			field: 'action',
+			headerName: 'Hành động',
+			sortable: false,
+			width: 130,
+			align: 'center',
+			headerAlign: 'center',
+			filterable: false,
+			disableColumnMenu: true,
+			disableReorder: true,
+			renderCell: (params) => {
+				const onUpdate = () => {
+					setName(params.row.name)
+					setCategory(params.row.parent)
+					setId(params.row._id)
+					setItem(params.row)
+					setOpen(true)
+				}
+				const onDelete = () => {
+					setOpenDelete(true)
+					setId(params.row._id)
+				}
+				return (
+					<SimplePopover>
+						<Box p={0.5}>
+							<IconButton size="small" onClick={onUpdate}>
+								<Iconify icon="eva:edit-2-fill" width="1.5em" height="1.5em" color="#2065d1" />
+							</IconButton>
+							<IconButton size="small" onClick={onDelete}>
+								<Iconify
+									icon="fluent:delete-16-filled"
+									width="1.5em"
+									height="1.5em"
+									color="#f50057"
+								/>
+							</IconButton>
+						</Box>
+					</SimplePopover>
+				)
+			},
+		},
+	]
 
-  useEffect(() => {
-    if (isError) {
-      enqueueSnackbar(message, { variant: 'error' });
-      dispatch(clearState());
-    }
+	const requestSearch = (searchedVal) => {
+		setSearched(searchedVal)
+		const searchRegex = new RegExp(escapeRegExp(searchedVal), 'i')
+		const filteredRows = data.filter((row) => {
+			return Object.keys(row).some((field) => {
+				return searchRegex.test(row[field].toString())
+			})
+		})
+		setRows(filteredRows)
+	}
 
-    if (isSuccess) {
-      enqueueSnackbar(message, { variant: 'success' });
-      dispatch(clearState());
-      actionGetCategories();
-      actionGetSubs();
-    } // eslint-disable-next-line
-  }, [isError, isSuccess]);
+	const cancelSearch = () => {
+		setSearched('')
+		requestSearch('')
+	}
 
-  useEffect(() => {
-    actionGetCategories();
-    actionGetSubs(); // eslint-disable-next-line
-  }, []);
+	const onClose = () => {
+		setOpen(false)
+		if (item) {
+			setItem(null)
+			setName('')
+			setId(null)
+			setCategory(null)
+		}
+	}
 
-  const handleChange = (event, newValue) => {
-    setCategory(newValue);
-  };
+	const handleCloseDelete = () => {
+		setOpenDelete(false)
+	}
 
-  const handleClickDeleteOpen = (slug) => {
-    setOpenDelete(true);
-    setSlug(slug);
-  };
+	const handleCreate = async () => {
+		try {
+			await mutationAdd.mutateAsync({ _id: '###', name, parent: category })
+			setName('')
+			setCategory('')
+			setOpen(false)
+		} catch (e) {
+			enqueueSnackbar('Tạo mới thất bại', { variant: 'error' })
+		}
+	}
 
-  const handleCloseDelete = () => {
-    setOpenDelete(false);
-  };
+	const handleUpdate = async () => {
+		try {
+			await mutationUpdate.mutateAsync({ id, name, parent: category })
+			onClose()
+		} catch (e) {
+			enqueueSnackbar('Cập nhật thất bại', { variant: 'error' })
+		}
+	}
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const data = { name, parent: category };
-    actionCreateSub(data, token);
-    actionGetCategories();
-    setName('');
-    setCategory('');
-  };
+	const handleRemove = async () => {
+		try {
+			await mutationDelete.mutateAsync(id)
+			handleCloseDelete()
+		} catch (e) {
+			enqueueSnackbar('Xóa thất bại', { variant: 'error' })
+		}
+	}
 
-  const handleRemove = () => {
-    actionDeleteSub(slug, token);
-    actionGetCategories();
-    actionGetSubs();
-    handleCloseDelete();
-  };
+	return (
+		<AdminLayout>
+			<AdminContent>
+				<SEO pageTitle={'Admin | Thương hiệu'} />
+				<>
+					{error ? (
+						<span>Error: {error.message}</span>
+					) : (
+						<>
+							<Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+								{isLoading ? (
+									<Skeleton variant="rect" width={150} height={30} />
+								) : (
+									<Typography variant="h6">{`Thương hiệu (${data.length})`}</Typography>
+								)}
+								<Button
+									variant="contained"
+									size="small"
+									onClick={() => setOpen(true)}
+									startIcon={<Iconify icon="carbon:add" width="1em" height="1em" />}
+								>
+									Tạo mới
+								</Button>
+							</Box>
+							<SearchBar
+								value={searched}
+								onChange={(searchVal) => requestSearch(searchVal)}
+								onCancelSearch={() => cancelSearch()}
+								placeholder="Tìm kiếm"
+							/>
+							<Box mt={2} width="100%">
+								<DataGrid
+									loading={isLoading}
+									rows={rows}
+									getRowId={(row) => row._id}
+									columns={columns}
+									pageSize={pageSize}
+									onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+									rowsPerPageOptions={[10, 20, 30]}
+									componentsProps={{
+										toolbar: {
+											value: searched,
+											onChange: (event) => requestSearch(event.target.value),
+											clearSearch: () => requestSearch(''),
+										},
+									}}
+									autoHeight
+									hideFooterSelectedRowCount
+									pagination
+								/>
+							</Box>
+							{/*Create or Update*/}
+							<Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth>
+								<DialogTitle id="form-dialog-title">
+									{item ? `Cập nhật thương hiệu: ${item.name}` : 'Tạo mới thương hiệu'}
+								</DialogTitle>
+								<DialogContent className={classes.dialogContent}>
+									<TextField
+										value={name}
+										size="small"
+										onChange={(e) => setName(e.target.value)}
+										placeholder="Tên thương hiệu"
+										style={{ width: 270 }}
+										variant="outlined"
+										required={true}
+									/>
+									<Autocomplete
+										id="choose-category"
+										value={category}
+										onChange={(event, newValue) => {
+											setCategory(newValue)
+										}}
+										inputValue={inputValue}
+										onInputChange={(event, newInputValue) => {
+											setInputValue(newInputValue)
+										}}
+										options={dataCategories}
+										getOptionLabel={(o) => o.name || ''}
+										style={{ width: 270 }}
+										renderInput={(params) => (
+											<TextField {...params} label="Danh mục" variant="outlined" size="small" />
+										)}
+									/>
+								</DialogContent>
+								<DialogActions style={{ marginRight: '16px' }}>
+									<OptionBtn onClick={onClose} title="Hủy" color="default" />
+									<OptionBtn
+										onClick={item ? handleUpdate : handleCreate}
+										title="Xác nhận"
+										autoFocus
+										disabled={
+											(!name && !category) ||
+											(item && item.name === name && item.parent === category)
+										}
+									/>
+								</DialogActions>
+							</Dialog>
+							{/*Delete*/}
+							<DialogOption
+								open={openDelete}
+								onClose={handleCloseDelete}
+								title="Xóa thương hiệu"
+								content="Bạn có chắc chắn xóa?"
+								handleConfirm={handleRemove}
+							/>
+						</>
+					)}
+				</>
+			</AdminContent>
+		</AdminLayout>
+	)
+}
 
-  const searched = (keyword) => (c) => c.name.toLowerCase().includes(keyword);
-
-  return (
-    <>
-      <Helmet>
-        <title>Sub</title>
-      </Helmet>
-      <div className={classes.root}>
-        {loading && <SimpleBackdrop />}
-        <AdminSidebar />
-        <main className={classes.content}>
-          <Box display="flex">
-            <form onSubmit={handleSubmit} style={{ margin: '0.5rem', minWidth: '120px' }}>
-              <Typography variant="body1">Tạo mới thương hiệu</Typography>
-              <Box display="flex">
-                <TextField
-                  value={name}
-                  size="small"
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Tên thương hiệu"
-                  margin="dense"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  variant="outlined"
-                />
-                <div className={classes.autoComplete}>
-                  <Autocomplete
-                    value={category}
-                    onChange={handleChange}
-                    inputValue={inputValue}
-                    onInputChange={(event, newInputValue) => {
-                      setInputValue(newInputValue);
-                    }}
-                    classes={{
-                      option: classes.option,
-                    }}
-                    id="controllable-states-demo"
-                    options={categories}
-                    getOptionLabel={(option) => option.name || ''}
-                    getOptionSelected={(option, value) => option.value === value.value}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Danh mục" variant="outlined" size="small" />
-                    )}
-                  />
-                </div>
-              </Box>
-              <Button variant="contained" color="primary" type="submit">
-                Lưu
-              </Button>
-            </form>
-            <LocalSearch keyword={keyword} setKeyword={setKeyword} placeholder="Tên thương hiệu" />
-          </Box>
-
-          {/* step 5 */}
-          <Box m="0.5rem">
-            <Typography variant="body1">Danh sách thương hiệu&nbsp;({subs.length})</Typography>
-            {subs.length > 0 &&
-              subs.filter(searched(keyword)).map((c, index) => (
-                <div className={classes.wrapper} key={c.slug}>
-                  <div className={classes.item}>
-                    <p>{c.name}</p>
-                    <div className={classes.itemBtn}>
-                      <IconButton onClick={() => history.push(`/admin/sub/${c.slug}`)} size="small">
-                        <EditIcon color="primary" />
-                      </IconButton>
-                      <IconButton onClick={() => handleClickDeleteOpen(c.slug)} size="small">
-                        <DeleteOutlineIcon color="secondary" />
-                      </IconButton>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            {/* Box delete */}
-            <Box>
-              <Dialog
-                open={openDelete}
-                onClose={handleCloseDelete}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">Xóa danh mục</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Bạn có chắc chắn xóa?
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleCloseDelete} color="primary">
-                    Đóng
-                  </Button>
-                  <Button onClick={handleRemove} color="primary" autoFocus>
-                    Xác nhận
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </Box>
-          </Box>
-        </main>
-      </div>
-    </>
-  );
-};
-
-export default Sub;
+export default Sub
