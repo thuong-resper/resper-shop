@@ -4,9 +4,9 @@ import queryString from 'query-string'
 const axiosClient = axios.create({
 	baseURL:
 		// development
-		process.env.REACT_APP_API_DEV,
-	// production
-	// process.env.REACT_APP_API_URL,
+		// process.env.REACT_APP_API_DEV,
+		// production
+		process.env.REACT_APP_API_URL,
 	headers: {
 		'content-type': 'application/json',
 	},
