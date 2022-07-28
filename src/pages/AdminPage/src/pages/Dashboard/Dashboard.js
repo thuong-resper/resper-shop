@@ -6,7 +6,7 @@ import AppItemOrders from './AppItemOrders'
 import AppNewUsers from './AppNewUsers'
 import AppWeeklySales from './AppWeeklySales'
 import { AdminLayout } from 'components/Layout/index.js'
-import SEO from 'components/SEO/SEO.js'
+import SEO from 'components/SEO/SEO'
 
 const drawerWidth = 240
 
