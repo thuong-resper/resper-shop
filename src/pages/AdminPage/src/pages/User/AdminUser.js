@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom'
 import { AdminContent, AdminLayout } from 'components/Layout'
 import Iconify from 'components/Iconify'
 import { escapeRegExp } from 'utils/regex'
-import SearchBar from 'components/Search/SearchBar'
+// import SearchBar from 'components/Search/SearchBar'
 import { DataGrid } from '@material-ui/data-grid'
 import { Skeleton } from '@material-ui/lab'
 import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
@@ -197,12 +197,12 @@ const AdminUser = () => {
 							Thêm người dùng
 						</Button>
 					</Box>
-					<SearchBar
+					{/* <SearchBar
 						value={searched}
 						onChange={(searchVal) => requestSearch(searchVal)}
 						onCancelSearch={() => cancelSearch()}
-						placeholder="Tìm kiếm"
-					/>
+						placeholder="Tìm kiếm" 
+					/> */}
 					<Box mt={2} width="100%">
 						<DataGrid
 							loading={isLoading || mutationDelete.isLoading}
