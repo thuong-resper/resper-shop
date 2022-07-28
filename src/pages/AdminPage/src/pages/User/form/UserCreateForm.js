@@ -34,6 +34,9 @@ const defaultValues = {
 	dob: '01/01/1990',
 }
 
+const defaultImgUrl =
+	'https://res.cloudinary.com/dfxk0fqfp/image/upload/v1626342034/watchshopstorage/default-avatar-profile-icon-vector-social-media-user-portrait-176256935_qy5m6a.jpg'
+
 function GridItem({ children }) {
 	return (
 		<Grid item xs={12}>
@@ -44,7 +47,7 @@ function GridItem({ children }) {
 
 const UserCreateForm = ({ user }) => {
 	const { enqueueSnackbar } = useSnackbar()
-	const [avatar, setAvatar] = useState(user.avatar || null)
+	const [avatar, setAvatar] = useState(user?.avatar && defaultImgUrl)
 	const [openAddressForm, setOpenAddressForm] = useState(false)
 
 	const mutation = useUserUpdate((o, n) => Object.assign(o, n))

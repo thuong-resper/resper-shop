@@ -22,7 +22,7 @@ const UserCreate = () => {
 					<CustomAdminBreadCrumb link={link} lastTitle={'Tạo mới'} />
 				</Box>
 				<Box marginTop={4}>
-					<UserCreateForm />
+					<UserCreateForm user={null} />
 				</Box>
 			</AdminContent>
 		</AdminLayout>
