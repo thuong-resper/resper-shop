@@ -3,7 +3,6 @@ import Box from '@material-ui/core/Box'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { Skeleton } from '@material-ui/lab'
-import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import SimpleBackdrop from '../Backdrop/Backdrop'
 import { AntTab, AntTabs } from '../Tab/Tab'
@@ -95,12 +94,6 @@ function TabPanel(props) {
 			)}
 		</div>
 	)
-}
-
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.any.isRequired,
-	value: PropTypes.any.isRequired,
 }
 
 function a11yProps(index) {

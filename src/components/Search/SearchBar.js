@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { IconButton, Input, Paper } from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
@@ -185,33 +184,6 @@ SearchBar.defaultProps = {
 	searchIcon: <SearchIcon />,
 	style: null,
 	value: '',
-}
-
-SearchBar.propTypes = {
-	/** Whether to clear search on escape */
-	cancelOnEscape: PropTypes.bool,
-	/** Override or extend the styles applied to the component. */
-	classes: PropTypes.object.isRequired,
-	/** Custom top-level class */
-	className: PropTypes.string,
-	/** Override the close icon. */
-	closeIcon: PropTypes.node,
-	/** Disables text field. */
-	disabled: PropTypes.bool,
-	/** Fired when the search is cancelled. */
-	onCancelSearch: PropTypes.func,
-	/** Fired when the text value changes. */
-	onChange: PropTypes.func,
-	/** Fired when the search icon is clicked. */
-	onRequestSearch: PropTypes.func,
-	/** Sets placeholder text for the embedded text field. */
-	placeholder: PropTypes.string,
-	/** Override the search icon. */
-	searchIcon: PropTypes.node,
-	/** Override the inline-styles of the root element. */
-	style: PropTypes.object,
-	/** The value of the text field. */
-	value: PropTypes.string,
 }
 
 export default withStyles(styles)(SearchBar)
