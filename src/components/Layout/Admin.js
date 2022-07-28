@@ -1,6 +1,7 @@
 import { Box, makeStyles } from '@material-ui/core'
 import React from 'react'
 import AdminSidebar from 'components/Navigation/MainMenu/AdminSidebar'
+import { AuthAdmin } from 'components/common'
 
 const useStyles = makeStyles((theme) => ({
 	admin: {
@@ -21,11 +22,13 @@ const useStyles = makeStyles((theme) => ({
 export function AdminLayout({ children }) {
 	const classes = useStyles()
 	return (
-		<Box className={classes.admin}>
-			<Box className={classes.sideBar}>
-				<AdminSidebar />
+		<AuthAdmin>
+			<Box className={classes.admin}>
+				<Box className={classes.sideBar}>
+					<AdminSidebar />
+				</Box>
+				<Box className={classes.children}>{children}</Box>
 			</Box>
-			<Box className={classes.children}>{children}</Box>
-		</Box>
+		</AuthAdmin>
 	)
 }

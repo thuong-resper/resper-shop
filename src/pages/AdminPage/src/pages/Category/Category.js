@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 import { useSnackbar } from 'notistack'
 import moment from 'moment-timezone'
-import { DataGrid } from '@material-ui/data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
 import { escapeRegExp } from 'utils/regex'
 import { AdminContent, AdminLayout } from 'components/Layout'

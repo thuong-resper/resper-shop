@@ -9,7 +9,6 @@ import './global.css'
 import NotFound from './pages/NotFound/NotFound'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import UserPage from 'pages/routes'
-import AdminPage from 'pages/AdminPage/routesAdmin'
 import { UserContext } from 'contexts'
 import MomentUtils from '@date-io/moment'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
@@ -18,7 +17,6 @@ import MessengerCustomerChat from 'react-messenger-customer-chat'
 const App = () => {
 	const state = useContext(UserContext)
 	const [token] = state.token
-	const [admin] = state.admin
 
 	useEffect(() => {
 		AOS.init({
@@ -38,19 +36,6 @@ const App = () => {
 		}
 	}
 
-	const showPageAdmin = (page) => {
-		if (page.length > 0) {
-			return page.map((page, index) => (
-				<Route
-					key={index}
-					exact={page.exact}
-					path={page.path}
-					component={admin && token ? page.main : NotFound}
-				/>
-			))
-		}
-	}
-
 	const paypalOptions = {
 		'client-id': 'test',
 		currency: 'USD',
@@ -66,7 +51,6 @@ const App = () => {
 					<Suspense fallback={<SimpleBackdrop />}>
 						<Switch>
 							{showPageUser(UserPage)}
-							{showPageAdmin(AdminPage)}
 							<Route path="*" component={NotFound} exact />
 							<Redirect to="/" from="/" />
 						</Switch>

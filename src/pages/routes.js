@@ -64,6 +64,46 @@ const UserProfile = lazy(() => {
 	return import('./UserPage/UserProfile')
 })
 
+const Dashboard = lazy(() => {
+	return import('./AdminPage/src/pages/Dashboard/Dashboard')
+})
+
+const AdminUser = lazy(() => {
+	return import('./AdminPage/src/pages/User/AdminUser')
+})
+
+const Category = lazy(() => {
+	return import('./AdminPage/src/pages/Category/Category')
+})
+
+const Coupon = lazy(() => {
+	return import('./AdminPage/src/pages/Coupon/Coupon')
+})
+
+const Sub = lazy(() => {
+	return import('./AdminPage/src/pages/Sub/Sub')
+})
+
+const AdminProduct = lazy(() => {
+	return import('./AdminPage/src/pages/Product/AdminProduct')
+})
+
+const ProductCreate = lazy(() => {
+	return import('./AdminPage/src/pages/Product/ProductCreate')
+})
+
+const ProductUpdate = lazy(() => {
+	return import('./AdminPage/src/pages/Product/ProductUpdate')
+})
+
+const UserCreate = lazy(() => {
+	return import('./AdminPage/src/pages/User/UserCreate')
+})
+
+const AdminOrder = lazy(() => {
+	return import('./AdminPage/src/pages/Order/AdminOrder')
+})
+
 const UserPage = [
 	{
 		path: '/',
@@ -144,6 +184,62 @@ const UserPage = [
 		path: '/user/profile',
 		exact: true,
 		main: UserProfile,
+	},
+	// admin
+	{
+		path: '/admin/dashboard',
+		exact: true,
+		main: Dashboard,
+	},
+	{
+		path: '/admin/user',
+		exact: true,
+		main: AdminUser,
+	},
+	{
+		path: '/admin/category',
+		exact: true,
+		main: Category,
+	},
+	{
+		path: '/admin/coupon',
+		exact: true,
+		main: Coupon,
+	},
+	{
+		path: '/admin/sub',
+		exact: true,
+		main: Sub,
+	},
+	{
+		path: '/admin/product',
+		exact: true,
+		main: AdminProduct,
+	},
+	{
+		path: '/admin/order',
+		exact: true,
+		main: AdminOrder,
+	},
+	{
+		path: '/admin/product/create',
+		exact: true,
+		main: ProductCreate,
+	},
+	{
+		path: '/admin/product/update/:id',
+		exact: true,
+		main: ProductUpdate,
+	},
+	{
+		path: '/admin/user/create',
+		exact: true,
+		main: UserCreate,
+	},
+	{
+		path: '/admin/product/update/:id',
+		exact: true,
+		main: ProductUpdate,
 	},
 ]
 export default UserPage

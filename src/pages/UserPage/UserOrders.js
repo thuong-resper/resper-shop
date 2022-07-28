@@ -7,7 +7,7 @@ import SEO from 'components/SEO/SEO'
 import { UserLayout } from 'components/Layout/UserLayout'
 import { useGetUserOrders } from 'features/Order'
 import { escapeRegExp } from 'utils/regex'
-import { DataGrid } from '@material-ui/data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import SearchBar from 'components/Search/SearchBar'
 
 function RowIdCell(props) {

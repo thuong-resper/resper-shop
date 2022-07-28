@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core'
 import moment from 'moment-timezone'
 import React, { useEffect, useState } from 'react'
-import { DataGrid } from '@material-ui/data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import { useSnackbar } from 'notistack'
 import { Autocomplete, Skeleton } from '@material-ui/lab'
 import SearchBar from 'components/Search/SearchBar'

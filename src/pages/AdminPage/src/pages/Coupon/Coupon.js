@@ -16,7 +16,7 @@ import { useAddCoupon, useDeleteCoupon, useGetCoupons, usePatchCoupon } from 'fe
 import { escapeRegExp } from 'utils/regex'
 import Iconify from 'components/Iconify'
 import SearchBar from 'components/Search/SearchBar'
-import { DataGrid } from '@material-ui/data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import { OptionBtn } from 'components/UI/Button/Button'
 import DialogOption from 'pages/AdminPage/src/components/Dialog/DialogOption'
 import moment from 'moment-timezone'
