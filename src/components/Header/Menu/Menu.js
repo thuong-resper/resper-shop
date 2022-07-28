@@ -407,23 +407,24 @@ const MenuListUser = ({ user, setUser, setIdUser, token, setToken, loadingGetPro
 				</div>
 			) : (
 				<>
-					{loadingGetProfile ? (
-						<Box display="flex" justifyContent="flex-end">
-							<CircularProgress color="inherit" size={24} />
-						</Box>
-					) : width > 600 ? (
-						<Button
-							edge="end"
-							className={classes.button}
-							aria-label="account of current user"
-							color="inherit"
-							aria-owns={anchorEl ? 'simple-menu' : undefined}
-							aria-haspopup="true"
-							onClick={() => router.push('/login')}
-							startIcon={<AccountCircle />}
-						>
-							Đăng nhập
-						</Button>
+					{width > 600 ? (
+						loadingGetProfile ? (
+							<Box display="flex" justifyContent="flex-end">
+								<CircularProgress color="inherit" size={24} />
+							</Box>
+						) : (
+							<Button
+								edge="end"
+								className={classes.button}
+								color="inherit"
+								aria-owns={anchorEl ? 'simple-menu' : undefined}
+								aria-haspopup="true"
+								onClick={() => router.push('/login')}
+								startIcon={<AccountCircle />}
+							>
+								Đăng nhập
+							</Button>
+						)
 					) : null}
 				</>
 			)}

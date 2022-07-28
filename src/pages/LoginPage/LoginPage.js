@@ -46,7 +46,7 @@ const LoginPage = ({ location }) => {
 	const { setValues, data } = useData()
 
 	const [token, setToken] = state.token
-	const [setUser] = state.user
+	const [, setUser] = state.user
 	const [, setIdUser] = state.idUser
 	const componentMounted = useRef(true)
 

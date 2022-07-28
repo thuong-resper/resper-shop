@@ -50,10 +50,9 @@ const UserContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		const socketIo = io(
-			// development
-			// process.env.REACT_APP_API_DEV,
-			// production
-			process.env.REACT_APP_API_URL,
+			process.env.REACT_APP_NODE_ENV === 'development'
+				? process.env.REACT_APP_API_DEV
+				: process.env.REACT_APP_API_URL,
 			{
 				withCredentials: true,
 				extraHeaders: {
