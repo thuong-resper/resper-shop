@@ -34,7 +34,7 @@ export default function SeeMoreProduct({ items, dataRelated, onChangePage, loadi
 				<Box display="flex" justifyContent="center" width="100%" m="0.5rem">
 					<Pagination
 						count={Math.ceil(length / items)}
-						page={pageUrl}
+						page={pageUrl + 1}
 						onChange={onChangePagination}
 						variant="outlined"
 						shape="rounded"
