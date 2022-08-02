@@ -255,7 +255,7 @@ const ProductPage = ({ location }) => {
 
 	const onChangePageSeenMoreProduct = (_page) => {
 		const data = {
-			page: _page,
+			page: Number(_page - 1),
 			page_cmt: page_cmt,
 		}
 		const params = queryString.stringify(data)
