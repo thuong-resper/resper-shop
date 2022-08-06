@@ -307,7 +307,7 @@ const ShopPage = ({ location }) => {
 							style={{
 								position: 'absolute',
 								bottom: 16,
-								right: 16,
+								left: 16,
 								zIndex: 3,
 							}}
 						>
